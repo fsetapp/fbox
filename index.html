@@ -1,0 +1,59 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fbox basic</title>
+</head>
+<style>
+  kbd {
+    border: 1px solid gray;
+    padding: .25rem;
+    border-radius: .25rem;
+  }
+</style>
+<script type="module">
+  import { render, html } from "https://cdn.skypack.dev/uhtml"
+  var store = {}
+  const anySch = { type: "any" }
+  const stringSch = { type: "string" }
+  const boolSch = { type: "boolean" }
+  const numberSch = { type: "number" }
+  const nullSch = { type: "null" }
+  const recordSch = { type: "record", fields: [], order: [] }
+  const listSch = { type: "list", sch: anySch }
+  const tupleSch = { type: "tuple", items: [stringSch, boolSch, numberSch] }
+  const unionSch = { type: "union", items: [nullSch, recordSch, numberSch] }
+  const schs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
+
+  const putSch = (store, sch) => {
+    store[`key_${Date.now()}`] = sch
+    return store
+  }
+
+  const renderHtml = (store) => {
+    render(document.body, html`
+      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema</p>
+      <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
+      `)
+  }
+
+  const handleKeydown = e => {
+    switch (e.key) {
+      case "+":
+        putSch(store, schs[ranInt(schs.length - 1)])
+        renderHtml(store)
+        break
+    }
+  }
+
+  const ranInt = max => Math.floor(Math.random() * Math.floor(max));
+
+  document.addEventListener("keydown", handleKeydown)
+  renderHtml(store)
+</script>
+
+<body>
+</body>
+
+</html>
