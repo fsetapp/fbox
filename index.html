@@ -14,21 +14,71 @@
 </style>
 <script type="module">
   import { render, html } from "https://cdn.skypack.dev/uhtml"
-  var store = {}
-  const anySch = { type: "any" }
-  const stringSch = { type: "string" }
-  const boolSch = { type: "boolean" }
-  const numberSch = { type: "number" }
-  const nullSch = { type: "null" }
-  const recordSch = { type: "record", fields: [], order: [] }
-  const listSch = { type: "list", sch: anySch }
-  const tupleSch = { type: "tuple", items: [stringSch, boolSch, numberSch] }
-  const unionSch = { type: "union", items: [nullSch, recordSch, numberSch] }
+
+  const anySch = () => ({ type: "any" })
+  const stringSch = () => ({ type: "string" })
+  const boolSch = () => ({ type: "boolean" })
+  const numberSch = () => ({ type: "number" })
+  const nullSch = () => ({ type: "null" })
+  const recordSch = () => ({ type: "record", fields: {}, order: [] })
+  const listSch = () => ({ type: "list", sch: anySch() })
+  const tupleSch = () => ({ type: "tuple", schs: [stringSch(), boolSch(), numberSch()] })
+  const unionSch = () => ({ type: "union", schs: [nullSch(), recordSch(), numberSch()] })
   const schs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
 
-  const putSch = (store, sch) => {
-    store[`key_${Date.now()}`] = sch
-    return store
+  var store = recordSch()
+
+  const walk = (sch, f, meta = {}) => {
+    meta.path = meta.path || ""
+    meta.level = meta.level || 0
+
+    switch (true) {
+      case ["record"].includes(sch.type):
+        for (let [k, sch_] of Object.entries(sch.fields)) {
+          let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1 }
+          sch.fields[k] = walk(f(sch_, nextMeta), f, nextMeta)
+        }
+        break
+      case ["tuple", "union"].includes(sch.type):
+        sch.schs.forEach((sch_, i) => {
+          let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1 }
+          sch.schs[i] = walk(f(sch_, nextMeta), f, nextMeta)
+        })
+        break
+      case ["list"].includes(sch.type):
+        let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1 }
+        sch.sch = walk(f(sch.sch, nextMeta), f, nextMeta)
+        break
+      default:
+        sch
+    }
+
+    return f(sch, meta)
+  }
+  const putSch = (currentNode, path, k, sch, index) => {
+    walk(currentNode, (sch_, meta) => {
+      if (meta.path != path) return sch_
+      else {
+        switch (sch_.type) {
+          case "record":
+            k = k || Date.now()
+            sch_.fields[k] = sch()
+            sch_.order.push(k)
+            break
+          case "list":
+            break
+          case "tuple":
+            sch_.schs.unshift(sch())
+            break
+          case "union":
+            sch_.schs.unshift(sch())
+            break
+          default:
+            sch_
+        }
+        return sch_
+      }
+    })
   }
 
   const renderHtml = (store) => {
@@ -39,9 +89,10 @@
   }
 
   const handleKeydown = e => {
+    let currentPath = ""
     switch (e.key) {
       case "+":
-        putSch(store, schs[ranInt(schs.length - 1)])
+        putSch(store, currentPath, null, schs[ranInt(schs.length - 1)], -1)
         renderHtml(store)
         break
     }
