@@ -11,19 +11,50 @@
     padding: .25rem;
     border-radius: .25rem;
   }
+
+  dfn {
+    font-style: normal;
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+
+  .t {
+    color: initial;
+  }
+
+  .k {
+    color: initial;
+  }
 </style>
 <script type="module">
   import { render, html } from "https://cdn.skypack.dev/uhtml"
 
-  const anySch = () => ({ type: "any" })
-  const stringSch = () => ({ type: "string" })
-  const boolSch = () => ({ type: "boolean" })
-  const numberSch = () => ({ type: "number" })
-  const nullSch = () => ({ type: "null" })
-  const recordSch = () => ({ type: "record", fields: {}, order: [] })
-  const listSch = () => ({ type: "list", sch: anySch() })
-  const tupleSch = () => ({ type: "tuple", schs: [stringSch(), boolSch(), numberSch()] })
-  const unionSch = () => ({ type: "union", schs: [nullSch(), recordSch(), numberSch()] })
+  const RECORD = "record"
+  const LIST = "list"
+  const TUPLE = "tuple"
+  const STRING = "string"
+  const NUMBER = "number"
+  const INTEGER = "integer"
+  const BOOLEAN = "boolean"
+  const NULL = "null"
+  const UNION = "union"
+  const ANY = "any"
+  const REF = "ref"
+  const VALUE = "value"
+  const CONTAINER_TYPES = [RECORD, TUPLE, LIST, UNION]
+
+  const anySch = () => ({ type: ANY })
+  const stringSch = () => ({ type: STRING })
+  const boolSch = () => ({ type: BOOLEAN })
+  const numberSch = () => ({ type: NUMBER })
+  const nullSch = () => ({ type: NULL })
+  const recordSch = () => ({ type: RECORD, fields: {}, order: [] })
+  const listSch = () => ({ type: LIST, sch: anySch() })
+  const tupleSch = () => ({ type: TUPLE, schs: [stringSch(), boolSch(), numberSch()] })
+  const unionSch = () => ({ type: UNION, schs: [nullSch(), recordSch(), numberSch()] })
   const schs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
 
   var store = recordSch()
@@ -33,19 +64,19 @@
     meta.level = meta.level || 0
 
     switch (true) {
-      case ["record"].includes(sch.type):
+      case [RECORD].includes(sch.type):
         for (let [k, sch_] of Object.entries(sch.fields)) {
           let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1 }
           sch.fields[k] = walk(f(sch_, nextMeta), f, nextMeta)
         }
         break
-      case ["tuple", "union"].includes(sch.type):
+      case [TUPLE, UNION].includes(sch.type):
         sch.schs.forEach((sch_, i) => {
           let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1 }
           sch.schs[i] = walk(f(sch_, nextMeta), f, nextMeta)
         })
         break
-      case ["list"].includes(sch.type):
+      case [LIST].includes(sch.type):
         let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1 }
         sch.sch = walk(f(sch.sch, nextMeta), f, nextMeta)
         break
@@ -60,17 +91,17 @@
       if (meta.path != path) return sch_
       else {
         switch (sch_.type) {
-          case "record":
-            k = k || Date.now()
+          case RECORD:
+            k = `key_${k || Date.now() / 100}`
             sch_.fields[k] = sch()
             sch_.order.push(k)
             break
-          case "list":
+          case LIST:
             break
-          case "tuple":
+          case TUPLE:
             sch_.schs.unshift(sch())
             break
-          case "union":
+          case UNION:
             sch_.schs.unshift(sch())
             break
           default:
@@ -81,27 +112,184 @@
     })
   }
 
-  const renderHtml = (store) => {
-    render(document.body, html`
-      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema</p>
-      <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
-      `)
+  const viewMain = (assigns) =>
+    render(document.body, html`<p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema</p>
+      <section style="display: flex; justify-content: space-around;">
+        <ul>
+          ${viewModel(assigns)}
+        </ul>
+        <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
+      </section>
+
+    `)
+
+  const viewModel = (assigns) =>
+    CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
+
+  const viewFolder = (assigns) =>
+    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}">
+      <dfn class="h">
+        ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
+        ${viewType(assigns)}
+      </dfn>
+      <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
+        ${viewItself(assigns)}
+      </ul>
+    </li>`
+
+  const viewFile = (assigns) =>
+    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}">
+      ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
+      ${viewType(assigns)}
+    </li>`
+
+  const viewItself = (assigns) => {
+    switch (true) {
+      case [RECORD].includes(assigns.sch.type):
+        return viewKeyed(assigns)
+        break
+      case [TUPLE].includes(assigns.sch.type):
+        return viewIndexed(assigns)
+        break
+      case [LIST].includes(assigns.sch.type):
+        return viewSingled(assigns)
+        break
+      case [UNION].includes(assigns.sch.type):
+        return viewNonKeyed(assigns)
+        break
+      default:
+        return html``
+    }
+  }
+
+  const viewKeyed = (assigns) =>
+    assigns.sch.order.map(k =>
+      viewModel({
+        key: k,
+        sch: assigns.sch.fields[k],
+        parent: assigns.sch,
+        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        path: `${assigns.path}[${k}]`
+      })
+    )
+
+  const viewIndexed = (assigns) =>
+    assigns.sch.schs.map((sch, i) =>
+      viewModel({
+        key: i,
+        sch: assigns.sch.schs[i],
+        parent: assigns.sch,
+        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        path: `${assigns.path}[][${i}]`
+      })
+    )
+
+  const viewSingled = (assigns) =>
+    viewModel({
+      key: 0,
+      sch: assigns.sch.sch,
+      parent: assigns.sch,
+      ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+      path: `${assigns.path}[][${0}]`
+    })
+
+  const viewNonKeyed = (assigns) =>
+    assigns.sch.schs.map((sch, i) =>
+      viewModel({
+        key: "",
+        sch: sch,
+        parent: assigns.sch,
+        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        path: `${assigns.path}[][${i}]`
+      })
+    )
+
+  const indent = (assigns) => `padding-left: ${((assigns.ui.level - 1) * 1.25) + assigns.ui.tab}rem`
+  const viewKey = (assigns) => assigns.ui.level == 1 ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
+  const viewKeyRoot = (assigns) =>
+    html`
+    <span class="text-blue-500 mr-2" style=${indent(assigns)}>
+      ${modelTypeText(assigns.sch, assigns.ui)}
+    </span>
+    <sch-key class="k">${assigns.key}</sch-key>
+    <span class="mx-2">=</span>
+    `
+  const viewKeyNonRoot = (assigns) => {
+    switch (true) {
+      case assigns.parent.type == UNION:
+        return html`
+          <span class="" style=${indent(assigns)}></span>
+          <span class="mx-2 text-gray-500">|</span>
+          `
+        break
+      case assigns.parent.type == LIST:
+        return html`
+          <span class="k" style=${indent(assigns)}></span>
+          <span class="mx-2 text-gray-500">└</span>
+          `
+        break
+      default:
+        return html`
+          <span class="k" style=${indent(assigns)}>${assigns.key}</span>
+          <span class="mx-2 text-gray-500">:</span>
+          `
+    }
+  }
+
+  const viewType = (assigns) => assigns.level == 1 ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
+  const viewTypeRoot = (assigns) =>
+    html`<span class="t text-pink-400" role="complementary">${typeText(assigns.sch, assigns.ui)}</span>`
+  const viewTypeNonRoot = (assigns) =>
+    html`<span class="t text-pink-400" role="complementary">${typeText(assigns.sch, assigns.ui)}</span>`
+
+  const typeText = (sch, ui) => {
+    switch (true) {
+      case sch.type == RECORD && jEQ(sch.fields, {}): return "{ any }"
+      case sch.type == RECORD: return `{ \xa0 }`
+      case sch.type == LIST && sch.sch.type == "any": return "[ any ]"
+      case sch.type == LIST: return `${typeText(sch.sch, ui)}`
+      case sch.type == TUPLE: return "( \xa0 )"
+      case sch.type == STRING: return "string"
+      case sch.type == NUMBER: return "number"
+      case sch.type == INTEGER: return "integer"
+      case sch.type == BOOLEAN: return "bool"
+      case sch.type == NULL: return "null"
+      case sch.type == UNION: return "||"
+      case sch.type == ANY: return "any"
+      case sch.type == REF: return "ref"
+      case sch.type == VALUE: return "value"
+      default: return "please define what type ${sch} is"
+    }
+  }
+
+  const wordBreakHtml = (word) => word
+  const keyedOrIndexed = (assigns) => "keyed"
+
+  const modelTypeText = (sch, ui) => {
+    switch (true) {
+      case sch.type == RECORD: return "record"; break
+      case sch.type == LIST: return "list"; break
+      case sch.type == TUPLE: return "tuple"; break
+      case sch.type == UNION: return "union"; break
+      default: return "field"
+    }
   }
 
   const handleKeydown = e => {
     let currentPath = ""
     switch (e.key) {
       case "+":
-        putSch(store, currentPath, null, schs[ranInt(schs.length - 1)], -1)
-        renderHtml(store)
+        putSch(store, currentPath, null, schs[ranInt(schs.length)], -1)
+        viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
         break
     }
   }
 
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
+  const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
   document.addEventListener("keydown", handleKeydown)
-  renderHtml(store)
+  viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
 </script>
 
 <body>
