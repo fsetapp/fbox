@@ -21,6 +21,18 @@
     list-style: none;
   }
 
+  [role="treeitem"] {
+    border: 1px solid transparent;
+  }
+
+  [role="treeitem"]:focus {
+    border: 1px solid black;
+  }
+
+  [role="treeitem"][aria-selected="true"] {
+    border: 1px solid blue;
+  }
+
   .t {
     color: initial;
   }
@@ -115,7 +127,7 @@
   const viewMain = (assigns) =>
     render(document.body, html`<p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema</p>
       <section style="display: flex; justify-content: space-around;">
-        <ul>
+        <ul role="tree" aria-multiselectable="true">
           ${viewModel(assigns)}
         </ul>
         <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
@@ -127,7 +139,7 @@
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
 
   const viewFolder = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}">
+    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false">
       <dfn class="h">
         ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
         ${viewType(assigns)}
@@ -138,7 +150,7 @@
     </li>`
 
   const viewFile = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}">
+    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false">
       ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
       ${viewType(assigns)}
     </li>`
@@ -285,10 +297,54 @@
     }
   }
 
+  const stepNode = (currentNode, nextStepNode) => {
+    currentNode.tabIndex = -1
+    currentNode.setAttribute("aria-selected", false)
+    if (nextStepNode) {
+      nextStepNode.setAttribute("aria-selected", true)
+      nextStepNode.tabIndex = 0
+      nextStepNode.focus()
+    }
+  }
+
+  function handleTreeKeydown(e) {
+    let tree = this
+    let currentNode = tree._walker.currentNode
+
+    switch (e.code) {
+      case "ArrowUp":
+        stepNode(currentNode, tree._walker.previousNode())
+        break
+      case "ArrowDown":
+        stepNode(currentNode, tree._walker.nextNode())
+        e.preventDefault()
+        break
+      default:
+        return
+    }
+  }
+
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
   const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
   document.addEventListener("keydown", handleKeydown)
+  window.addEventListener("DOMContentLoaded", e => {
+    document.querySelectorAll("[role='tree']").forEach(tree => {
+      tree._walker = document.createTreeWalker(
+        tree,
+        NodeFilter.SHOW_ELEMENT,
+        {
+          acceptNode: function (node) {
+            if (node.hasAttribute("aria-selected")) return NodeFilter.FILTER_ACCEPT
+            else return NodeFilter.FILTER_SKIP
+          }
+        },
+        false
+      )
+      tree.addEventListener("keydown", handleTreeKeydown)
+      stepNode(tree._walker.currentNode, tree._walker.nextNode())
+    })
+  })
   viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
 </script>
 
