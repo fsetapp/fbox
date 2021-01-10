@@ -79,18 +79,18 @@
       case [RECORD].includes(sch.type):
         for (let [k, sch_] of Object.entries(sch.fields)) {
           let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1 }
-          sch.fields[k] = walk(f(sch_, nextMeta), f, nextMeta)
+          sch.fields[k] = walk(sch_, f, nextMeta)
         }
         break
       case [TUPLE, UNION].includes(sch.type):
         sch.schs.forEach((sch_, i) => {
           let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1 }
-          sch.schs[i] = walk(f(sch_, nextMeta), f, nextMeta)
+          sch.schs[i] = walk(sch_, f, nextMeta)
         })
         break
       case [LIST].includes(sch.type):
         let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1 }
-        sch.sch = walk(f(sch.sch, nextMeta), f, nextMeta)
+        sch.sch = walk(sch.sch, f, nextMeta)
         break
       default:
         sch
@@ -288,7 +288,7 @@
   }
 
   const handleKeydown = e => {
-    let currentPath = ""
+    let currentPath = document.activeElement.id
     switch (e.key) {
       case "+":
         putSch(store, currentPath, null, schs[ranInt(schs.length)], -1)
@@ -317,11 +317,12 @@
         break
       case "ArrowDown":
         stepNode(currentNode, tree._walker.nextNode())
-        e.preventDefault()
         break
       default:
         return
     }
+
+    e.preventDefault()
   }
 
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
