@@ -298,9 +298,9 @@
   }
 
   const stepNode = (currentNode, nextStepNode) => {
-    currentNode.tabIndex = -1
-    currentNode.setAttribute("aria-selected", false)
     if (nextStepNode) {
+      currentNode.tabIndex = -1
+      currentNode.setAttribute("aria-selected", false)
       nextStepNode.setAttribute("aria-selected", true)
       nextStepNode.tabIndex = 0
       nextStepNode.focus()
@@ -343,7 +343,8 @@
         false
       )
       tree.addEventListener("keydown", handleTreeKeydown)
-      stepNode(tree._walker.currentNode, tree._walker.nextNode())
+      let firstNode = tree._walker.nextNode()
+      stepNode(firstNode, firstNode)
     })
   })
   viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
