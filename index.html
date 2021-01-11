@@ -42,7 +42,7 @@
   }
 </style>
 <script type="module">
-  import { render, html } from "https://cdn.skypack.dev/uhtml"
+  import { render, html } from "https://cdn.skypack.dev/pin/uhtml@v2.2.2-NCNWbAlfOH9s1rfcepA9/min/uhtml.js"
 
   const RECORD = "record"
   const LIST = "list"
@@ -139,7 +139,7 @@
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
 
   const viewFolder = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false">
+    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       <dfn class="h">
         ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
         ${viewType(assigns)}
@@ -150,7 +150,7 @@
     </li>`
 
   const viewFile = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false">
+    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
       ${viewType(assigns)}
     </li>`
@@ -325,6 +325,14 @@
     e.preventDefault()
   }
 
+  function handleTreeFocusin(e) {
+    let tree = this
+    let prevtNode = tree._walker.currentNode
+    tree._walker.currentNode = e.target
+
+    stepNode(prevtNode, tree._walker.currentNode)
+  }
+
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
   const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
@@ -343,6 +351,7 @@
         false
       )
       tree.addEventListener("keydown", handleTreeKeydown)
+      tree.addEventListener("focusin", handleTreeFocusin)
       let firstNode = tree._walker.nextNode()
       stepNode(firstNode, firstNode)
     })
