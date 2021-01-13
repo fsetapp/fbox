@@ -98,6 +98,37 @@
 
     return f(sch, meta)
   }
+
+  const popSchs = (currentNode, path, indices) => {
+    let result = { original: { ...currentNode }, popped: {} }
+
+    walk(currentNode, (sch_, meta) => {
+      if (meta.path != path) return sch_
+      else {
+        switch (sch_.type) {
+          case RECORD:
+            let keys = indices.sort((a, b) => a - b).map((i_) => sch_.order[i_])
+
+            for (let k of keys) { result.popped[k] = sch_.fields[k]; delete sch_.fields[k] }
+            for (let i of indices) sch_.order.splice(i, 1)
+
+            break
+          case LIST:
+            break
+          case TUPLE:
+            break
+          case UNION:
+            break
+          default:
+            sch_
+        }
+        return sch_
+      }
+    })
+
+    return result
+  }
+
   const putSch = (currentNode, path, k, sch, index) => {
     walk(currentNode, (sch_, meta) => {
       if (meta.path != path) return sch_
@@ -106,7 +137,7 @@
           case RECORD:
             k = `key_${k || Date.now() / 100}`
             sch_.fields[k] = sch()
-            sch_.order.push(k)
+            sch_.order.unshift(k)
             break
           case LIST:
             break
@@ -124,22 +155,35 @@
     })
   }
 
+  const getSch = (currentNode, path) => {
+    let foundSch
+    walk(currentNode, (sch_, meta) => {
+      if (meta.path == path) return foundSch = sch_
+      else return sch_
+    })
+    return foundSch && { ...foundSch }
+  }
+
+  const renderRoot = (sch) =>
+    viewMain({ sch: sch, ui: { level: 1, tab: 1.5 }, path: "", key: "root" })
+
   const viewMain = (assigns) =>
-    render(document.body, html`<p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema</p>
+    render(document.body, html`
+      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
+      <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
       <section style="display: flex; justify-content: space-around;">
         <ul role="tree" aria-multiselectable="true">
           ${viewModel(assigns)}
         </ul>
         <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
       </section>
-
     `)
 
   const viewModel = (assigns) =>
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
 
   const viewFolder = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html.for(assigns.sch)`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       <dfn class="h">
         ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
         ${viewType(assigns)}
@@ -150,7 +194,7 @@
     </li>`
 
   const viewFile = (assigns) =>
-    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html.for(assigns.sch)`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
       ${viewType(assigns)}
     </li>`
@@ -179,8 +223,8 @@
       viewModel({
         key: k,
         sch: assigns.sch.fields[k],
-        parent: assigns.sch,
-        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        parent: { type: assigns.sch.type, path: assigns.path },
+        ui: { ...assigns.ui, level: assigns.ui.level + 1 },
         path: `${assigns.path}[${k}]`
       })
     )
@@ -190,8 +234,8 @@
       viewModel({
         key: i,
         sch: assigns.sch.schs[i],
-        parent: assigns.sch,
-        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        parent: { type: assigns.sch.type, path: assigns.path },
+        ui: { ...assigns.ui, level: assigns.ui.level + 1 },
         path: `${assigns.path}[][${i}]`
       })
     )
@@ -200,8 +244,8 @@
     viewModel({
       key: 0,
       sch: assigns.sch.sch,
-      parent: assigns.sch,
-      ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+      parent: { type: assigns.sch.type, path: assigns.path },
+      ui: { ...assigns.ui, level: assigns.ui.level + 1 },
       path: `${assigns.path}[][${0}]`
     })
 
@@ -210,8 +254,8 @@
       viewModel({
         key: "",
         sch: sch,
-        parent: assigns.sch,
-        ui: { ...assigns.ui, level: assigns.ui.level + 1, parentPath: assigns.path },
+        parent: { type: assigns.sch.type, path: assigns.path },
+        ui: { ...assigns.ui, level: assigns.ui.level + 1 },
         path: `${assigns.path}[][${i}]`
       })
     )
@@ -287,17 +331,27 @@
     }
   }
 
-  const handleKeydown = e => {
-    let currentPath = document.activeElement.id
-    switch (e.key) {
-      case "+":
-        putSch(store, currentPath, null, schs[ranInt(schs.length)], -1)
-        viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
-        break
-    }
+  const selectedGroupedByParents = (tree) =>
+    [...tree.querySelectorAll("[aria-selected='true']")].reduce((acc, child) => {
+      let parent = child.parentNode.closest("[role='treeitem']")
+      if (!parent) return acc
+
+      let parentLevel = parseInt(parent.getAttribute("aria-level"))
+      let children = parent.querySelectorAll(`[aria-level='${parentLevel + 1}'][role=treeitem]`)
+
+      acc[parent.id] = acc[parent.id] || []
+      acc[parent.id].push([...children].indexOf(child))
+      return acc
+    }, {})
+
+  const deleteSelected = (tree) => {
+    const indicesPerParent = selectedGroupedByParents(tree)
+
+    for (let parentPath of Object.keys(indicesPerParent))
+      popSchs(store, parentPath, indicesPerParent[parentPath])
   }
 
-  const stepNode = (currentNode, nextStepNode) => {
+  const selectNode = (currentNode, nextStepNode) => {
     if (nextStepNode) {
       currentNode.tabIndex = -1
       currentNode.setAttribute("aria-selected", false)
@@ -313,13 +367,23 @@
 
     switch (e.code) {
       case "ArrowUp":
-        stepNode(currentNode, tree._walker.previousNode())
+        selectNode(currentNode, tree._walker.previousNode())
         break
       case "ArrowDown":
-        stepNode(currentNode, tree._walker.nextNode())
+        selectNode(currentNode, tree._walker.nextNode())
         break
+      case "Delete":
+        let nextNode = tree._walker.nextSibling() || tree._walker.previousSibling() || tree._walker.parentNode()
+        deleteSelected(tree)
+        renderRoot(store)
+        selectNode(currentNode, nextNode)
       default:
-        return
+        switch (e.key) {
+          case "+":
+            putSch(store, currentNode.id, null, schs[ranInt(schs.length)], -1)
+            renderRoot(store)
+            break
+        }
     }
 
     e.preventDefault()
@@ -330,13 +394,12 @@
     let prevtNode = tree._walker.currentNode
     tree._walker.currentNode = e.target
 
-    stepNode(prevtNode, tree._walker.currentNode)
+    selectNode(prevtNode, tree._walker.currentNode)
   }
 
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
   const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
-  document.addEventListener("keydown", handleKeydown)
   window.addEventListener("DOMContentLoaded", e => {
     document.querySelectorAll("[role='tree']").forEach(tree => {
       tree._walker = document.createTreeWalker(
@@ -353,10 +416,10 @@
       tree.addEventListener("keydown", handleTreeKeydown)
       tree.addEventListener("focusin", handleTreeFocusin)
       let firstNode = tree._walker.nextNode()
-      stepNode(firstNode, firstNode)
+      selectNode(firstNode, firstNode)
     })
   })
-  viewMain({ sch: store, ui: { level: 1, tab: 1.5, parentPath: "" }, path: "", key: "root", parent: recordSch() })
+  renderRoot(store)
 </script>
 
 <body>
