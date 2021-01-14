@@ -99,27 +99,28 @@
     return f(sch, meta)
   }
 
-  const popSchs = (currentNode, path, indices) => {
-    let result = { original: { ...currentNode }, popped: {} }
+  const popSchs = (schema, path, indices) => {
+    let result = { original: { ...schema }, popped: {} }
+    let descIndices = indices.sort((a, b) => b - a)
 
-    walk(currentNode, (sch_, meta) => {
+    walk(schema, (sch_, meta) => {
       if (meta.path != path) return sch_
       else {
         switch (sch_.type) {
           case RECORD:
-            let keys = indices.sort((a, b) => a - b).map((i_) => sch_.order[i_])
+            let keys = descIndices.map((i_) => sch_.order[i_])
 
             for (let k of keys) { result.popped[k] = sch_.fields[k]; delete sch_.fields[k] }
-            for (let i of indices) sch_.order.splice(i, 1)
+            for (let i of descIndices) sch_.order.splice(i, 1)
 
             break
           case LIST:
             break
           case TUPLE:
-            for (let i of indices) sch_.schs.splice(i, 1)
+            for (let i of descIndices) sch_.schs.splice(i, 1)
             break
           case UNION:
-            for (let i of indices) sch_.schs.splice(i, 1)
+            for (let i of descIndices) sch_.schs.splice(i, 1)
             break
           default:
             sch_
@@ -129,12 +130,6 @@
     })
 
     return result
-  }
-
-  const nCopyString = (str) => {
-    let dupN = str.match(/(?<=(\d+)\))$/) || [0]
-    let i = parseInt(dupN.slice(-1))
-    return `${k} (${i + 1})`
   }
 
   const putSch = (currentNode, path, k, sch, index) => {
@@ -182,7 +177,9 @@
     render(document.body, html`
       <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
       <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
+      <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
       <p>Press <kbd>Delete</kbd> to delete selected schema</p>
+
       <section style="display: flex; justify-content: space-around;">
         <ul role="tree" aria-multiselectable="true">
           ${viewModel(assigns)}
@@ -349,7 +346,7 @@
       if (!parent) return acc
 
       let parentLevel = parseInt(parent.getAttribute("aria-level"))
-      let children = parent.querySelectorAll(`[aria-level='${parentLevel + 1}'][role=treeitem]`)
+      let children = parent.querySelectorAll(`[aria-level='${parentLevel + 1}'][role='treeitem']`)
 
       acc[parent.id] = acc[parent.id] || []
       acc[parent.id].push([...children].indexOf(child))
@@ -363,14 +360,30 @@
       popSchs(store, parentPath, indicesPerParent[parentPath])
   }
 
-  const selectNode = (currentNode, nextStepNode) => {
+  const selectNode = (tree, currentNode, nextStepNode) => {
     if (nextStepNode) {
-      currentNode.tabIndex = -1
-      currentNode.setAttribute("aria-selected", false)
+      deselectAllNode(tree, currentNode)
+      selectMultiNode(nextStepNode)
+    }
+  }
+  const deselectAllNode = (tree, currentNode) => {
+    [...tree.querySelectorAll("[aria-selected='true']")]
+      .forEach(item => item.setAttribute("aria-selected", false))
+    currentNode.tabIndex = -1
+    currentNode.setAttribute("aria-selected", false)
+  }
+  const selectMultiNode = (nextStepNode) => {
+    if (nextStepNode) {
       nextStepNode.setAttribute("aria-selected", true)
       nextStepNode.tabIndex = 0
       nextStepNode.focus()
     }
+  }
+
+  const findUnselectedNode = (fstep, nextNode) => {
+    do nextNode = fstep()
+    while (nextNode?.getAttribute("aria-selected") == "true")
+    return nextNode
   }
 
   function handleTreeKeydown(e) {
@@ -379,16 +392,24 @@
 
     switch (e.code) {
       case "ArrowUp":
-        selectNode(currentNode, tree._walker.previousNode())
+        e.shiftKey ?
+          selectMultiNode(tree._walker.previousSibling()) :
+          selectNode(tree, currentNode, tree._walker.previousNode())
         break
       case "ArrowDown":
-        selectNode(currentNode, tree._walker.nextNode())
+        e.shiftKey ?
+          selectMultiNode(tree._walker.nextSibling()) :
+          selectNode(tree, currentNode, tree._walker.nextNode())
         break
       case "Delete":
-        let nextNode = tree._walker.nextSibling() || tree._walker.previousSibling() || tree._walker.parentNode()
+        let nextNode =
+          findUnselectedNode(() => tree._walker.nextSibling()) ||
+          findUnselectedNode(() => tree._walker.previousSibling()) ||
+          findUnselectedNode(() => tree._walker.parentNode())
+
         deleteSelected(tree)
         renderRoot(store)
-        selectNode(currentNode, nextNode)
+        selectNode(tree, currentNode, nextNode)
       default:
         switch (e.key) {
           case "+":
@@ -401,12 +422,11 @@
     e.preventDefault()
   }
 
-  function handleTreeFocusin(e) {
+  function handleTreeClick(e) {
     let tree = this
     let prevtNode = tree._walker.currentNode
-    tree._walker.currentNode = e.target
-
-    selectNode(prevtNode, tree._walker.currentNode)
+    tree._walker.currentNode = e.target.closest("[role='treeitem']")
+    selectNode(tree, prevtNode, tree._walker.currentNode)
   }
 
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
@@ -425,10 +445,11 @@
         },
         false
       )
-      tree.addEventListener("keydown", handleTreeKeydown)
-      tree.addEventListener("focusin", handleTreeFocusin)
+      tree.onkeydown = handleTreeKeydown
+      tree.onclick = handleTreeClick
+
       let firstNode = tree._walker.nextNode()
-      selectNode(firstNode, firstNode)
+      selectNode(tree, firstNode, firstNode)
     })
   })
   renderRoot(store)
