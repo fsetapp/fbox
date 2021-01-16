@@ -21,6 +21,16 @@
     list-style: none;
   }
 
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   [role="treeitem"] {
     border: 1px solid transparent;
   }
@@ -33,8 +43,13 @@
     border: 1px solid blue;
   }
 
-  [role="treeitem"][aria-grabbed="true"] {
+  [role="treeitem"].item-cutting {
     border: 1px solid orange;
+  }
+
+  [role="treeitem"].item-pasted {
+    animation: fadein;
+    animation-duration: .25s;
   }
 
   .t {
@@ -224,10 +239,14 @@
 
   const viewMain = (assigns) =>
     render(document.body, html`
+      <h3>Add</h3>
       <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
+      <h3>Select</h3>
       <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
       <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
+      <h3>Delete</h3>
       <p>Press <kbd>Delete</kbd> to delete selected schema</p>
+      <h3>Move</h3>
       <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
       <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
 
@@ -436,6 +455,22 @@
     while (nextNode?.getAttribute("aria-selected") == "true")
     return nextNode
   }
+  const reselectNodes = (tree, nodes) => {
+    for (let newDst of Object.keys(nodes)) {
+      let rawSchs = nodes[newDst]
+
+      newDst = tree.querySelector(`[id='${newDst}']`)
+      let dstLevel = parseInt(newDst.getAttribute("aria-level"))
+      let children = newDst.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
+
+      deselectAllNode(tree, tree._walker.currentNode)
+      rawSchs.map(({ index }) => children[index]).forEach(a => {
+        a.classList.add("item-pasted")
+        selectMultiNode(a)
+        tree._walker.currentNode = a
+      })
+    }
+  }
 
   const filterMostOuters = (paths) => {
     return paths.filter(p => {
@@ -447,7 +482,7 @@
   }
 
   const clearClipboard = (tree) => {
-    tree.querySelectorAll("[aria-grabbed]").forEach(a => a.removeAttribute("aria-grabbed"))
+    tree.querySelectorAll(".item-cutting").forEach(a => a.classList.remove("item-cutting"))
     tree._clipboard = null
   }
 
@@ -480,8 +515,8 @@
         if (e.metaKey) {
           clearClipboard(tree)
 
-          tree._clipboard = () => selectedGroupedByParent(tree, { ops: "[aria-grabbed='true']" })
-          tree.querySelectorAll("[aria-selected='true']").forEach(a => a.setAttribute("aria-grabbed", true))
+          tree._clipboard = () => selectedGroupedByParent(tree, { ops: ".item-cutting" })
+          tree.querySelectorAll("[aria-selected='true']").forEach(a => a.classList.add("item-cutting"))
         }
         break
       case "KeyV":
@@ -495,20 +530,7 @@
           let moved = moveSchs(store, dstPath, selectedPerParent)
           renderRoot(store)
           clearClipboard(tree)
-
-          // Re-select moved treeitem(s)
-          for (let newDst of Object.keys(moved)) {
-            let rawSchs = moved[newDst]
-
-            newDst = tree.querySelector(`[id='${newDst}']`)
-            let dstLevel = parseInt(newDst.getAttribute("aria-level"))
-            let children = newDst.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
-
-            rawSchs.map(({ index }) => children[index]).forEach(a => {
-              selectMultiNode(a)
-              tree._walker.currentNode = a
-            })
-          }
+          reselectNodes(tree, moved)
         }
         break
       default:
