@@ -25,12 +25,16 @@
     border: 1px solid transparent;
   }
 
-  [role="treeitem"]:focus {
+  [role="treeitem"][aria-selected="true"] {
     border: 1px solid black;
   }
 
-  [role="treeitem"][aria-selected="true"] {
+  [role="treeitem"][aria-selected="true"]:focus {
     border: 1px solid blue;
+  }
+
+  [role="treeitem"][aria-grabbed="true"] {
+    border: 1px solid orange;
   }
 
   .t {
@@ -70,6 +74,7 @@
   const schs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
 
   var store = recordSch()
+  const copyObj = (obj) => JSON.parse(JSON.stringify(obj))
 
   const walk = (sch, f, meta = {}) => {
     meta.path = meta.path || ""
@@ -100,7 +105,7 @@
   }
 
   const popSchs = (schema, path, indices) => {
-    let result = { original: { ...schema }, popped: {} }
+    let result = { original: copyObj(schema), popped: [] }
     let descIndices = indices.sort((a, b) => b - a)
 
     walk(schema, (sch_, meta) => {
@@ -108,19 +113,19 @@
       else {
         switch (sch_.type) {
           case RECORD:
-            let keys = descIndices.map((i_) => sch_.order[i_])
+            let keys = descIndices.map((i_) => sch_.order[i_]).filter((i_) => i_)
 
-            for (let k of keys) { result.popped[k] = sch_.fields[k]; delete sch_.fields[k] }
+            for (let k of keys) { result.popped.unshift([k, sch_.fields[k]]); delete sch_.fields[k] }
             for (let i of descIndices) sch_.order.splice(i, 1)
 
             break
           case LIST:
             break
           case TUPLE:
-            for (let i of descIndices) sch_.schs.splice(i, 1)
+            for (let i of descIndices) result.popped.unshift([i, sch_.schs.splice(i, 1)[0]])
             break
           case UNION:
-            for (let i of descIndices) sch_.schs.splice(i, 1)
+            for (let i of descIndices) result.popped.unshift([i, sch_.schs.splice(i, 1)[0]])
             break
           default:
             sch_
@@ -132,26 +137,33 @@
     return result
   }
 
-  const putSch = (currentNode, path, k, sch, index) => {
+  const putSchs = (currentNode, path, rawSchs) => {
+    let ascRawSchs = rawSchs.sort((a, b) => a.index - b.index)
+
     walk(currentNode, (sch_, meta) => {
       if (meta.path != path) return sch_
       else {
         switch (sch_.type) {
           case RECORD:
-            k = `key_${k || Date.now() / 100}`
-            while (sch_.fields[k]) k = `${k} (copy)`
+            for (let { k, sch, index } of ascRawSchs) {
+              k = k == 0 ? "0" : k
+              k = k || `key_${Date.now() / 100}`
+              while (sch_.fields[k]) k = `${k} (copy)`
 
-            sch_.fields[k] = sch()
-            sch_.order.unshift(k)
+              sch_.fields[k] = sch()
+              sch_.order.splice(index, 0, k)
+            }
 
             break
           case LIST:
             break
           case TUPLE:
-            sch_.schs.unshift(sch())
+            for (let { k, sch, index } of ascRawSchs)
+              sch_.schs.splice(index, 0, sch())
             break
           case UNION:
-            sch_.schs.unshift(sch())
+            for (let { k, sch, index } of ascRawSchs)
+              sch_.schs.splice(index, 0, sch())
             break
           default:
             sch_
@@ -161,10 +173,47 @@
     })
   }
 
-  const getSch = (currentNode, path) => {
+  const moveSchs = (store, dstPath, selectedPerParent) => {
+    const pinDst = (store, dstPath, pin) =>
+      getAndUpdateSch(store, (a, m) => m.path == dstPath, (a, m) => { a._pinId = pin; return a })
+
+    const getPinedDst = (store, pin) =>
+      getAndUpdateSch(store, (a, m) => a._pinId == pin, (a, m) => { a._pinned = m; return a })
+
+    const srcPaths = filterMostOuters(Object.keys(selectedPerParent))
+    let moved = {}
+
+    for (let srcPath of srcPaths) {
+      let selectedItems = selectedPerParent[srcPath]
+      let isDstSubtree = selectedItems.filter(c => dstPath.startsWith(c.id)).length != 0
+
+      if (!isDstSubtree) {
+        let pin = Symbol(srcPath)
+        pinDst(store, dstPath, pin)
+
+        let result = popSchs(store, srcPath, selectedItems.map(c => c.index))
+        let rawSchs = result.popped.map(([k, sch], i) => ({ k: k, sch: () => sch, index: i }))
+
+        let dst = getPinedDst(store, pin)
+        putSchs(store, dst._pinned.path, rawSchs)
+
+        moved[dst._pinned.path] = rawSchs
+      }
+    }
+
+    return moved
+  }
+
+  const getSch = (currentNode, path) =>
+    getSchBy(currentNode, (a, m) => m.path == path)
+
+  const getSchBy = (currentNode, fget) =>
+    getAndUpdateSch(currentNode, fget, (a, m) => a)
+
+  const getAndUpdateSch = (currentNode, fget, fupdate) => {
     let foundSch
     walk(currentNode, (sch_, meta) => {
-      if (meta.path == path) return foundSch = sch_
+      if (fget(sch_, meta)) return foundSch = fupdate(sch_, meta)
       else return sch_
     })
     return foundSch && { ...foundSch }
@@ -179,6 +228,8 @@
       <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
       <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
       <p>Press <kbd>Delete</kbd> to delete selected schema</p>
+      <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
+      <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
 
       <section style="display: flex; justify-content: space-around;">
         <ul role="tree" aria-multiselectable="true">
@@ -192,7 +243,7 @@
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
 
   const viewFolder = (assigns) =>
-    html.for(assigns.sch)`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html`<li id="${assigns.path}" class="sort-handle" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       <dfn class="h">
         ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
         ${viewType(assigns)}
@@ -203,7 +254,7 @@
     </li>`
 
   const viewFile = (assigns) =>
-    html.for(assigns.sch)`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html`<li id="${assigns.path}" class="sort-handle flex" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
       ${viewType(assigns)}
     </li>`
@@ -340,24 +391,25 @@
     }
   }
 
-  const selectedGroupedByParents = (tree) =>
-    [...tree.querySelectorAll("[aria-selected='true']")].reduce((acc, child) => {
+  const selectedGroupedByParent = (tree, opts = {}) =>
+    [...tree.querySelectorAll(`${opts.ops || "[aria-selected='true']"}`)].reduce((acc, child) => {
       let parent = child.parentNode.closest("[role='treeitem']")
       if (!parent) return acc
 
       let parentLevel = parseInt(parent.getAttribute("aria-level"))
       let children = parent.querySelectorAll(`[aria-level='${parentLevel + 1}'][role='treeitem']`)
 
+      child.index = [...children].indexOf(child)
       acc[parent.id] = acc[parent.id] || []
-      acc[parent.id].push([...children].indexOf(child))
+      acc[parent.id].push(child)
       return acc
     }, {})
 
   const deleteSelected = (tree) => {
-    const indicesPerParent = selectedGroupedByParents(tree)
+    const indicesPerParent = selectedGroupedByParent(tree)
 
     for (let parentPath of Object.keys(indicesPerParent))
-      popSchs(store, parentPath, indicesPerParent[parentPath])
+      popSchs(store, parentPath, indicesPerParent[parentPath].map(c => c.index))
   }
 
   const selectNode = (tree, currentNode, nextStepNode) => {
@@ -379,11 +431,24 @@
       nextStepNode.focus()
     }
   }
-
   const findUnselectedNode = (fstep, nextNode) => {
     do nextNode = fstep()
     while (nextNode?.getAttribute("aria-selected") == "true")
     return nextNode
+  }
+
+  const filterMostOuters = (paths) => {
+    return paths.filter(p => {
+      for (let p_ of paths) {
+        if (p == p_) return true
+        else if (p.startsWith(p_)) return false
+      }
+    })
+  }
+
+  const clearClipboard = (tree) => {
+    tree.querySelectorAll("[aria-grabbed]").forEach(a => a.removeAttribute("aria-grabbed"))
+    tree._clipboard = null
   }
 
   function handleTreeKeydown(e) {
@@ -410,10 +475,48 @@
         deleteSelected(tree)
         renderRoot(store)
         selectNode(tree, currentNode, nextNode)
+        break
+      case "KeyX":
+        if (e.metaKey) {
+          clearClipboard(tree)
+
+          tree._clipboard = () => selectedGroupedByParent(tree, { ops: "[aria-grabbed='true']" })
+          tree.querySelectorAll("[aria-selected='true']").forEach(a => a.setAttribute("aria-grabbed", true))
+        }
+        break
+      case "KeyV":
+        const dstSch = getSch(store, tree._walker.currentNode.id)
+        if (![RECORD, UNION, TUPLE].includes(dstSch.type)) return
+
+        if (e.metaKey && tree._clipboard) {
+          const dstPath = tree._walker.currentNode.id
+          const selectedPerParent = tree._clipboard()
+
+          let moved = moveSchs(store, dstPath, selectedPerParent)
+          renderRoot(store)
+          clearClipboard(tree)
+
+          // Re-select moved treeitem(s)
+          for (let newDst of Object.keys(moved)) {
+            let rawSchs = moved[newDst]
+
+            newDst = tree.querySelector(`[id='${newDst}']`)
+            let dstLevel = parseInt(newDst.getAttribute("aria-level"))
+            let children = newDst.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
+
+            rawSchs.map(({ index }) => children[index]).forEach(a => {
+              selectMultiNode(a)
+              tree._walker.currentNode = a
+            })
+          }
+        }
+        break
       default:
         switch (e.key) {
           case "+":
-            putSch(store, currentNode.id, null, schs[ranInt(schs.length)], -1)
+            let randomSch = schs[ranInt(schs.length)]
+
+            putSchs(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
             renderRoot(store)
             break
         }
