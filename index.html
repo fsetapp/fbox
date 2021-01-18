@@ -6,6 +6,10 @@
   <title>Fbox basic</title>
 </head>
 <style>
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  }
+
   kbd {
     border: 1px solid gray;
     padding: .25rem;
@@ -36,6 +40,9 @@
     /* text-sm */
     font-size: .875rem;
     line-height: 1.25rem;
+    background-color: rgb(20, 20, 20);
+    /* text-gray-300 */
+    color: rgba(209, 213, 219, 1);
   }
 
   [role="treeitem"] {
@@ -43,7 +50,7 @@
   }
 
   [role="treeitem"][aria-selected="true"] {
-    border: 1px solid black;
+    border: 1px dashed blue;
   }
 
   [role="treeitem"][aria-selected="true"]:focus {
@@ -70,7 +77,7 @@
   }
 
   [role="group"][data-group="keyed"]>[role="treeitem"]>.k {
-    color: black;
+    color: inherit;
   }
 
   [role="group"][data-group="indexed"]>[role="treeitem"]>.k,
@@ -175,19 +182,24 @@
       else {
         switch (sch_.type) {
           case RECORD:
-            let keys = descIndices.map((i_) => sch_.order[i_]).filter((i_) => i_)
+            let ikeys = descIndices.map(i => [i, sch_.order[i]]).filter(([i, k]) => k)
 
-            for (let k of keys) { result.popped.unshift([k, sch_.fields[k]]); delete sch_.fields[k] }
+            for (let [i, k] of ikeys) {
+              result.popped.unshift({ k: k, sch: sch_.fields[k], index: i })
+              delete sch_.fields[k]
+            }
             for (let i of descIndices) sch_.order.splice(i, 1)
 
             break
           case LIST:
             break
           case TUPLE:
-            for (let i of descIndices) result.popped.unshift([i, sch_.schs.splice(i, 1)[0]])
+            for (let i of descIndices)
+              result.popped.unshift({ k: i, sch: sch_.schs.splice(i, 1)[0], index: i })
             break
           case UNION:
-            for (let i of descIndices) result.popped.unshift([i, sch_.schs.splice(i, 1)[0]])
+            for (let i of descIndices)
+              result.popped.unshift({ k: i, sch: sch_.schs.splice(i, 1)[0], index: i })
             break
           default:
             sch_
@@ -199,48 +211,55 @@
     return result
   }
 
-  const putSchs = (currentNode, path, rawSchs) => {
+  const putSchs = (schema, path, rawSchs) => {
+    let result = { original: clone(schema), inserted: [] }
     let ascRawSchs = rawSchs.sort((a, b) => a.index - b.index)
 
-    walk(currentNode, (sch_, meta) => {
+    walk(schema, (sch_, meta) => {
       if (meta.path != path) return sch_
       else {
         switch (sch_.type) {
           case RECORD:
             for (let { k, sch, index } of ascRawSchs) {
               k = k == 0 ? "0" : k
-              k = k || `key_${Date.now() / 100}`
-              while (sch_.fields[k]) k = `${k} (copy)`
+              k = k || `key_${Math.floor(Date.now() / 100)}`
+              while (sch_.fields[k]) k = `${k} –`
 
               sch_.fields[k] = sch()
               sch_.order.splice(index, 0, k)
+              result.inserted.push({ k: k, sch: sch_.fields[k], index: index })
             }
 
             break
           case LIST:
             break
           case TUPLE:
-            for (let { k, sch, index } of ascRawSchs)
+            for (let { k, sch, index } of ascRawSchs) {
               sch_.schs.splice(index, 0, sch())
+              result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
+            }
             break
           case UNION:
-            for (let { k, sch, index } of ascRawSchs)
+            for (let { k, sch, index } of ascRawSchs) {
               sch_.schs.splice(index, 0, sch())
-            break
+              result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
+            }
           default:
             sch_
         }
         return sch_
       }
     })
+    return result
   }
 
-  const moveSchs = (store, dstPath, selectedPerParent) => {
+  const moveSchs = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
     const pinDst = (store, dstPath, pin) =>
       getAndUpdateSch(store, (a, m) => m.path == dstPath, (a, m) => { a._pinId = pin; return a })
 
     const getPinedDst = (store, pin) =>
       getAndUpdateSch(store, (a, m) => a._pinId == pin, (a, m) => { a._pinned = m; return a })
+
 
     const srcPaths = filterMostOuters(Object.keys(selectedPerParent))
     let moved = {}
@@ -248,18 +267,21 @@
     for (let srcPath of srcPaths) {
       let selectedItems = selectedPerParent[srcPath]
       let isDstSubtree = selectedItems.filter(c => dstPath.startsWith(c.id)).length != 0
+      const newK = (index) => selectedItems.filter(c => c.index == index)[0]?.newK
 
       if (!isDstSubtree) {
         let pin = Symbol(srcPath)
         pinDst(store, dstPath, pin)
 
         let result = popSchs(store, srcPath, selectedItems.map(c => c.index))
-        let rawSchs = result.popped.map(([k, sch], i) => ({ k: k, sch: () => sch, index: i }))
+        let rawSchs = result.popped.map(({ k, sch, index }, i) => {
+          return { k: newK(index) || k, sch: () => sch, index: startIndex + i }
+        })
 
         let dst = getPinedDst(store, pin)
-        putSchs(store, dst._pinned.path, rawSchs)
+        let result_ = putSchs(store, dst._pinned.path, rawSchs)
 
-        moved[dst._pinned.path] = rawSchs
+        moved[dst._pinned.path] = result_.inserted
       }
     }
 
@@ -296,20 +318,28 @@
       <h3>Move</h3>
       <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
       <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
+      <h3>Rename key</h3>
+      <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
+      <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
 
-      <section style="display: flex; justify-content: space-around;">
-        <ul role="tree" aria-multiselectable="true">
-          ${viewModel(assigns)}
-        </ul>
-        <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
-      </section>
+      <div style="display: flex;">
+        <section style="width: 50%">
+          <ul role="tree" aria-multiselectable="true">
+            ${viewModel(assigns)}
+          </ul>
+        </section>
+        <section style="width: 50%">
+          <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
+        </section>
+      </div>
     `)
 
   const viewModel = (assigns) =>
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
 
   const viewFolder = (assigns) =>
-    html.for(assigns.sch, assigns.path)`<li id="${assigns.path}" class="folder" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html.for(assigns.sch, assigns.path)`
+    <li id="${assigns.path}" .key=${assigns.key} class="folder" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       <dfn class="h">
         ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
         ${viewType(assigns)}
@@ -320,7 +350,8 @@
     </li>`
 
   const viewFile = (assigns) =>
-    html.for(assigns.sch, assigns.path)`<li id="${assigns.path}" class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+    html.for(assigns.sch, assigns.path)`
+    <li id="${assigns.path}" .key=${assigns.key} class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
       ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
       ${viewType(assigns)}
     </li>`
@@ -413,7 +444,7 @@
       default:
         const editableKey = (assigns) =>
           (assigns.sch?.uiMode == "editKey") ?
-            html`<textarea class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus>${assigns.key}</textarea>`
+            html`<textarea class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus data-parent-path="${assigns.parent.path}">${assigns.key}</textarea>`
             :
             html`${assigns.key}`
 
@@ -493,6 +524,21 @@
       popSchs(store, parentPath, indicesPerParent[parentPath].map(c => c.index))
   }
 
+  const renameSelected = (tree, textArea) => {
+    let indicesPerParent = selectedGroupedByParent(tree)
+    let dstPath = textArea.dataset.parentPath
+
+    indicesPerParent[textArea.dataset.parentPath] =
+      indicesPerParent[textArea.dataset.parentPath]
+        .filter(c => c.id == textArea._treeItem.id)
+        .map(c => ({ id: c.id, newK: textArea.value, index: c.index }))
+
+    let renameIndex = indicesPerParent[textArea.dataset.parentPath][0].index
+    let moved = moveSchs(store, { dstPath, startIndex: renameIndex }, indicesPerParent)
+
+    return moved[dstPath][0].k
+  }
+
   const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
     if (nextStepNode) {
       deselectAllNode(tree, currentNode)
@@ -553,13 +599,21 @@
 
   const handleTextAreaKeyDown = (e, tree) => {
     let currentNode = tree._walker.currentNode
+    let textArea = e.target
 
     switch (e.code) {
       case "Enter":
         if (!e.shiftKey) {
-          getAndUpdateSch(store, (a, m) => m.path == currentNode.id, (a, m) => ({ ...a, uiMode: "viewKey" }))
+          textArea._treeItem = textArea.closest("[role='treeitem']")
+          selectNode(tree, currentNode, textArea._treeItem, { focus: false })
+
+          let newKey = renameSelected(tree, textArea)
+          let ancestor = textArea._treeItem.parentNode.closest("[role='treeitem']")
+          let renamedId = `${ancestor.id}[${newKey}]`
+
+          getAndUpdateSch(store, (a, m) => m.path == renamedId, (a, m) => ({ ...a, uiMode: "viewKey" }))
           renderRoot(store)
-          tree._walker.currentNode = tree.querySelector(`[id='${currentNode.id}']`)
+          tree._walker.currentNode = tree.querySelector(`[id='${renamedId}']`)
           selectNode(tree, currentNode, tree._walker.currentNode)
         }
         break
@@ -570,7 +624,7 @@
     let tree = this
     let currentNode = tree._walker.currentNode
 
-    if (tree.querySelector("textarea")) return handleTextAreaKeyDown(e, tree)
+    if (e.target instanceof HTMLTextAreaElement) return handleTextAreaKeyDown(e, tree)
 
     switch (e.code) {
       case "ArrowUp":
@@ -609,7 +663,7 @@
           const dstPath = tree._walker.currentNode.id
           const selectedPerParent = tree._clipboard()
 
-          let moved = moveSchs(store, dstPath, selectedPerParent)
+          let moved = moveSchs(store, { dstPath, startIndex: 0 }, selectedPerParent)
           renderRoot(store)
           clearClipboard(tree)
           reselectNodes(tree, moved)
