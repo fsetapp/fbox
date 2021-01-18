@@ -6,6 +6,17 @@
   <title>Fbox basic</title>
 </head>
 <style>
+  :root {
+    --tree-bg-color: rgb(13, 13, 13);
+    /* text-gray-300 */
+    --tree-text-color: rgba(209, 213, 219, 1);
+    /* bg-gray-700 */
+    --item-selected-bg-color: rgba(55, 65, 81, .25);
+    --item-selected-header-bg-color: rgba(55, 65, 81, 1);
+    /*text-pink-400*/
+    --type-color: rgba(244, 114, 182, 1);
+  }
+
   html {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
@@ -35,14 +46,17 @@
     }
   }
 
-  [role="tree"] {
-    min-width: 374px;
-    /* text-sm */
+  .text-sm {
     font-size: .875rem;
     line-height: 1.25rem;
-    background-color: rgb(20, 20, 20);
-    /* text-gray-300 */
-    color: rgba(209, 213, 219, 1);
+  }
+
+  [role="tree"] {
+    min-width: 374px;
+    min-height: 50vh;
+    padding: .5rem;
+    background-color: var(--tree-bg-color);
+    color: var(--tree-text-color);
   }
 
   [role="treeitem"] {
@@ -50,22 +64,30 @@
   }
 
   [role="treeitem"][aria-selected="true"] {
-    border: 1px dashed blue;
+    /* text-blue-500 */
+    border: 1px dotted rgba(59, 130, 246, 1);
+    background-color: var(--item-selected-bg-color);
+  }
+
+  [role="treeitem"][aria-selected="true"]>.h {
+    background-color: var(--item-selected-header-bg-color);
   }
 
   [role="treeitem"][aria-selected="true"]:focus {
-    border: 1px solid blue;
+    /* text-blue-500 */
+    border: 1px solid rgba(59, 130, 246, 1);
+    outline: none;
   }
 
+  [role="treeitem"][aria-selected="true"].item-cutting,
   [role="treeitem"].item-cutting {
-    border: 1px solid orange;
+    border: 1px dotted orange;
   }
 
   [role="treeitem"].item-pasted {
     animation: fadein;
     animation-duration: .25s;
   }
-
 
   .file {
     display: flex;
@@ -90,12 +112,10 @@
     margin: 0 .5rem;
     /*text-gray-500*/
     color: rgba(107, 114, 128, 1);
-
   }
 
   .t {
-    /*text-pink-400*/
-    color: rgba(244, 114, 182, 1);
+    color: var(--type-color);
   }
 
   textarea {
@@ -106,7 +126,7 @@
     margin: 0;
     padding: 0 .5rem;
     border: 0;
-    background-color: antiquewhite;
+    background-color: lavender;
   }
 
   textarea.no-resize {
@@ -308,31 +328,37 @@
 
   const viewMain = (assigns) =>
     render(document.body, html`
-      <h3>Add</h3>
-      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
-      <h3>Select</h3>
-      <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
-      <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
-      <h3>Delete</h3>
-      <p>Press <kbd>Delete</kbd> to delete selected schema</p>
-      <h3>Move</h3>
-      <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
-      <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
-      <h3>Rename key</h3>
-      <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
-      <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
-
-      <div style="display: flex;">
-        <section style="width: 50%">
-          <ul role="tree" aria-multiselectable="true">
-            ${viewModel(assigns)}
-          </ul>
-        </section>
-        <section style="width: 50%">
-          <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
-        </section>
-      </div>
+      <theme>
+        <div style="display: flex;">
+          <section style="width: 50%" class="text-sm">
+            <h3>Add</h3>
+            <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
+            <h3>Select</h3>
+            <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
+            <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
+            <h3>Delete</h3>
+            <p>Press <kbd>Delete</kbd> to delete selected schema</p>
+            <h3>Move</h3>
+            <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
+            <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
+            <h3>Rename key</h3>
+            <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
+            <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
+          </section>
+          <section style="width: 50%">
+            <ul role="tree" aria-multiselectable="true" class="text-sm">
+              ${viewModel(assigns)}
+            </ul>
+          </section>
+        </div>
+      </theme>
     `)
+
+  const debug = () =>
+    html`
+    <section style="width: 50%">
+      <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
+    </section>`
 
   const viewModel = (assigns) =>
     CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
