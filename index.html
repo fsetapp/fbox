@@ -61,6 +61,8 @@
 
   [role="treeitem"] {
     border: 1px solid transparent;
+    border-radius: .25rem;
+    overflow: hidden;
   }
 
   [role="treeitem"][aria-selected="true"] {
@@ -160,7 +162,7 @@
   const listSch = () => ({ type: LIST, sch: anySch() })
   const tupleSch = () => ({ type: TUPLE, schs: [stringSch(), boolSch(), numberSch()] })
   const unionSch = () => ({ type: UNION, schs: [nullSch(), recordSch(), numberSch()] })
-  const schs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
+  const allSchs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
 
   var store = recordSch()
   const clone = (obj) => JSON.parse(JSON.stringify(obj))
@@ -308,6 +310,9 @@
     return moved
   }
 
+  const changeSchType = (store, path, sch) =>
+    getAndUpdateSch(store, (a, m) => m.path == path, (a, m) => a = sch())
+
   const getSch = (currentNode, path) =>
     getSchBy(currentNode, (a, m) => m.path == path)
 
@@ -344,6 +349,10 @@
             <h3>Rename key</h3>
             <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
             <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
+            <h3>Change type</h3>
+            <p>Press <kbd>shift</kbd> + <kbd>Enter</kbd> on a selected schema to enable type editting</p>
+            <p>Press <kbd>Enter</kbd> within a text input to submit a changed type</p>
+            <p>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"<p>
           </section>
           <section style="width: 50%">
             <ul role="tree" aria-multiselectable="true" class="text-sm">
@@ -444,6 +453,12 @@
     )
 
   const indent = (assigns) => `padding-left: ${((assigns.ui.level - 1) * 1.25) + assigns.ui.tab}rem`
+  const textInput = (id, parentPath, content) =>
+    html`<textarea id=${id} class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus
+      data-parent-path="${parentPath}"
+      oninput=${e => e.target.value = e.target.value.replace(/\n/g, "")}>${content}</textarea>`
+
+
   const viewKey = (assigns) => assigns.ui.level == 1 ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
   const viewKeyRoot = (assigns) =>
     html`
@@ -470,8 +485,7 @@
       default:
         const editableKey = (assigns) =>
           (assigns.sch?.uiMode == "editKey") ?
-            html`<textarea class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus data-parent-path="${assigns.parent.path}">${assigns.key}</textarea>`
-            :
+            textInput("key-edit", assigns.parent.path, assigns.key) :
             html`${assigns.key}`
 
         return html`
@@ -487,14 +501,17 @@
   const viewTypeRoot = (assigns) =>
     html`<span class="t" role="complementary">${typeText(assigns.sch, assigns.ui)}</span>`
   const viewTypeNonRoot = (assigns) =>
-    html`<span class="t" role="complementary">${typeText(assigns.sch, assigns.ui)}</span>`
+    html`<span class="t" role="complementary">${editableType(assigns)}</span>`
+  const editableType = (assigns) =>
+    (assigns.sch?.uiMode == "editType") ?
+      textInput("type-edit", assigns.parent.path, assigns.sch.type) :
+      html`${typeText(assigns.sch, assigns.ui)}`
 
   const typeText = (sch, ui) => {
     switch (true) {
       case sch.type == RECORD && jEQ(sch.fields, {}): return "{ any }"
       case sch.type == RECORD: return `{ \xa0 }`
-      case sch.type == LIST && sch.sch.type == "any": return "[ any ]"
-      case sch.type == LIST: return `${typeText(sch.sch, ui)}`
+      case sch.type == LIST: return `[ ${typeText(sch.sch, ui)} ]`
       case sch.type == TUPLE: return "( \xa0 )"
       case sch.type == STRING: return "string"
       case sch.type == NUMBER: return "number"
@@ -565,6 +582,11 @@
     return moved[dstPath][0].k
   }
 
+  const changeTypeSelected = (tree, textArea) => {
+    let newSch = allSchs.filter(sch_ => sch_().type == textArea.value)[0]
+    if (newSch) changeSchType(store, textArea._treeItem.id, newSch)
+  }
+
   const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
     if (nextStepNode) {
       deselectAllNode(tree, currentNode)
@@ -596,7 +618,7 @@
     for (let newDst of Object.keys(nodes)) {
       let rawSchs = nodes[newDst]
 
-      newDst = tree.querySelector(`[id='${newDst}']`)
+      newDst = tree.querySelector(`[id='${CSS.escape(newDst)}']`)
       let dstLevel = parseInt(newDst.getAttribute("aria-level"))
       let children = newDst.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
 
@@ -623,25 +645,45 @@
     tree._clipboard = null
   }
 
+  const editSelected = (e, tree, textArea, f) => {
+    let currentNode = tree._walker.currentNode
+
+    textArea._treeItem = textArea.closest("[role='treeitem']")
+    selectNode(tree, currentNode, textArea._treeItem, { focus: false })
+
+    let currentId = f(tree, textArea) || currentNode.id
+
+    getAndUpdateSch(store, (a, m) => m.path == currentId, (a, m) => ({ ...a, uiMode: "viewKey" }))
+    renderRoot(store)
+
+    tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
+    selectNode(tree, currentNode, tree._walker.currentNode)
+  }
+  const editKey = (e, tree, textArea) => {
+    editSelected(e, tree, textArea, () => {
+      let newKey = renameSelected(tree, textArea)
+      let ancestor = textArea._treeItem.parentNode.closest("[role='treeitem']")
+      return `${ancestor.id}[${newKey}]`
+    })
+  }
+
+  const editType = (e, tree, textArea) => {
+    editSelected(e, tree, textArea, () => {
+      changeTypeSelected(tree, textArea)
+      return null
+    })
+  }
+
   const handleTextAreaKeyDown = (e, tree) => {
     let currentNode = tree._walker.currentNode
     let textArea = e.target
 
     switch (e.code) {
       case "Enter":
-        if (!e.shiftKey) {
-          textArea._treeItem = textArea.closest("[role='treeitem']")
-          selectNode(tree, currentNode, textArea._treeItem, { focus: false })
-
-          let newKey = renameSelected(tree, textArea)
-          let ancestor = textArea._treeItem.parentNode.closest("[role='treeitem']")
-          let renamedId = `${ancestor.id}[${newKey}]`
-
-          getAndUpdateSch(store, (a, m) => m.path == renamedId, (a, m) => ({ ...a, uiMode: "viewKey" }))
-          renderRoot(store)
-          tree._walker.currentNode = tree.querySelector(`[id='${renamedId}']`)
-          selectNode(tree, currentNode, tree._walker.currentNode)
-        }
+        if (!e.shiftKey && textArea.id == "key-edit")
+          editKey(e, tree, textArea)
+        else if (!e.shiftKey && textArea.id == "type-edit")
+          editType(e, tree, textArea)
         break
     }
   }
@@ -697,9 +739,13 @@
         break
       case "Enter":
         let group = currentNode.closest("[role='group']")?.dataset?.group
+        let editMode
 
-        if (group == "keyed") {
-          getAndUpdateSch(store, (a, m) => m.path == currentNode.id, (a, m) => ({ ...a, uiMode: "editKey" }))
+        if (e.shiftKey) editMode = "editType"
+        else if (group == "keyed") editMode = "editKey"
+
+        if (editMode) {
+          getAndUpdateSch(store, (a, m) => m.path == currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
           renderRoot(store)
           tree.querySelector("textarea")?.focus()
         }
@@ -707,7 +753,7 @@
       default:
         switch (e.key) {
           case "+":
-            let randomSch = schs[ranInt(schs.length)]
+            let randomSch = allSchs[ranInt(allSchs.length)]
 
             putSchs(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
             renderRoot(store)
