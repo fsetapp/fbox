@@ -353,34 +353,41 @@
     render(document.body, html`
       <theme>
         <div style="display: flex;">
-          <section style="width: 50%" class="text-sm">
-            <h3>Add</h3>
-            <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
-            <h3>Select</h3>
-            <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
-            <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
-            <h3>Delete</h3>
-            <p>Press <kbd>Delete</kbd> to delete selected schema</p>
-            <h3>Move</h3>
-            <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
-            <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
-            <h3>Rename key</h3>
-            <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
-            <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
-            <h3>Change type</h3>
-            <p>Press <kbd>shift</kbd> + <kbd>Enter</kbd> on a selected schema to enable type editting</p>
-            <p>Press <kbd>Enter</kbd> within a text input to submit a changed type</p>
-            <p>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"<p>
-          </section>
+          ${help()}
           <section style="width: 50%">
             <ul role="tree" aria-multiselectable="true" class="text-sm">
               ${viewModel(assigns)}
             </ul>
+            <button>+ New Model</button>
           </section>
         </div>
       </theme>
     `)
 
+  const help = () =>
+    html`
+    <section style="width: 50%" class="text-sm">
+      <h3>Add</h3>
+      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
+      <h3>Select</h3>
+      <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
+      <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
+      <p>Press <kbd>Home</kbd> to move to the first element of tree</p>
+      <p>Press <kbd>End</kbd> to move to the last element of tree</p>
+      <h3>Delete</h3>
+      <p>Press <kbd>Delete</kbd> to delete selected schema</p>
+      <h3>Move</h3>
+      <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
+      <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
+      <h3>Rename key</h3>
+      <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
+      <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
+      <h3>Change type</h3>
+      <p>Press <kbd>shift</kbd> + <kbd>Enter</kbd> on a selected schema to enable type editting</p>
+      <p>Press <kbd>Enter</kbd> within a text input to submit a changed type</p>
+      <p>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"<p>
+    </section>
+    `
   const debug = () =>
     html`
     <section style="width: 50%">
@@ -517,9 +524,9 @@
 
   const viewType = (assigns) => assigns.level == 1 ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
   const viewTypeRoot = (assigns) =>
-    html`<span class="t" role="complementary">${typeText(assigns.sch, assigns.ui)}</span>`
+    html`<span class="t">${typeText(assigns.sch, assigns.ui)}</span>`
   const viewTypeNonRoot = (assigns) =>
-    html`<span class="t" role="complementary">${editableType(assigns)}</span>`
+    html`<span class="t">${editableType(assigns)}</span>`
   const editableType = (assigns) =>
     (assigns.sch?.uiMode == "editType") ?
       textInput("type-edit", assigns.parent.path, assigns.sch.type) :
@@ -717,11 +724,13 @@
         e.shiftKey ?
           selectMultiNode(tree._walker.previousSibling()) :
           selectNode(tree, currentNode, tree._walker.previousNode())
+        e.preventDefault()
         break
       case "ArrowDown":
         e.shiftKey ?
           selectMultiNode(tree._walker.nextSibling()) :
           selectNode(tree, currentNode, tree._walker.nextNode())
+        e.preventDefault()
         break
       case "Delete":
         let nextNode =
@@ -768,6 +777,16 @@
           tree.querySelector("textarea")?.focus()
         }
         break
+      case "Home":
+        while (tree._walker.parentNode()) { }
+        selectNode(tree, currentNode, tree._walker.currentNode)
+        break
+      case "End":
+        while (tree._walker.parentNode()) { }
+        tree._walker.nextNode()
+        while (tree._walker.nextSibling()) { }
+        selectNode(tree, currentNode, tree._walker.currentNode)
+        break
       default:
         switch (e.key) {
           case "+":
@@ -778,8 +797,6 @@
             break
         }
     }
-
-    e.preventDefault()
   }
 
   function handleTreeClick(e) {
