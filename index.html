@@ -40,7 +40,20 @@
 
   ul {
     padding: 0;
+    margin: 0;
     list-style: none;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .help dl {
+    border-bottom: 1px dotted rgba(107, 114, 128, .75);
+  }
+
+  .help dd {
+    margin: .5rem 0;
   }
 
   @keyframes fadein {
@@ -58,12 +71,27 @@
     line-height: 1.25rem;
   }
 
+  .text-xs {
+    font-size: .75rem;
+    line-height: 1rem;
+  }
+
   [role="tree"] {
     min-width: 374px;
     min-height: 50vh;
     padding: .5rem;
     background-color: var(--tree-bg-color);
     color: var(--tree-text-color);
+  }
+
+  .fmodels {
+    padding: 0 .5rem;
+  }
+
+  .fmodels>[role='group']>[role="treeitem"] {
+    margin: .5rem 0;
+    padding: .5rem 0;
+    border: 1px dotted rgba(107, 114, 128, .75);
   }
 
   [role="treeitem"] {
@@ -90,7 +118,7 @@
 
   [role="treeitem"][aria-selected="true"].item-cutting,
   [role="treeitem"].item-cutting {
-    border: 1px dotted orange;
+    border: 1px dotted orange !important;
   }
 
   [role="treeitem"].item-pasted {
@@ -121,6 +149,12 @@
     /* text-xs */
     font-size: 0.75rem;
     line-height: 1.25rem;
+  }
+
+  .def {
+    margin-right: .5rem;
+    /* text-blue-500 */
+    color: rgba(59, 130, 246, 1);
   }
 
   .s {
@@ -346,46 +380,78 @@
     return foundSch && { ...foundSch }
   }
 
+  const newModel = (e) => {
+    putSchs(store, "", [{ k: null, sch: recordSch, index: 0 }])
+    renderRoot(store)
+    let tree = document.querySelector("[role='tree']")
+    let firstNode = tree._walker.nextNode()
+    selectNode(tree, firstNode, firstNode)
+  }
+
   const renderRoot = (sch) =>
-    viewMain({ sch: sch, ui: { level: 1, tab: 1.5 }, path: "", key: "root" })
+    viewMain({ sch: sch, ui: { level: 1, tab: 0, rootLevel: 2 }, path: "", key: "root", parent: { type: RECORD } })
 
   const viewMain = (assigns) =>
     render(document.body, html`
       <theme>
         <div style="display: flex;">
-          ${help()}
-          <section style="width: 50%">
-            <ul role="tree" aria-multiselectable="true" class="text-sm">
-              ${viewModel(assigns)}
-            </ul>
-            <button>+ New Model</button>
-          </section>
+          ${true && help()}
+          <ul role="tree" aria-multiselectable="true" class="text-sm" style="flex: 1;">
+            ${viewModel(assigns)}
+          </ul>
         </div>
       </theme>
+      ${null && debug()}
     `)
 
   const help = () =>
     html`
-    <section style="width: 50%" class="text-sm">
-      <h3>Add</h3>
-      <p>Press <kbd>shift</kbd> + <kbd>+</kbd> to add random schema to container types (record | union | tuple)</p>
-      <h3>Select</h3>
-      <p>Press <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to select schema</p>
-      <p>Press <kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd> to mutiple select schema</p>
-      <p>Press <kbd>Home</kbd> to move to the first element of tree</p>
-      <p>Press <kbd>End</kbd> to move to the last element of tree</p>
-      <h3>Delete</h3>
-      <p>Press <kbd>Delete</kbd> to delete selected schema</p>
-      <h3>Move</h3>
-      <p>Press <kbd>cmd</kbd> + <kbd>x</kbd> to cut selected schema</p>
-      <p>Press <kbd>cmd</kbd> + <kbd>v</kbd> to paste schema from (cmd + x) command</p>
-      <h3>Rename key</h3>
-      <p>Press <kbd>Enter</kbd> on a selected schema to enable key editting</p>
-      <p>Press <kbd>Enter</kbd> within a text input to submit a changed key</p>
-      <h3>Change type</h3>
-      <p>Press <kbd>shift</kbd> + <kbd>Enter</kbd> on a selected schema to enable type editting</p>
-      <p>Press <kbd>Enter</kbd> within a text input to submit a changed type</p>
-      <p>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"<p>
+    <section class="help text-xs">
+      <h2>Add</h2>
+      <dl>
+        <dt><kbd>shift</kbd> + <kbd>+</kbd></dt>
+        <dd>Add random schema to container types (record | union | tuple)</dd></dl>
+      <h2>Select</h2>
+      <dl>
+        <dt><kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
+        <dd>Select schema</dd></dl>
+      <dl>
+        <dt><kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
+        <dd>Select mutiple schema</dd></dl>
+      <dl>
+        <dt><kbd>Home</kbd></dt>
+        <dd>Move to the first element of tree</dd></dl>
+      <dl>
+        <dt><kbd>End</kbd></dt>
+        <dd>Move to the last element of tree</dd></dl>
+      <h2>Delete</h2>
+      <dl>
+        <dt><kbd>Delete</kbd></dt>
+        <dd>Delete selected schema</dd></dl>
+      <h2>Move</h2>
+      <dl>
+        <dt><kbd>cmd</kbd> + <kbd>x</kbd></dt>
+        <dd>Cut selected schema</dd></dl>
+      <dl>
+        <dt><kbd>cmd</kbd> + <kbd>v</kbd></dt>
+        <dd>Paste schema from (cmd + x) command</dd></dl>
+      <h2>Rename key</h2>
+      <dl>
+        <dt><kbd>Enter</kbd></dt>
+        <dd>Enable key editting on a selected schema </dd></dl>
+      <dl>
+        <dt><kbd>Enter</kbd></dt>
+        <dd>submit a changed key with current text input value</dd></dl>
+      <h2>Change type</h2>
+      <dl>
+        <dt><kbd>shift</kbd> + <kbd>Enter</kbd></dt>
+        <dd>Enable type editting on a selected schema</dd></dl>
+      <dl>
+        <dt>Press <kbd>Enter</kbd></dt>
+        <dd>Submit a changed type with current text input value</dd></dl>
+      <dl>
+        <dt>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"
+      <dl>
     </section>
     `
   const debug = () =>
@@ -394,8 +460,21 @@
       <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
     </section>`
 
-  const viewModel = (assigns) =>
-    CONTAINER_TYPES.includes(assigns.sch.type) ? viewFolder(assigns) : viewFile(assigns)
+  const viewModel = (assigns) => {
+    switch (true) {
+      case assigns.ui.level == 1: return viewFModels(assigns)
+      case CONTAINER_TYPES.includes(assigns.sch.type): return viewFolder(assigns)
+      default: return viewFile(assigns)
+    }
+  }
+
+  const viewFModels = (assigns) =>
+    html.for(assigns.sch, assigns.path)`
+      <li id="${assigns.path}" .key=${assigns.key} class="fmodels" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+        <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
+          ${viewItself(assigns)}
+        </ul>
+      </li>`
 
   const viewFolder = (assigns) =>
     html.for(assigns.sch, assigns.path)`
@@ -484,13 +563,14 @@
       oninput=${e => e.target.value = e.target.value.replace(/\n/g, "")}>${content}</textarea>`
 
 
-  const viewKey = (assigns) => assigns.ui.level == 1 ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
+  const viewKey = (assigns) =>
+    assigns.ui.level == assigns.ui.rootLevel ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
   const viewKeyRoot = (assigns) =>
     html`
-    <span class="text-blue-500 mr-2" style=${indent(assigns)}>
+    <span class="def" style=${indent(assigns)}>
       ${modelTypeText(assigns.sch, assigns.ui)}
     </span>
-    <span class="k">${assigns.key}</span>
+    <span class="k">${editableKey(assigns)}</span>
     <span class="s">=</span>
     `
   const viewKeyNonRoot = (assigns) => {
@@ -508,11 +588,6 @@
           `
         break
       default:
-        const editableKey = (assigns) =>
-          (assigns.sch?.uiMode == "editKey") ?
-            textInput("key-edit", assigns.parent.path, assigns.key) :
-            html`${assigns.key}`
-
         return html`
           <span class="k" style=${indent(assigns)}>
             ${editableKey(assigns)}
@@ -521,10 +596,15 @@
         `
     }
   }
+  const editableKey = (assigns) =>
+    (assigns.sch?.uiMode == "editKey") ?
+      textInput("key-edit", assigns.parent.path, assigns.key) :
+      html`${assigns.key}`
 
-  const viewType = (assigns) => assigns.level == 1 ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
+  const viewType = (assigns) =>
+    assigns.ui.level == assigns.ui.rootLevel ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
   const viewTypeRoot = (assigns) =>
-    html`<span class="t">${typeText(assigns.sch, assigns.ui)}</span>`
+    html`<span class="t">${editableType(assigns)}</span>`
   const viewTypeNonRoot = (assigns) =>
     html`<span class="t">${editableType(assigns)}</span>`
   const editableType = (assigns) =>
@@ -787,6 +867,9 @@
         while (tree._walker.nextSibling()) { }
         selectNode(tree, currentNode, tree._walker.currentNode)
         break
+      case "Escape":
+        clearClipboard(tree)
+        break
       default:
         switch (e.key) {
           case "+":
@@ -802,8 +885,12 @@
   function handleTreeClick(e) {
     let tree = this
     let prevtNode = tree._walker.currentNode
-    tree._walker.currentNode = e.target.closest("[role='treeitem']")
-    selectNode(tree, prevtNode, tree._walker.currentNode, { focus: !tree._walker.currentNode.querySelector("textarea") })
+    let itemTarget = e.target.closest("[role='treeitem']")
+
+    if (itemTarget) {
+      tree._walker.currentNode = itemTarget
+      selectNode(tree, prevtNode, tree._walker.currentNode, { focus: !tree._walker.currentNode.querySelector("textarea") })
+    }
   }
 
   const ranInt = max => Math.floor(Math.random() * Math.floor(max));
@@ -829,6 +916,9 @@
       selectNode(tree, firstNode, firstNode)
     })
   })
+
+  putSchs(store, "", [{ k: null, sch: recordSch, index: 0 }])
+  putSchs(store, "", [{ k: null, sch: unionSch, index: 0 }])
   renderRoot(store)
 </script>
 
