@@ -22,6 +22,10 @@
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 
+  body {
+    margin: 0;
+  }
+
   *,
   :after,
   :before {
@@ -46,6 +50,12 @@
 
   dd {
     margin: 0;
+  }
+
+  .help {
+    padding: 0 .5rem;
+    height: 100vh;
+    overflow-y: scroll;
   }
 
   .help dl {
@@ -208,9 +218,9 @@
   const nullSch = () => ({ type: NULL })
   const recordSch = () => ({ type: RECORD, fields: {}, order: [] })
   const listSch = () => ({ type: LIST, sch: anySch() })
-  const tupleSch = () => ({ type: TUPLE, schs: [stringSch(), boolSch(), numberSch()] })
-  const unionSch = () => ({ type: UNION, schs: [nullSch(), recordSch(), numberSch()] })
-  const allSchs = [anySch, stringSch, boolSch, numberSch, nullSch, recordSch, listSch, tupleSch, unionSch]
+  const tupleSch = () => ({ type: TUPLE, schs: [anySch()] })
+  const unionSch = () => ({ type: UNION, schs: [anySch()] })
+  const allSchs = [recordSch, listSch, tupleSch, unionSch, anySch, stringSch, boolSch, numberSch, nullSch]
 
   var store = recordSch()
   const clone = (obj) => JSON.parse(JSON.stringify(obj))
@@ -410,47 +420,67 @@
       <h2>Add</h2>
       <dl>
         <dt><kbd>shift</kbd> + <kbd>+</kbd></dt>
-        <dd>Add random schema to container types (record | union | tuple)</dd></dl>
+        <dd>Add random schema to container types (record | union | tuple)</dd>
+      </dl>
       <h2>Select</h2>
       <dl>
         <dt><kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
-        <dd>Select schema</dd></dl>
+        <dd>Select schema</dd>
+      </dl>
       <dl>
         <dt><kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
-        <dd>Select mutiple schema</dd></dl>
+        <dd>Select mutiple schema</dd>
+      </dl>
       <dl>
         <dt><kbd>Home</kbd></dt>
-        <dd>Move to the first element of tree</dd></dl>
+        <dd>Move to the first element of tree</dd>
+      </dl>
       <dl>
         <dt><kbd>End</kbd></dt>
-        <dd>Move to the last element of tree</dd></dl>
+        <dd>Move to the last element of tree</dd>
+      </dl>
       <h2>Delete</h2>
       <dl>
         <dt><kbd>Delete</kbd></dt>
-        <dd>Delete selected schema</dd></dl>
+        <dd>Delete selected schema</dd>
+      </dl>
       <h2>Move</h2>
       <dl>
         <dt><kbd>cmd</kbd> + <kbd>x</kbd></dt>
-        <dd>Cut selected schema</dd></dl>
+        <dd>Cut selected schema</dd>
+      </dl>
       <dl>
         <dt><kbd>cmd</kbd> + <kbd>v</kbd></dt>
-        <dd>Paste schema from (cmd + x) command</dd></dl>
+        <dd>Paste schema from (cmd + x) command</dd>
+      </dl>
       <h2>Rename key</h2>
       <dl>
         <dt><kbd>Enter</kbd></dt>
-        <dd>Enable key editting on a selected schema </dd></dl>
+        <dd>Enable key editing on a selected schema </dd>
+      </dl>
       <dl>
         <dt><kbd>Enter</kbd></dt>
-        <dd>submit a changed key with current text input value</dd></dl>
+        <dd>submit a changed key with current text input value</dd>
+      </dl>
+      <dl>
+        <dt><kbd>Escape</kbd></dt>
+        <dd>Cancel editing</dd>
+      </dl>
       <h2>Change type</h2>
       <dl>
         <dt><kbd>shift</kbd> + <kbd>Enter</kbd></dt>
-        <dd>Enable type editting on a selected schema</dd></dl>
+        <dd>Enable type editing on a selected schema</dd>
+      </dl>
       <dl>
-        <dt>Press <kbd>Enter</kbd></dt>
-        <dd>Submit a changed type with current text input value</dd></dl>
+        <dt><kbd>Enter</kbd></dt>
+        <dd>Submit a changed type with current text input value</dd>
+      </dl>
       <dl>
-        <dt>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "integer", "boolean", "null", "union", "any"
+        <dt><kbd>Escape</kbd></dt>
+        <dd>Cancel editing</dd>
+      </dl>
+      <dl>
+        <dt>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "boolean", "null", "union", "any"
       <dl>
     </section>
     `
@@ -560,7 +590,8 @@
   const textInput = (id, parentPath, content) =>
     html`<textarea id=${id} class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus
       data-parent-path="${parentPath}"
-      oninput=${e => e.target.value = e.target.value.replace(/\n/g, "")}>${content}</textarea>`
+      oninput=${e => e.target.value = e.target.value.replace(/\n/g, "")}
+      >${content}</textarea>`
 
 
   const viewKey = (assigns) =>
@@ -758,7 +789,7 @@
 
     let currentId = f(tree, textArea) || currentNode.id
 
-    getAndUpdateSch(store, (a, m) => m.path == currentId, (a, m) => ({ ...a, uiMode: "viewKey" }))
+    getAndUpdateSch(store, (a, m) => m.path == currentId, (a, m) => ({ ...a, uiMode: "view" }))
     renderRoot(store)
 
     tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
@@ -777,6 +808,13 @@
       changeTypeSelected(tree, textArea)
       return null
     })
+  }
+
+  const cancelTextArea = (e, tree, textArea) => {
+    getAndUpdateSch(store, (a, m) => m.path == textArea._treeItem.id, (a, m) => ({ ...a, uiMode: "view" }))
+    renderRoot(store)
+    tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
+    selectNode(tree, textArea._treeItem, tree._walker.currentNode)
   }
 
   const handleTextAreaKeyDown = (e, tree) => {
@@ -854,7 +892,10 @@
         if (editMode) {
           getAndUpdateSch(store, (a, m) => m.path == currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
           renderRoot(store)
-          tree.querySelector("textarea")?.focus()
+          let textArea = tree.querySelector("textarea")
+          textArea._treeItem = currentNode
+          textArea.onblur = e => cancelTextArea(e, tree, textArea)
+          textArea.focus()
         }
         break
       case "Home":
@@ -917,8 +958,10 @@
     })
   })
 
-  putSchs(store, "", [{ k: null, sch: recordSch, index: 0 }])
-  putSchs(store, "", [{ k: null, sch: unionSch, index: 0 }])
+  allSchs.reverse().forEach((sch, i) =>
+    putSchs(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
+  )
+
   renderRoot(store)
 </script>
 
