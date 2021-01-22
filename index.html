@@ -355,10 +355,10 @@
 
   const moveSchs = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
     const pinDst = (store, dstPath, pin) =>
-      getAndUpdateSch(store, (a, m) => m.path == dstPath, (a, m) => { a._pinId = pin; return a })
+      updateSch(store, dstPath, (a, m) => { a._pinId = pin; return a })
 
     const getPinedDst = (store, pin) =>
-      getAndUpdateSch(store, (a, m) => a._pinId == pin, (a, m) => { a._pinned = m; return a })
+      getByAndUpdateSch(store, (a, m) => a._pinId == pin, (a, m) => { a._pinned = m; return a })
 
 
     const srcPaths = filterMostOuters(Object.keys(selectedPerParent))
@@ -389,15 +389,15 @@
   }
 
   const changeSchType = (store, path, sch) =>
-    getAndUpdateSch(store, (a, m) => m.path == path, (a, m) => a = sch())
+    updateSch(store, path, (a, m) => a = sch())
 
   const getSch = (currentNode, path) =>
-    getSchBy(currentNode, (a, m) => m.path == path)
+    getByAndUpdateSch(currentNode, (a, m) => m.path == path, (a, m) => a)
 
-  const getSchBy = (currentNode, fget) =>
-    getAndUpdateSch(currentNode, fget, (a, m) => a)
+  const updateSch = (currentNode, path, fupdate) =>
+    getByAndUpdateSch(currentNode, (a, m) => m.path == path, fupdate)
 
-  const getAndUpdateSch = (currentNode, fget, fupdate) => {
+  const getByAndUpdateSch = (currentNode, fget, fupdate) => {
     let foundSch
     walk(currentNode, (sch_, meta) => {
       if (fget(sch_, meta)) return foundSch = fupdate(sch_, meta)
@@ -805,7 +805,7 @@
 
     let currentId = f(tree, textArea) || currentNode.id
 
-    getAndUpdateSch(store, (a, m) => m.path == currentId, (a, m) => ({ ...a, uiMode: "view" }))
+    updateSch(store, currentId, (a, m) => ({ ...a, uiMode: "view" }))
     renderRoot(store)
 
     tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
@@ -827,7 +827,7 @@
   }
 
   const cancelTextArea = (e, tree, textArea) => {
-    getAndUpdateSch(store, (a, m) => m.path == textArea._treeItem.id, (a, m) => ({ ...a, uiMode: "view" }))
+    updateSch(store, textArea._treeItem.id, (a, m) => ({ ...a, uiMode: "view" }))
     renderRoot(store)
     tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
     selectNode(tree, textArea._treeItem, tree._walker.currentNode)
@@ -906,7 +906,7 @@
         else if (group == "keyed") editMode = "editKey"
 
         if (editMode) {
-          getAndUpdateSch(store, (a, m) => m.path == currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
+          updateSch(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
           renderRoot(store)
           let textArea = tree.querySelector("textarea")
           textArea._treeItem = currentNode
