@@ -10,12 +10,14 @@
     /* text-gray-900 */
     --tree-bg-color: rgba(17, 24, 39, 1);
     /* text-gray-300 */
-    --tree-text-color: rgba(209, 213, 219, 1);
+    --tree-color: rgba(209, 213, 219, 1);
     /* bg-gray-700 */
     --item-selected-bg-color: rgba(55, 65, 81, .25);
     --item-selected-header-bg-color: rgba(55, 65, 81, 1);
     /*text-pink-400*/
     --type-color: rgba(244, 114, 182, 1);
+    /* text-indigo-400 */
+    --ref-color: rgba(129, 140, 248, 1);
   }
 
   html {
@@ -92,7 +94,7 @@
     min-height: 50vh;
     padding: .5rem;
     background-color: var(--tree-bg-color);
-    color: var(--tree-text-color);
+    color: var(--tree-color);
   }
 
   .fmodels {
@@ -170,7 +172,7 @@
   .def {
     margin-right: .5rem;
     /* text-indigo-400 */
-    color: rgba(129, 140, 248, 1);
+    color: var(--ref-color);
   }
 
   .s {
@@ -182,6 +184,19 @@
   .t {
     color: var(--type-color);
     word-break: break-all;
+  }
+
+  .t>.ref {
+    color: var(--ref-color);
+  }
+
+  .t>.ref.notfound {
+    color: orangered;
+  }
+
+  .t>.value {
+    /* text-green-500 */
+    color: rgba(16, 185, 129, 1);
   }
 
   textarea {
@@ -218,6 +233,8 @@
   const VALUE = "value"
   const CONTAINER_TYPES = [RECORD, TUPLE, LIST, UNION]
 
+  const MODEL_PREFIX = "def_"
+
   const anySch = () => ({ type: ANY })
   const stringSch = () => ({ type: STRING })
   const boolSch = () => ({ type: BOOLEAN })
@@ -227,6 +244,18 @@
   const listSch = () => ({ type: LIST, sch: anySch() })
   const tupleSch = () => ({ type: TUPLE, schs: [anySch()] })
   const unionSch = () => ({ type: UNION, schs: [anySch()] })
+  const refSch = (anchor) => ({ type: REF, $ref: anchor })
+  const valueSch = (v) => {
+    try {
+      v = JSON.parse(v)
+      if (
+        (v == null) ||
+        ([STRING, NUMBER, BOOLEAN].includes(typeof v))
+      ) return { type: VALUE, "const": v }
+      else return false
+    }
+    catch (e) { return false }
+  }
   const allSchs = [recordSch, listSch, tupleSch, unionSch, anySch, stringSch, boolSch, numberSch, nullSch]
 
   var store = recordSch()
@@ -305,7 +334,7 @@
   const putAnchor = (sch, level) => {
     let newSch = sch()
     if (level == 0)
-      newSch.$anchor = newSch.$anchor || `def_${uuid()}`
+      newSch.$anchor = newSch.$anchor || `${MODEL_PREFIX}${uuid()}`
     else
       newSch.$anchor = uuid()
     return newSch
@@ -415,14 +444,18 @@
   }
 
   const renderRoot = (sch) =>
-    viewMain({ sch: sch, ui: { level: 1, tab: 0, rootLevel: 2 }, path: "", key: "root", parent: { type: RECORD } })
+    viewMain({
+      sch: sch,
+      ui: { level: 1, tab: 0, rootLevel: 2, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
+      path: "", key: "root", parent: { type: RECORD }
+    })
 
   const viewMain = (assigns) =>
     render(document.body, html`
       <theme>
         <div style="display: flex;">
           ${true && help()}
-          <ul role="tree" aria-multiselectable="true" class="text-sm" style="flex: 1;">
+          <ul role="tree" aria-multiselectable="true" class="text-sm" style="flex: 2;">
             ${viewModel(assigns)}
           </ul>
         </div>
@@ -432,7 +465,7 @@
 
   const help = () =>
     html`
-    <section class="help text-xs">
+    <section class="help text-sm" style="flex: 1;">
       <h2>Add</h2>
       <dl>
         <dt><kbd>shift</kbd> + <kbd>+</kbd></dt>
@@ -496,7 +529,13 @@
         <dd>Cancel editing</dd>
       </dl>
       <dl>
-        <dt>Note: Current changeable types are: "record", "list", "tuple", "string", "number", "boolean", "null", "union", "any"
+        <dt>
+          Note: Changeable types are: <b>record</b>, <b>list</b>, <b>tuple</b>, <b>string</b>, <b>number</b>, <b>boolean</b>, <b>null</b>, <b>union</b>, <b>any</b>.
+          <br><br>
+          For <b>Ref type</b>, type in the defined top level model name.
+          <br><br>
+          For <b>Value type</b>, type in any json value (e.g. "a", 1, false, null), array and object json is not allowed (for now).
+        </dt>
       <dl>
     </section>
     `
@@ -663,7 +702,7 @@
     switch (true) {
       case sch.type == RECORD && jEQ(sch.fields, {}): return "{ any }"
       case sch.type == RECORD: return `{ \xa0 }`
-      case sch.type == LIST: return `[ ${typeText(sch.sch, ui)} ]`
+      case sch.type == LIST: return html`[ ${typeText(sch.sch, ui)} ]`
       case sch.type == TUPLE: return "( \xa0 )"
       case sch.type == STRING: return "string"
       case sch.type == NUMBER: return "number"
@@ -672,8 +711,9 @@
       case sch.type == NULL: return "null"
       case sch.type == UNION: return "||"
       case sch.type == ANY: return "any"
-      case sch.type == REF: return "ref"
-      case sch.type == VALUE: return "value"
+      case sch.type == REF && !!ui.models[sch.$ref]: return html`<span class="ref">${sch._text = ui.models[sch.$ref]}</span>`
+      case sch.type == REF: return html`<span class="ref notfound" title="Ref type">${`${sch._text} (#404)`}</span>`
+      case sch.type == VALUE: return html`<span class="value" title="Value type">${JSON.stringify(sch.const)}</span>`
       default: return "please define what type ${sch} is"
     }
   }
@@ -736,7 +776,12 @@
 
   const changeTypeSelected = (tree, textArea) => {
     let newSch = allSchs.filter(sch_ => sch_().type == textArea.value)[0]
+    let model = store.order.filter(model => model == textArea.value)[0]
+    let valSch = valueSch(textArea.value)
+
     if (newSch) changeSchType(store, textArea._treeItem.id, newSch)
+    else if (model) changeSchType(store, textArea._treeItem.id, () => refSch(store.fields[model].$anchor))
+    else if (valSch) changeSchType(store, textArea._treeItem.id, () => valSch)
   }
 
   const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
