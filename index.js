@@ -17,15 +17,18 @@ const CONTAINER_TYPES = [RECORD, TUPLE, LIST, UNION]
 
 const MODEL_PREFIX = "def_"
 
+/* Box type */
+const FMODEL_BOX = "fmodel"
+
 const anySch = () => ({ type: ANY })
 const stringSch = () => ({ type: STRING })
 const boolSch = () => ({ type: BOOLEAN })
 const numberSch = () => ({ type: NUMBER })
 const nullSch = () => ({ type: NULL })
 const recordSch = () => ({ type: RECORD, fields: {}, order: [] })
-const listSch = () => ({ type: LIST, sch: anySch() })
-const tupleSch = () => ({ type: TUPLE, schs: [anySch()] })
-const unionSch = () => ({ type: UNION, schs: [anySch()] })
+const listSch = () => ({ type: LIST, sch: putAnchor(anySch) })
+const tupleSch = () => ({ type: TUPLE, schs: [putAnchor(anySch)] })
+const unionSch = () => ({ type: UNION, schs: [putAnchor(anySch)] })
 const refSch = (anchor) => ({ type: REF, $ref: anchor })
 const valueSch = (v) => {
   try {
@@ -40,28 +43,28 @@ const valueSch = (v) => {
 }
 const allSchs = [recordSch, listSch, tupleSch, unionSch, anySch, stringSch, boolSch, numberSch, nullSch, () => valueSch("\"json string\"")]
 
-var store = recordSch()
+var store = { ...recordSch(), _box: FMODEL_BOX }
 const clone = (obj) => JSON.parse(JSON.stringify(obj))
 
-const walk = (sch, f, meta = {}) => {
-  meta.path = meta.path || ""
-  meta.level = meta.level || 0
-
+/* Any computed data should be in meta variable.
+   Anything needed to be saved across program restart should be in the sch.
+ */
+const walk = (sch, f, meta = { path: "", level: 1, parent: {} }) => {
   switch (true) {
     case [RECORD].includes(sch.type):
       for (let [k, sch_] of Object.entries(sch.fields)) {
-        let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1 }
+        let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1, parent: { _box: sch._box } }
         sch.fields[k] = walk(sch_, f, nextMeta)
       }
       break
     case [TUPLE, UNION].includes(sch.type):
       sch.schs.forEach((sch_, i) => {
-        let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1 }
+        let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1, parent: { _box: sch._box } }
         sch.schs[i] = walk(sch_, f, nextMeta)
       })
       break
     case [LIST].includes(sch.type):
-      let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1 }
+      let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1, parent: { _box: sch._box } }
       sch.sch = walk(sch.sch, f, nextMeta)
       break
     default:
@@ -95,13 +98,13 @@ const popSchs = (schema, path, indices) => {
           for (let i of descIndices)
             result.popped.unshift({ k: i, sch: sch_.schs.splice(i, 1)[0], index: i })
 
-          if (sch_.schs.length == 0) sch_.schs.splice(0, 0, anySch())
+          if (sch_.schs.length == 0) sch_.schs.splice(0, 0, putAnchor(anySch))
           break
         case UNION:
           for (let i of descIndices)
             result.popped.unshift({ k: i, sch: sch_.schs.splice(i, 1)[0], index: i })
 
-          if (sch_.schs.length == 0) sch_.schs.splice(0, 0, anySch())
+          if (sch_.schs.length == 0) sch_.schs.splice(0, 0, putAnchor(anySch))
           break
         default:
           sch_
@@ -113,12 +116,19 @@ const popSchs = (schema, path, indices) => {
   return result
 }
 
-const putAnchor = (sch, level) => {
+const putAnchor = (sch, box) => {
   let newSch = sch()
-  if (level == 0)
-    newSch.$anchor = newSch.$anchor || `${MODEL_PREFIX}${uuid()}`
-  else
-    newSch.$anchor = uuid()
+
+  switch (true) {
+    case box == FMODEL_BOX:
+      newSch.$anchor = newSch.$anchor?.startsWith(MODEL_PREFIX) ?
+        newSch.$anchor :
+        `${MODEL_PREFIX}${uuid()}`
+      break
+    default:
+      newSch.$anchor = uuid()
+  }
+
   return newSch
 }
 
@@ -136,7 +146,7 @@ const putSchs = (schema, path, rawSchs) => {
             k = k || `key_${Math.floor(Date.now() / 100)}`
             while (sch_.fields[k]) k = `${k} –`
 
-            sch_.fields[k] = putAnchor(sch, meta.level)
+            sch_.fields[k] = putAnchor(sch, sch_._box)
             sch_.order.splice(index, 0, k)
             result.inserted.push({ k: k, sch: sch_.fields[k], index: index })
           }
@@ -146,13 +156,13 @@ const putSchs = (schema, path, rawSchs) => {
           break
         case TUPLE:
           for (let { k, sch, index } of ascRawSchs) {
-            sch_.schs.splice(index, 0, putAnchor(sch, meta.level))
+            sch_.schs.splice(index, 0, putAnchor(sch, sch_._box))
             result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
           }
           break
         case UNION:
           for (let { k, sch, index } of ascRawSchs) {
-            sch_.schs.splice(index, 0, putAnchor(sch, meta.level))
+            sch_.schs.splice(index, 0, putAnchor(sch, sch_._box))
             result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
           }
         default:
@@ -170,7 +180,6 @@ const moveSchs = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
 
   const getPinedDst = (store, pin) =>
     getByAndUpdateSch(store, (a, m) => a._pinId == pin, (a, m) => { a._pinned = m; return a })
-
 
   const srcPaths = filterMostOuters(Object.keys(selectedPerParent))
   let moved = {}
@@ -200,7 +209,7 @@ const moveSchs = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
 }
 
 const changeSchType = (store, path, sch) =>
-  updateSch(store, path, (a, m) => a = sch())
+  updateSch(store, path, (a, m) => a = putAnchor(sch, m.parent._box))
 
 const getSch = (currentNode, path) =>
   getByAndUpdateSch(currentNode, (a, m) => m.path == path, (a, m) => a)
@@ -217,19 +226,11 @@ const getByAndUpdateSch = (currentNode, fget, fupdate) => {
   return foundSch && { ...foundSch }
 }
 
-const newModel = (e) => {
-  putSchs(store, "", [{ k: null, sch: recordSch, index: 0 }])
-  renderRoot(store)
-  let tree = document.querySelector("[role='tree']")
-  let firstNode = tree._walker.nextNode()
-  selectNode(tree, firstNode, firstNode)
-}
-
 const renderRoot = (sch) =>
   viewMain({
     sch: sch,
-    ui: { level: 1, tab: 0, rootLevel: 2, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
-    path: "", key: "root", parent: { type: RECORD }
+    ui: { level: 1, tab: 0, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
+    path: "", key: "root", parent: { type: sch.type, _box: sch._box }
   })
 
 const viewMain = (assigns) =>
@@ -329,7 +330,7 @@ const debug = () =>
 
 const viewModel = (assigns) => {
   switch (true) {
-    case assigns.ui.level == 1: return viewFModels(assigns)
+    case assigns.sch._box == FMODEL_BOX: return viewFModels(assigns)
     case CONTAINER_TYPES.includes(assigns.sch.type): return viewFolder(assigns)
     default: return viewFile(assigns)
   }
@@ -386,7 +387,7 @@ const viewKeyed = (assigns) =>
     viewModel({
       key: k,
       sch: assigns.sch.fields[k],
-      parent: { type: assigns.sch.type, path: assigns.path },
+      parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
       ui: { ...assigns.ui, level: assigns.ui.level + 1 },
       path: `${assigns.path}[${k}]`
     })
@@ -397,7 +398,7 @@ const viewIndexed = (assigns) =>
     viewModel({
       key: i,
       sch: assigns.sch.schs[i],
-      parent: { type: assigns.sch.type, path: assigns.path },
+      parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
       ui: { ...assigns.ui, level: assigns.ui.level + 1 },
       path: `${assigns.path}[][${i}]`
     })
@@ -407,7 +408,7 @@ const viewSingled = (assigns) =>
   viewModel({
     key: 0,
     sch: assigns.sch.sch,
-    parent: { type: assigns.sch.type, path: assigns.path },
+    parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
     ui: { ...assigns.ui, level: assigns.ui.level + 1 },
     path: `${assigns.path}[][${0}]`
   })
@@ -417,7 +418,7 @@ const viewNonKeyed = (assigns) =>
     viewModel({
       key: "",
       sch: assigns.sch.schs[i],
-      parent: { type: assigns.sch.type, path: assigns.path },
+      parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
       ui: { ...assigns.ui, level: assigns.ui.level + 1 },
       path: `${assigns.path}[][${i}]`
     })
@@ -432,7 +433,8 @@ const textInput = (id, parentPath, content) =>
 
 
 const viewKey = (assigns) =>
-  assigns.ui.level == assigns.ui.rootLevel ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
+  assigns.parent._box == FMODEL_BOX ? viewKeyRoot(assigns) : viewKeyNonRoot(assigns)
+
 const viewKeyRoot = (assigns) =>
   html`
   <span class="def" style="${indent(assigns)}">
@@ -470,7 +472,7 @@ const editableKey = (assigns) =>
     html`${assigns.key}`
 
 const viewType = (assigns) =>
-  assigns.ui.level == assigns.ui.rootLevel ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
+  assigns.parent._box == FMODEL_BOX ? viewTypeRoot(assigns) : viewTypeNonRoot(assigns)
 const viewTypeRoot = (assigns) =>
   html`<span class="t">${editableType(assigns)}</span>`
 const viewTypeNonRoot = (assigns) =>
@@ -502,10 +504,9 @@ const typeText = (sch, ui) => {
 
 const wordBreakHtml = (word) => word
 const keyedOrIndexed = (sch) => {
-  switch (sch.type) {
-    case RECORD: return "keyed"
-    case TUPLE: return "indexed"
-    case UNION: return "indexed"
+  switch (true) {
+    case [RECORD].includes(sch.type): return "keyed"
+    case [TUPLE, UNION].includes(sch.type): return "indexed"
     default: return "none"
   }
 }
@@ -729,7 +730,7 @@ function handleTreeKeydown(e) {
       let group = currentNode.closest("[role='group']")?.dataset?.group
       let editMode
 
-      if (e.shiftKey) editMode = "editType"
+      if (group && e.shiftKey) editMode = "editType"
       else if (group == "keyed") editMode = "editKey"
 
       if (editMode) {

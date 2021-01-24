@@ -138,14 +138,17 @@ dd {
 
 .file {
   display: flex;
+  align-items: baseline;
 }
 
 .folder .h {
   display: flex;
+  align-items: baseline;
   width: 100%;
 }
 
-[role="group"][data-group="keyed"]>[role="treeitem"]>.k {
+.k {
+  display: flex;
   color: inherit;
   word-break: break-all;
 }
@@ -174,6 +177,7 @@ dd {
 }
 
 .t {
+  display: flex;
   color: var(--type-color);
   word-break: break-all;
 }
@@ -200,6 +204,7 @@ textarea {
   padding: 0 .5rem;
   border: 0;
   background-color: lavender;
+  align-self: center;
 }
 
 textarea.no-resize {
