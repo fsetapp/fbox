@@ -234,94 +234,15 @@ const renderRoot = (sch) =>
   })
 
 const viewMain = (assigns) =>
-  render(document.body, html`
+  render(document.querySelector("#fmodel"), html`
     <theme>
-      <div style="display: flex;">
-        ${true && help()}
-        <ul role="tree" aria-multiselectable="true" class="text-sm" style="flex: 2;">
-          ${viewModel(assigns)}
-        </ul>
-      </div>
+      <ul role="tree" aria-multiselectable="true" class="text-sm">
+        ${viewModel(assigns)}
+      </ul>
     </theme>
     ${null && debug()}
   `)
 
-const help = () =>
-  html`
-  <section class="help text-sm" style="flex: 1;">
-    <h2>Add</h2>
-    <dl>
-      <dt><kbd>shift</kbd> + <kbd>+</kbd></dt>
-      <dd>Add random schema to container types (record | union | tuple)</dd>
-    </dl>
-    <h2>Select</h2>
-    <dl>
-      <dt><kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
-      <dd>Select schema</dd>
-    </dl>
-    <dl>
-      <dt><kbd>shift</kbd> + <kbd>ArrowUp</kbd> / <kbd>ArrowUp</kbd></dt>
-      <dd>Select mutiple schema</dd>
-    </dl>
-    <dl>
-      <dt><kbd>Home</kbd></dt>
-      <dd>Move to the first element of tree</dd>
-    </dl>
-    <dl>
-      <dt><kbd>End</kbd></dt>
-      <dd>Move to the last element of tree</dd>
-    </dl>
-    <h2>Delete</h2>
-    <dl>
-      <dt><kbd>Delete</kbd></dt>
-      <dd>Delete selected schema</dd>
-    </dl>
-    <h2>Move</h2>
-    <dl>
-      <dt><kbd>cmd</kbd> + <kbd>x</kbd></dt>
-      <dd>Cut selected schema</dd>
-    </dl>
-    <dl>
-      <dt><kbd>cmd</kbd> + <kbd>v</kbd></dt>
-      <dd>Paste schema from (cmd + x) command</dd>
-    </dl>
-    <h2>Rename key</h2>
-    <dl>
-      <dt><kbd>Enter</kbd></dt>
-      <dd>Enable key editing on a selected schema </dd>
-    </dl>
-    <dl>
-      <dt><kbd>Enter</kbd></dt>
-      <dd>submit a changed key with current text input value</dd>
-    </dl>
-    <dl>
-      <dt><kbd>Escape</kbd></dt>
-      <dd>Cancel editing</dd>
-    </dl>
-    <h2>Change type</h2>
-    <dl>
-      <dt><kbd>shift</kbd> + <kbd>Enter</kbd></dt>
-      <dd>Enable type editing on a selected schema</dd>
-    </dl>
-    <dl>
-      <dt><kbd>Enter</kbd></dt>
-      <dd>Submit a changed type with current text input value</dd>
-    </dl>
-    <dl>
-      <dt><kbd>Escape</kbd></dt>
-      <dd>Cancel editing</dd>
-    </dl>
-    <dl>
-      <dt>
-        Note: Changeable types are: <b>record</b>, <b>list</b>, <b>tuple</b>, <b>string</b>, <b>number</b>, <b>boolean</b>, <b>null</b>, <b>union</b>, <b>any</b>.
-        <br><br>
-        For <b>Ref type</b>, type in the defined top level model name.
-        <br><br>
-        For <b>Value type</b>, type in any json value (e.g. "a", 1, false, null), array and object json is not allowed (for now).
-      </dt>
-    <dl>
-  </section>
-  `
 const debug = () =>
   html`
   <section style="width: 50%">

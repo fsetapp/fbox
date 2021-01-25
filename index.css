@@ -83,7 +83,8 @@ dd {
 
 [role="tree"] {
   min-width: 374px;
-  min-height: 50vh;
+  height: 100vh;
+  overflow-y: scroll;
   padding: .5rem;
   background-color: var(--tree-bg-color);
   color: var(--tree-color);
