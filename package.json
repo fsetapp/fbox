@@ -6,7 +6,7 @@
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
-    "test": "web-test-runner \"src/test/**/*.test.js\" --node-resolve --coverage --esbuild-target auto || exit 0"
+    "test": "web-test-runner || exit 0"
   },
   "repository": {
     "type": "git",

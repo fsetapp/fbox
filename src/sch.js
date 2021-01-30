@@ -93,6 +93,7 @@ const put = (schema, path, rawSchs) => {
           for (let { k, sch, index } of ascRawSchs) {
             k = k == 0 ? "0" : k
             k = k || `key_${Math.floor(Date.now() / 100)}`
+            k = `${k}`
             while (sch_.fields[k]) k = `${k} –`
 
             sch_.fields[k] = T.putAnchor(sch, sch_._box)
@@ -132,6 +133,8 @@ const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
 
   const srcPaths = filterMostOuters(Object.keys(selectedPerParent))
   let moved = {}
+  let poppedPerSrc = {}
+  let pin = Symbol(dstPath)
 
   for (let srcPath of srcPaths) {
     let selectedItems = selectedPerParent[srcPath]
@@ -139,21 +142,25 @@ const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
     const newK = (index) => selectedItems.filter(c => c.index == index)[0]?.newK
 
     if (!isDstSubtree) {
-      let pin = Symbol(srcPath)
       pinDst(store, dstPath, pin)
 
       let result = pop(store, srcPath, selectedItems.map(c => c.index))
-      let rawSchs = result.popped.map(({ k, sch, index }, i) => {
-        return { k: newK(index) || k, sch: () => sch, index: startIndex + i }
+      let rawSchs = result.popped.map(({ k, sch, index }) => {
+        return { k: newK(index) || k, sch: () => sch }
       })
 
-      let dst = getPinedDst(store, pin)
-      let result_ = put(store, dst._pinned.path, rawSchs)
-
-      moved[dst._pinned.path] = result_.inserted
+      poppedPerSrc[srcPath] = rawSchs
     }
   }
 
+  let rawSchs = Object.values(poppedPerSrc)
+    .flatMap((popped) => popped)
+    .map((a, i) => { return { ...a, index: startIndex + i } })
+
+  let dst = getPinedDst(store, pin)
+  let result_ = put(store, dst._pinned.path, rawSchs)
+
+  moved[dst._pinned.path] = result_.inserted
   return moved
 }
 
@@ -172,7 +179,7 @@ const getByAndUpdate = (currentNode, fget, fupdate) => {
     if (fget(sch_, meta)) return foundSch = fupdate(sch_, meta)
     else return sch_
   })
-  return foundSch && { ...foundSch }
+  return foundSch
 }
 
 export { get, update, put, pop, move, changeType }
