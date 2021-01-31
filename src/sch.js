@@ -1,4 +1,5 @@
 import * as T from "./sch/type.js"
+export { get, update, put, pop, move, changeType }
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj))
 
@@ -181,5 +182,3 @@ const getByAndUpdate = (currentNode, fget, fupdate) => {
   })
   return foundSch
 }
-
-export { get, update, put, pop, move, changeType }
