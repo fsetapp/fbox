@@ -1,13 +1,12 @@
 import * as Sch from "./sch.js"
 import * as T from "./sch/type.js"
-import { renderRoot } from "./sch/view.js"
+import * as View from "./sch/view.js"
 import * as AriaTree from "./aria_tree.js"
 
 "use strict"
 
 const allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.number, T.nil, () => T.value("\"json string\"")]
 var store = { ...T.record(), _box: T.FMODEL_BOX }
-const clone = (obj) => JSON.parse(JSON.stringify(obj))
 
 const deleteSelected = (tree) => {
   const indicesPerParent = AriaTree.selectedGroupedByParent(tree)
@@ -50,7 +49,7 @@ const editSelected = (e, tree, textArea, f) => {
   let currentId = f(tree, textArea) || currentNode.id
 
   Sch.update(store, currentId, (a, m) => ({ ...a, uiMode: "view" }))
-  renderRoot(store)
+  View.renderRoot(store)
 
   tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
   AriaTree.selectNode(tree, currentNode, tree._walker.currentNode)
@@ -72,7 +71,7 @@ const editType = (e, tree, textArea) => {
 
 const cancelTextArea = (e, tree, textArea) => {
   Sch.update(store, textArea._treeItem.id, (a, m) => ({ ...a, uiMode: "view" }))
-  renderRoot(store)
+  View.renderRoot(store)
   tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
   AriaTree.selectNode(tree, textArea._treeItem, tree._walker.currentNode)
 }
@@ -124,7 +123,7 @@ function handleTreeKeydown(e) {
         AriaTree.findUnselectedNode(() => tree._walker.parentNode())
 
       deleteSelected(tree)
-      renderRoot(store)
+      View.renderRoot(store)
       AriaTree.selectNode(tree, currentNode, nextStepNode)
       break
     case "KeyX":
@@ -144,7 +143,7 @@ function handleTreeKeydown(e) {
         const selectedPerParent = tree._clipboard()
 
         let moved = Sch.move(store, { dstPath, startIndex: 0 }, selectedPerParent)
-        renderRoot(store)
+        View.renderRoot(store)
         AriaTree.clearClipboard(tree)
         AriaTree.reselectNodes(tree, moved)
       }
@@ -158,7 +157,7 @@ function handleTreeKeydown(e) {
 
       if (editMode) {
         Sch.update(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
-        renderRoot(store)
+        View.renderRoot(store)
         let textArea = tree.querySelector("textarea")
         textArea._treeItem = currentNode
         textArea.onblur = e => cancelTextArea(e, tree, textArea)
@@ -182,7 +181,7 @@ function handleTreeKeydown(e) {
           let randomSch = allSchs[ranInt(allSchs.length)]
 
           Sch.put(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
-          renderRoot(store)
+          View.renderRoot(store)
           break
       }
   }
@@ -216,4 +215,4 @@ allSchs.reverse().forEach((sch, i) =>
   Sch.put(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
 )
 
-renderRoot(store)
+View.renderRoot(store)

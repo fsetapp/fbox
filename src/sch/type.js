@@ -34,9 +34,12 @@ export const value = (v) => {
       (v == null) ||
       ([STRING, NUMBER, BOOLEAN].includes(typeof v))
     ) return { type: VALUE, "const": v }
-    else return false
+    else
+      return false
   }
-  catch (e) { return false }
+  catch (e) {
+    return false
+  }
 }
 
 export const putAnchor = (sch, box) => {

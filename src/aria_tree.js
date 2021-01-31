@@ -6,17 +6,19 @@ export {
 
 const ARIA_SELECTED = "aria-selected"
 
-const createWalker = (tree) => tree._walker = tree.ownerDocument.createTreeWalker(
-  tree,
-  NodeFilter.SHOW_ELEMENT,
-  {
-    acceptNode: (node) => {
-      if (node.hasAttribute(ARIA_SELECTED)) return NodeFilter.FILTER_ACCEPT
-      else return NodeFilter.FILTER_SKIP
-    }
-  },
-  false
-)
+const createWalker = (tree) => {
+  tree._walker = tree.ownerDocument.createTreeWalker(
+    tree,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode: (node) => {
+        if (node.hasAttribute(ARIA_SELECTED)) return NodeFilter.FILTER_ACCEPT
+        else return NodeFilter.FILTER_SKIP
+      }
+    },
+    false)
+  return tree
+}
 
 const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
   if (nextStepNode) {
@@ -42,7 +44,7 @@ const selectMultiNode = (currentNode, nextStepNode, opts = { focus: true }) => {
       currentNode.tabIndex = -1
     }
     nextStepNode.setAttribute(ARIA_SELECTED, true)
-    nextStepNode.tabIndex = 0
+    nextStepNode.setAttribute("tabIndex", 0)
     opts.focus && nextStepNode.focus()
   }
 }
@@ -65,15 +67,26 @@ const findUnselectedNode = (fstep, nextNode) => {
   return nextNode
 }
 
+const filterMostOuters = (paths) => {
+  return paths.filter(p => {
+    for (let p_ of paths) {
+      if (p == p_) return true
+      else if (p.startsWith(p_)) return false
+    }
+  })
+}
+
 const reselectNodes = (tree, childIncidesPerParent) => {
-  for (let parent of Object.keys(childIncidesPerParent)) {
+  deselectAllNode(tree, tree._walker.currentNode)
+
+  for (let parent of filterMostOuters(Object.keys(childIncidesPerParent))) {
     let indices = childIncidesPerParent[parent]
 
-    parent = tree.querySelector(`[id='${CSS.escape(parent)}']`)
+    parent = tree.querySelector(`[id='${CSS.escape(parent)}'][aria-level]`)
+    if (!parent) continue
     let dstLevel = parseInt(parent.getAttribute("aria-level"))
     let children = parent.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
 
-    deselectAllNode(tree, tree._walker.currentNode)
     indices.map(({ index }) => children[index]).forEach(a => {
       a.classList.add("item-pasted")
       selectMultiNode(tree, a)
