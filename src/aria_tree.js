@@ -29,7 +29,10 @@ const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => 
 
 const deselectAllNode = (tree, currentNode) => {
   [...tree.querySelectorAll(`[${ARIA_SELECTED}='true']`)]
-    .forEach(item => item.setAttribute(ARIA_SELECTED, false))
+    .forEach(item => {
+      item.tabIndex = -1
+      item.setAttribute(ARIA_SELECTED, false)
+    })
   currentNode.tabIndex = -1
   currentNode.setAttribute(ARIA_SELECTED, false)
 

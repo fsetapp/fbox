@@ -95,6 +95,13 @@ dd {
   color: var(--tree-color);
 }
 
+[role="tree"] :not(textarea)::selection {
+  background-color: transparent;
+}
+[role="tree"][data-shift-key="false"] *::selection {
+  background-color: rgba(59, 130, 246, .5);
+}
+
 .fmodels {
   padding: 0 .5rem;
 }
