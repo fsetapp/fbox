@@ -112,8 +112,7 @@ dd {
 }
 
 .fmodels>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
-  border: 1px dotted rgba(107, 114, 128, .75);
-  /* rgba(0, 0, 0, .2); */
+  border-color rgba(107, 114, 128, .75);
   background-color: rgba(14, 19, 31, 1);
 }
 
@@ -125,7 +124,7 @@ dd {
 
 [role="treeitem"][aria-selected="true"] {
   /* text-blue-500 */
-  border: 1px dotted rgba(59, 130, 246, 1);
+  border-color: rgba(59, 130, 246, 1);
   background-color: var(--item-selected-bg-color);
 }
 
@@ -135,7 +134,7 @@ dd {
 
 [role="treeitem"][aria-selected="true"]:focus {
   /* text-blue-500 */
-  border: 1px solid rgba(59, 130, 246, 1);
+  border-color: rgba(59, 130, 246, 1);
   outline: none;
 }
 
