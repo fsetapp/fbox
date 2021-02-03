@@ -195,8 +195,6 @@ function handleTreeClick(e) {
 
   if (targetNode) {
     if (e.shiftKey) {
-      let nextStepNode
-
       if (startNode.contains(targetNode))
         return AriaTree.selectNode(tree, startNode, tree._walker.currentNode = startNode)
 
@@ -209,28 +207,7 @@ function handleTreeClick(e) {
       if (targetNode.parentNode.closest("[role='treeitem']") != startNode.parentNode.closest("[role='treeitem']"))
         return AriaTree.selectNode(tree, startNode, tree._walker.currentNode = targetNode)
 
-      AriaTree.selectNode(tree, startNode, startNode, { focus: false })
-
-      do nextStepNode = tree._walker.previousSibling()
-      while (nextStepNode && nextStepNode != targetNode)
-
-      if (nextStepNode == targetNode)
-        while (tree._walker.nextSibling() && tree._walker.currentNode != startNode)
-          AriaTree.selectMultiNode(startNode, tree._walker.currentNode, { focus: false })
-      else {
-        tree._walker.currentNode = startNode
-        do nextStepNode = tree._walker.nextSibling()
-        while (nextStepNode && nextStepNode != targetNode)
-
-        if (nextStepNode == targetNode)
-          while (tree._walker.previousSibling() && tree._walker.currentNode != startNode)
-            AriaTree.selectMultiNode(startNode, tree._walker.currentNode, { focus: false })
-      }
-
-      if (nextStepNode)
-        AriaTree.selectMultiNode(startNode, nextStepNode, { focus: false })
-      else
-        AriaTree.selectMultiNode(startNode, tree._walker.currentNode = startNode)
+      AriaTree.selectMultiNodeTo(tree, startNode, targetNode)
     }
     else
       AriaTree.selectNode(tree, startNode, tree._walker.currentNode = targetNode, { focus: notFocusIfTextArea })
@@ -250,8 +227,13 @@ addEventListener("DOMContentLoaded", e => {
   })
 })
 
-allSchs.reverse().forEach((sch, i) =>
-  Sch.put(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
+
+let fixture = []
+for (var i = 0; i < 1000; i++)
+  fixture.push(allSchs[ranInt(allSchs.length)])
+
+fixture.reverse().forEach((sch, i) =>
+  Sch.put(store, "", [{ k: `model_${fixture.length - i}`, sch: sch, index: 0 }])
 )
 
 View.renderRoot(store)

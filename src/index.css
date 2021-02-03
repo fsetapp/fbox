@@ -112,7 +112,8 @@ dd {
 }
 
 .fmodels>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
-  border-color rgba(107, 114, 128, .75);
+  /* gray-800 */
+  border-color: rgba(31,41,55,1);
   background-color: rgba(14, 19, 31, 1);
 }
 
@@ -125,7 +126,7 @@ dd {
 [role="treeitem"][aria-selected="true"] {
   /* text-blue-500 */
   border-color: rgba(59, 130, 246, 1);
-  background-color: var(--item-selected-bg-color);
+  /* background-color: var(--item-selected-bg-color); */
 }
 
 [role="treeitem"][aria-selected="true"]>.h {

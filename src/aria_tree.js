@@ -1,6 +1,6 @@
 export {
   createWalker,
-  selectNode, selectMultiNode, selectMultiAllNodes, reselectNodes, selectedGroupedByParent, findUnselectedNode,
+  selectNode, selectMultiNode, selectMultiNodeTo, selectMultiAllNodes, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
 }
 
@@ -22,22 +22,18 @@ const createWalker = (tree) => {
 
 const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
   if (nextStepNode) {
-    deselectAllNode(tree, currentNode)
+    deselectAllNode(tree)
     selectMultiNode(currentNode, nextStepNode, opts)
   }
 }
 
-const deselectAllNode = (tree, currentNode) => {
-  [...tree.querySelectorAll(`[${ARIA_SELECTED}='true']`)]
-    .forEach(item => {
-      item.tabIndex = -1
-      item.setAttribute(ARIA_SELECTED, false)
-    })
-  currentNode.tabIndex = -1
-  currentNode.setAttribute(ARIA_SELECTED, false)
-
-  let _ = [...tree.querySelectorAll(".item-pasted")]
-    .forEach(a => a.classList.remove("item-pasted"))
+const deselectAllNode = (tree) => {
+  for (let item of tree.querySelectorAll(`[${ARIA_SELECTED}='true']`)) {
+    item.tabIndex = -1
+    item.setAttribute(ARIA_SELECTED, false)
+  }
+  for (let a of tree.querySelectorAll(".item-pasted"))
+    a.classList.remove("item-pasted")
 }
 
 const selectMultiNode = (currentNode, nextStepNode, opts = { focus: true }) => {
@@ -47,7 +43,7 @@ const selectMultiNode = (currentNode, nextStepNode, opts = { focus: true }) => {
       currentNode.tabIndex = -1
     }
     nextStepNode.setAttribute(ARIA_SELECTED, true)
-    nextStepNode.setAttribute("tabIndex", 0)
+    nextStepNode.tabIndex = 0
     opts.focus && nextStepNode.focus()
   }
 }
@@ -59,9 +55,32 @@ const selectMultiAllNodes = (tree, nextStepSibling) => {
   do {
     currentNode = tree._walker.currentNode
     nextStepSibling_ = nextStepSibling()
-    selectMultiNode(currentNode, nextStepSibling_)
+    selectMultiNode(currentNode, nextStepSibling_, { focus: false })
   }
   while (nextStepSibling_)
+  tree._walker.currentNode.focus()
+}
+
+const selectMultiNodeTo = (tree, startNode, targetNode) => {
+  selectNode(tree, startNode, startNode, { focus: false })
+
+  const selectMultiTo = (targetNode, nextStepNode, reverseStepNode) => {
+    let nextStepNode_
+    do nextStepNode_ = nextStepNode()
+    while (nextStepNode_ && nextStepNode_ != targetNode)
+
+    if (nextStepNode_ == targetNode)
+      while (reverseStepNode() && tree._walker.currentNode != startNode)
+        selectMultiNode(startNode, tree._walker.currentNode, { focus: false })
+
+    return nextStepNode_
+  }
+
+  const selectUp = (targetNode) => selectMultiTo(targetNode, () => tree._walker.previousSibling(), () => tree._walker.nextSibling())
+  const selectDown = (targetNode) => selectMultiTo(targetNode, () => tree._walker.nextSibling(), () => tree._walker.previousSibling())
+
+  let finalNode = selectUp(targetNode) || (tree._walker.currentNode = startNode) && selectDown(targetNode)
+  selectMultiNode(startNode, finalNode, { focus: false })
 }
 
 const findUnselectedNode = (fstep, nextNode) => {
@@ -80,7 +99,7 @@ const filterMostOuters = (paths) => {
 }
 
 const reselectNodes = (tree, childIncidesPerParent) => {
-  deselectAllNode(tree, tree._walker.currentNode)
+  deselectAllNode(tree)
 
   for (let parent of filterMostOuters(Object.keys(childIncidesPerParent))) {
     let indices = childIncidesPerParent[parent]
