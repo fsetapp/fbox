@@ -144,7 +144,7 @@ dd {
 
 [role="treeitem"][aria-selected="true"].item-cutting,
 [role="treeitem"].item-cutting {
-  border: 1px dotted orange !important;
+  border: 1px solid orange !important;
 }
 
 [role="treeitem"].item-pasted {

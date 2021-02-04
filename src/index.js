@@ -48,7 +48,7 @@ const editSelected = (e, tree, textArea, f) => {
 
   let currentId = f(tree, textArea) || currentNode.id
 
-  Sch.update(store, currentId, (a, m) => ({ ...a, uiMode: "view" }))
+  Sch.update(store, currentId, (a, m) => Object.assign(a, { uiMode: "editted" }))
   View.renderRoot(store)
 
   tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
@@ -70,10 +70,13 @@ const editType = (e, tree, textArea) => {
 }
 
 const cancelTextArea = (e, tree, textArea) => {
-  Sch.update(store, textArea._treeItem.id, (a, m) => ({ ...a, uiMode: "view" }))
+  let updatedNode = Sch.update(store, textArea._treeItem.id, (a, m) => Object.assign(a, { uiMode: "cancelled-edit" }))
+
   View.renderRoot(store)
-  tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
-  AriaTree.selectNode(tree, textArea._treeItem, tree._walker.currentNode)
+  if (updatedNode) {
+    tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
+    AriaTree.selectNode(tree, textArea._treeItem, tree._walker.currentNode)
+  }
 }
 
 const handleTextAreaKeyDown = (e, tree) => {
@@ -133,7 +136,7 @@ function handleTreeKeydown(e) {
         AriaTree.clearClipboard(tree)
 
         tree._clipboard = () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-cutting" })
-        tree.querySelectorAll("[aria-selected='true']").forEach(a => a.classList.add("item-cutting"))
+        for (let a of tree.querySelectorAll("[aria-selected='true']")) a.classList.add("item-cutting")
       }
       break
     case "KeyV":
@@ -158,7 +161,7 @@ function handleTreeKeydown(e) {
       else if (group == "keyed") editMode = "editKey"
 
       if (editMode) {
-        Sch.update(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
+        Sch.update(store, currentNode.id, (a, m) => Object.assign(a, { uiMode: editMode }))
         View.renderRoot(store)
         let textArea = tree.querySelector("textarea")
         textArea._treeItem = currentNode

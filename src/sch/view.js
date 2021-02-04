@@ -46,7 +46,7 @@ const viewFolder = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
   <li id="${assigns.path}" .key="${assigns.key}" class="folder" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     <dfn class="h">
-      ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
+      ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
       ${viewType(assigns)}
     </dfn>
     <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
@@ -57,7 +57,7 @@ const viewFolder = (assigns) =>
 const viewFile = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
   <li id="${assigns.path}" .key="${assigns.key}" class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
-    ${viewKey({ ...assigns, key: wordBreakHtml(assigns.key) })}
+    ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
     ${viewType(assigns)}
   </li>`
 
