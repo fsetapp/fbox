@@ -90,11 +90,11 @@ const handleTextAreaKeyDown = (e, tree) => {
   }
 }
 
-const pressSelect = (e, tree, nextStepSibling, nextStepNode) => {
+const pressSelect = (e, tree, nextStepSibling, nextStepNode, endStepNode) => {
   let nextStepSibling_
 
   if (e.shiftKey && e.metaKey)
-    AriaTree.selectMultiAllNodes(tree, nextStepSibling)
+    AriaTree.selectMultiNodeTo(tree, tree._walker.currentNode, endStepNode())
   else if (e.shiftKey)
     AriaTree.selectMultiNode(tree._walker.currentNode, nextStepSibling())
   else
@@ -109,11 +109,13 @@ function handleTreeKeydown(e) {
 
   switch (e.code) {
     case "ArrowUp":
-      pressSelect(e, tree, () => tree._walker.previousSibling(), () => tree._walker.previousNode())
+      if (document.activeElement != currentNode && e.shiftKey) tree._walker.currentNode = document.activeElement
+      pressSelect(e, tree, () => tree._walker.previousSibling(), () => tree._walker.previousNode(), () => { tree._walker.parentNode(); return tree._walker.firstChild() })
       e.preventDefault()
       break
     case "ArrowDown":
-      pressSelect(e, tree, () => tree._walker.nextSibling(), () => tree._walker.nextNode())
+      if (document.activeElement != currentNode && e.shiftKey) tree._walker.currentNode = document.activeElement
+      pressSelect(e, tree, () => tree._walker.nextSibling(), () => tree._walker.nextNode(), () => { tree._walker.parentNode(); return tree._walker.lastChild() })
       e.preventDefault()
       break
     case "Delete":
@@ -166,7 +168,7 @@ function handleTreeKeydown(e) {
       break
     case "Home":
       while (tree._walker.parentNode()) { }
-      AriaTree.selectNode(tree, currentNode, tree._walker.currentNode)
+      AriaTree.selectNode(tree, currentNode, tree._walker.nextNode())
       break
     case "End":
       while (tree._walker.nextNode()) { }

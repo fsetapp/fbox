@@ -1,6 +1,6 @@
 export {
   createWalker,
-  selectNode, selectMultiNode, selectMultiNodeTo, selectMultiAllNodes, reselectNodes, selectedGroupedByParent, findUnselectedNode,
+  selectNode, selectMultiNode, selectMultiNodeTo, selectStepNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
 }
 
@@ -28,27 +28,24 @@ const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => 
 }
 
 const deselectAllNode = (tree) => {
-  for (let item of tree.querySelectorAll(`[${ARIA_SELECTED}='true']`)) {
-    item.tabIndex = -1
-    item.setAttribute(ARIA_SELECTED, false)
-  }
+  for (let item of tree.querySelectorAll(`[${ARIA_SELECTED}='true']`))
+    setDeselect(item)
+
   for (let a of tree.querySelectorAll(".item-pasted"))
     a.classList.remove("item-pasted")
 }
 
 const selectMultiNode = (currentNode, nextStepNode, opts = { focus: true }) => {
   if (nextStepNode) {
-    if (nextStepNode.getAttribute(ARIA_SELECTED) == "true") {
-      currentNode.setAttribute(ARIA_SELECTED, false)
-      currentNode.tabIndex = -1
-    }
-    nextStepNode.setAttribute(ARIA_SELECTED, true)
-    nextStepNode.tabIndex = 0
+    if (nextStepNode.getAttribute(ARIA_SELECTED) == "true")
+      setDeselect(currentNode)
+
+    setSelect(nextStepNode)
     opts.focus && nextStepNode.focus()
   }
 }
 
-const selectMultiAllNodes = (tree, nextStepSibling) => {
+const selectStepNodeTo = (tree, nextStepSibling, targetNode) => {
   let currentNode
   let nextStepSibling_
 
@@ -57,30 +54,39 @@ const selectMultiAllNodes = (tree, nextStepSibling) => {
     nextStepSibling_ = nextStepSibling()
     selectMultiNode(currentNode, nextStepSibling_, { focus: false })
   }
-  while (nextStepSibling_)
-  tree._walker.currentNode.focus()
+  while (nextStepSibling_ && nextStepSibling_ != targetNode)
 }
 
 const selectMultiNodeTo = (tree, startNode, targetNode) => {
-  selectNode(tree, startNode, startNode, { focus: false })
+  switch (startNode.compareDocumentPosition(targetNode)) {
+    case Node.DOCUMENT_POSITION_FOLLOWING:
+      selectNode(tree, startNode, startNode)
 
-  const selectMultiTo = (targetNode, nextStepNode, reverseStepNode) => {
-    let nextStepNode_
-    do nextStepNode_ = nextStepNode()
-    while (nextStepNode_ && nextStepNode_ != targetNode)
+      tree._walker.currentNode = startNode
+      selectStepNodeTo(tree, () => tree._walker.nextSibling(), targetNode)
+      break
 
-    if (nextStepNode_ == targetNode)
-      while (reverseStepNode() && tree._walker.currentNode != startNode)
-        selectMultiNode(startNode, tree._walker.currentNode, { focus: false })
-
-    return nextStepNode_
+    case Node.DOCUMENT_POSITION_PRECEDING:
+      selectNode(tree, targetNode, targetNode)
+      /* Don't do tree._walker.previousSibling() because Firefox is slow at re-painting
+        applied style in bottom-to-top direction.
+      */
+      tree._walker.currentNode = targetNode
+      selectStepNodeTo(tree, () => tree._walker.nextSibling(), startNode)
+      break
   }
 
-  const selectUp = (targetNode) => selectMultiTo(targetNode, () => tree._walker.previousSibling(), () => tree._walker.nextSibling())
-  const selectDown = (targetNode) => selectMultiTo(targetNode, () => tree._walker.nextSibling(), () => tree._walker.previousSibling())
+  tree._walker.currentNode = startNode
+  targetNode.focus()
+}
 
-  let finalNode = selectUp(targetNode) || (tree._walker.currentNode = startNode) && selectDown(targetNode)
-  selectMultiNode(startNode, finalNode, { focus: false })
+const setSelect = (node) => {
+  node?.setAttribute(ARIA_SELECTED, true)
+  node?.setAttribute("tabindex", 0)
+}
+const setDeselect = (node) => {
+  node?.setAttribute(ARIA_SELECTED, false)
+  node?.setAttribute("tabindex", -1)
 }
 
 const findUnselectedNode = (fstep, nextNode) => {

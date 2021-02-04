@@ -1,7 +1,7 @@
 import { assert } from "@esm-bundle/chai";
 import {
   createWalker,
-  selectNode, selectMultiNode, selectMultiAllNodes, reselectNodes, selectedGroupedByParent, findUnselectedNode,
+  selectNode, selectMultiNode, selectStepNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
 } from "../aria_tree.js"
 
@@ -64,11 +64,13 @@ describe("aria [role='tree']", () => {
     assert.equal(document.querySelectorAll("[aria-selected='true']").length, 1)
   })
 
-  it("#selectMultiAllNodes", () => {
+  it("#selectStepNodeTo", () => {
     selectNode(tree, tree._walker.currentNode, tree._walker.nextNode())
-    selectMultiAllNodes(tree, () => tree._walker.nextSibling())
 
-    assert.equal(document.activeElement, tree._walker.currentNode)
+    let startNode = tree._walker.currentNode
+    selectStepNodeTo(tree, () => tree._walker.nextSibling())
+
+    assert.equal(document.activeElement, startNode)
     assert.equal(document.querySelectorAll("[aria-selected='true']").length, 3)
   })
 

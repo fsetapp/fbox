@@ -123,6 +123,10 @@ dd {
   overflow: hidden;
 }
 
+[role="treeitem"][aria-selected] {
+  outline: none;
+}
+
 [role="treeitem"][aria-selected="true"] {
   /* text-blue-500 */
   border-color: rgba(59, 130, 246, 1);
@@ -136,7 +140,6 @@ dd {
 [role="treeitem"][aria-selected="true"]:focus {
   /* text-blue-500 */
   border-color: rgba(59, 130, 246, 1);
-  outline: none;
 }
 
 [role="treeitem"][aria-selected="true"].item-cutting,
