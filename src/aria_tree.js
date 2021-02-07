@@ -1,6 +1,6 @@
 export {
   createWalker,
-  selectNode, selectMultiNode, selectMultiNodeTo, selectStepNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
+  selectNode, selectMultiNode, selectMultiNodeTo, toggleSelectNode, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
 }
 
@@ -20,11 +20,27 @@ const createWalker = (tree) => {
   return tree
 }
 
-const selectNode = (tree, currentNode, nextStepNode, opts = { focus: true }) => {
-  if (nextStepNode) {
-    deselectAllNode(tree)
-    selectMultiNode(currentNode, nextStepNode, opts)
-  }
+const selectNode = (tree, node, opts = { focus: true }) => {
+  if (!node) return
+  tree._walker.currentNode = node
+
+  deselectAllNode(tree)
+  setSelect(node)
+  opts.focus && node.focus()
+}
+
+const toggleSelectNode = (node) =>
+  setToggle(node)
+
+const selectMultiNode = (current, nextStepSibling, opts = { focus: true }) => {
+  if (!nextStepSibling) return
+
+  if (nextStepSibling.getAttribute(ARIA_SELECTED) == "true")
+    setToggle(current)
+  else
+    setSelect(nextStepSibling)
+
+  opts.focus && nextStepSibling.focus()
 }
 
 const deselectAllNode = (tree) => {
@@ -35,59 +51,65 @@ const deselectAllNode = (tree) => {
     a.classList.remove("item-pasted")
 }
 
-const selectMultiNode = (currentNode, nextStepNode, opts = { focus: true }) => {
-  if (nextStepNode) {
-    if (nextStepNode.getAttribute(ARIA_SELECTED) == "true")
-      setDeselect(currentNode)
+const selectStepNodeTo = (tree, stepSiblingFn, target, opts = {}) => {
+  let current = tree._walker.currentNode
+  let nextSibling = stepSiblingFn()
 
-    setSelect(nextStepNode)
-    opts.focus && nextStepNode.focus()
+  if (!nextSibling) return
+  if (current == target) return opts.target?.call(null, target)
+  else {
+    opts.pre?.call(null, current, nextSibling)
+    selectStepNodeTo(tree, stepSiblingFn, target, opts)
+    opts.post?.call(null, current, nextSibling)
   }
 }
 
-const selectStepNodeTo = (tree, nextStepSibling, targetNode) => {
-  let currentNode
-  let nextStepSibling_
+const selectMultiNodeTo = (tree, start, target) => {
+  if (!start || !target) return
 
-  do {
-    currentNode = tree._walker.currentNode
-    nextStepSibling_ = nextStepSibling()
-    selectMultiNode(currentNode, nextStepSibling_, { focus: false })
-  }
-  while (nextStepSibling_ && nextStepSibling_ != targetNode)
-}
-
-const selectMultiNodeTo = (tree, startNode, targetNode) => {
-  switch (startNode.compareDocumentPosition(targetNode)) {
+  switch (start.compareDocumentPosition(target)) {
     case Node.DOCUMENT_POSITION_FOLLOWING:
-      selectNode(tree, startNode, startNode)
+      tree._walker.currentNode = start
 
-      tree._walker.currentNode = startNode
-      selectStepNodeTo(tree, () => tree._walker.nextSibling(), targetNode)
+      selectStepNodeTo(tree, () => tree._walker.nextSibling(), target, {
+        pre: (current, nextSibling) => {
+          selectMultiNode(current, nextSibling, { focus: false })
+        }
+      })
+
+      tree._walker.currentNode = target
+      setSelect(target)
+      target.focus()
       break
 
     case Node.DOCUMENT_POSITION_PRECEDING:
-      selectNode(tree, targetNode, targetNode)
-      /* Don't do tree._walker.previousSibling() because Firefox is slow at re-painting
-        applied style in bottom-to-top direction.
-      */
-      tree._walker.currentNode = targetNode
-      selectStepNodeTo(tree, () => tree._walker.nextSibling(), startNode)
+      tree._walker.currentNode = start
+
+      selectStepNodeTo(tree, () => tree._walker.previousSibling(), target, {
+        pre: (current, nextSibling) => {
+          selectMultiNode(current, nextSibling, { focus: false })
+        }
+      })
+
+      tree._walker.currentNode = target
+      setSelect(target)
+      target.focus()
       break
   }
-
-  tree._walker.currentNode = startNode
-  targetNode.focus()
 }
 
 const setSelect = (node) => {
-  node?.setAttribute(ARIA_SELECTED, true)
-  node?.setAttribute("tabindex", 0)
+  if (!node) return
+  node.setAttribute(ARIA_SELECTED, true)
+  node.tabIndex = 0
 }
 const setDeselect = (node) => {
-  node?.setAttribute(ARIA_SELECTED, false)
-  node?.setAttribute("tabindex", -1)
+  if (!node) return
+  node.setAttribute(ARIA_SELECTED, false)
+  node.tabIndex = -1
 }
+const setToggle = (node) =>
+  node?.getAttribute(ARIA_SELECTED) == "true" ? setDeselect(node) : setSelect(node)
 
 const findUnselectedNode = (fstep, nextNode) => {
   do nextNode = fstep()
@@ -117,7 +139,7 @@ const reselectNodes = (tree, childIncidesPerParent) => {
 
     indices.map(({ index }) => children[index]).forEach(a => {
       a.classList.add("item-pasted")
-      selectMultiNode(tree, a)
+      selectMultiNode(null, a)
       tree._walker.currentNode = a
     })
   }

@@ -1,7 +1,7 @@
 import { assert } from "@esm-bundle/chai";
 import {
   createWalker,
-  selectNode, selectMultiNode, selectStepNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
+  selectNode, selectMultiNode, selectMultiNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
 } from "../aria_tree.js"
 
@@ -41,8 +41,8 @@ describe("aria [role='tree']", () => {
 
   it("#selectNode no next node", () => {
     let lastNode = tree._walker.lastChild()
-    selectNode(tree, tree._walker.currentNode, lastNode)
-    selectNode(tree, tree._walker.currentNode, tree._walker.nextSibling())
+    selectNode(tree, lastNode)
+    selectNode(tree, tree._walker.nextSibling())
 
     assert.equal(document.activeElement, lastNode)
   })
@@ -64,13 +64,25 @@ describe("aria [role='tree']", () => {
     assert.equal(document.querySelectorAll("[aria-selected='true']").length, 1)
   })
 
-  it("#selectStepNodeTo", () => {
-    selectNode(tree, tree._walker.currentNode, tree._walker.nextNode())
+  it("#selectMultiNodeTo top-to-bottom", () => {
+    selectNode(tree, tree._walker.nextNode())
 
-    let startNode = tree._walker.currentNode
-    selectStepNodeTo(tree, () => tree._walker.nextSibling())
+    let start = tree._walker.currentNode
+    let target = document.querySelector("[id='root/last']")
+    selectMultiNodeTo(tree, start, target)
 
-    assert.equal(document.activeElement, startNode)
+    assert.equal(document.activeElement, target)
+    assert.equal(document.querySelectorAll("[aria-selected='true']").length, 3)
+  })
+
+  it("#selectMultiNodeTo bottom-to-top", () => {
+    selectNode(tree, document.querySelector("[id='root/last']"))
+
+    let start = tree._walker.currentNode
+    let target = document.querySelector("[id='first']")
+    selectMultiNodeTo(tree, start, target)
+
+    assert.equal(document.activeElement, target)
     assert.equal(document.querySelectorAll("[aria-selected='true']").length, 3)
   })
 

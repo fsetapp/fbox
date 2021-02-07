@@ -44,7 +44,7 @@ const editSelected = (e, tree, textArea, f) => {
   let currentNode = tree._walker.currentNode
 
   textArea._treeItem = textArea.closest("[role='treeitem']")
-  AriaTree.selectNode(tree, currentNode, textArea._treeItem, { focus: false })
+  AriaTree.selectNode(tree, textArea._treeItem, { focus: false })
 
   let currentId = f(tree, textArea) || currentNode.id
 
@@ -52,7 +52,7 @@ const editSelected = (e, tree, textArea, f) => {
   View.renderRoot(store)
 
   tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(currentId)}']`)
-  AriaTree.selectNode(tree, currentNode, tree._walker.currentNode)
+  AriaTree.selectNode(tree, tree._walker.currentNode)
 }
 const editKey = (e, tree, textArea) => {
   editSelected(e, tree, textArea, () => {
@@ -75,7 +75,7 @@ const cancelTextArea = (e, tree, textArea) => {
   View.renderRoot(store)
   if (updatedNode) {
     tree._walker.currentNode = tree.querySelector(`[id='${CSS.escape(textArea._treeItem.id)}']`)
-    AriaTree.selectNode(tree, textArea._treeItem, tree._walker.currentNode)
+    AriaTree.selectNode(tree, tree._walker.currentNode)
   }
 }
 
@@ -93,15 +93,15 @@ const handleTextAreaKeyDown = (e, tree) => {
   }
 }
 
-const pressSelect = (e, tree, nextStepSibling, nextStepNode, endStepNode) => {
-  let nextStepSibling_
-
+const pressSelect = (e, tree, nextStepSiblingFn, nextStepNodeFn, endStepNodeFn) => {
   if (e.shiftKey && e.metaKey)
-    AriaTree.selectMultiNodeTo(tree, tree._walker.currentNode, endStepNode())
+    AriaTree.selectMultiNodeTo(tree, tree._walker.currentNode, endStepNodeFn())
   else if (e.shiftKey)
-    AriaTree.selectMultiNode(tree._walker.currentNode, nextStepSibling())
+    AriaTree.selectMultiNode(tree._walker.currentNode, nextStepSiblingFn())
+  else if (e.metaKey)
+    AriaTree.selectNode(tree, endStepNodeFn())
   else
-    AriaTree.selectNode(tree, tree._walker.currentNode, nextStepNode())
+    AriaTree.selectNode(tree, nextStepNodeFn())
 }
 
 function handleTreeKeydown(e) {
@@ -112,12 +112,10 @@ function handleTreeKeydown(e) {
 
   switch (e.code) {
     case "ArrowUp":
-      if (document.activeElement != currentNode && e.shiftKey) tree._walker.currentNode = document.activeElement
       pressSelect(e, tree, () => tree._walker.previousSibling(), () => tree._walker.previousNode(), () => { tree._walker.parentNode(); return tree._walker.firstChild() })
       e.preventDefault()
       break
     case "ArrowDown":
-      if (document.activeElement != currentNode && e.shiftKey) tree._walker.currentNode = document.activeElement
       pressSelect(e, tree, () => tree._walker.nextSibling(), () => tree._walker.nextNode(), () => { tree._walker.parentNode(); return tree._walker.lastChild() })
       e.preventDefault()
       break
@@ -129,7 +127,7 @@ function handleTreeKeydown(e) {
 
       deleteSelected(tree)
       View.renderRoot(store)
-      AriaTree.selectNode(tree, currentNode, nextStepNode)
+      AriaTree.selectNode(tree, nextStepNode)
       break
     case "KeyX":
       if (e.metaKey) {
@@ -171,11 +169,11 @@ function handleTreeKeydown(e) {
       break
     case "Home":
       while (tree._walker.parentNode()) { }
-      AriaTree.selectNode(tree, currentNode, tree._walker.nextNode())
+      AriaTree.selectNode(tree, tree._walker.nextNode())
       break
     case "End":
       while (tree._walker.nextNode()) { }
-      AriaTree.selectNode(tree, currentNode, tree._walker.currentNode)
+      AriaTree.selectNode(tree, tree._walker.currentNode)
       break
     case "Escape":
       AriaTree.clearClipboard(tree)
@@ -194,29 +192,28 @@ function handleTreeKeydown(e) {
 
 function handleTreeClick(e) {
   let tree = this
-  let startNode = tree._walker.currentNode
-  let targetNode = e.target.closest("[role='treeitem']")
+  let start = tree._walker.currentNode
+  let target = e.target.closest("[role='treeitem']")
   let notFocusIfTextArea = !tree.querySelector("textarea")
 
-  if (targetNode) {
-    if (e.shiftKey) {
-      if (startNode.contains(targetNode))
-        return AriaTree.selectNode(tree, startNode, tree._walker.currentNode = startNode)
-
-      if (targetNode.contains(startNode))
-        return AriaTree.selectNode(tree, targetNode, tree._walker.currentNode = targetNode)
-
-      if (startNode == targetNode)
-        return AriaTree.selectNode(tree, startNode, tree._walker.currentNode = targetNode, { focus: notFocusIfTextArea })
-
-      if (targetNode.parentNode.closest("[role='treeitem']") != startNode.parentNode.closest("[role='treeitem']"))
-        return AriaTree.selectNode(tree, startNode, tree._walker.currentNode = targetNode)
-
-      AriaTree.selectMultiNodeTo(tree, startNode, targetNode)
+  if (!target) return
+  if (e.shiftKey || e.metaKey) {
+    switch (start.compareDocumentPosition(target)) {
+      case Node.DOCUMENT_POSITION_CONTAINS:
+        return AriaTree.selectNode(tree, target)
+      case Node.DOCUMENT_POSITION_CONTAINED_BY:
+        return AriaTree.selectNode(tree, start)
+      default:
+        if (target.parentNode.closest("[role='treeitem']") != start.parentNode.closest("[role='treeitem']"))
+          return AriaTree.selectNode(tree, target)
     }
-    else
-      AriaTree.selectNode(tree, startNode, tree._walker.currentNode = targetNode, { focus: notFocusIfTextArea })
   }
+  if (e.shiftKey)
+    AriaTree.selectMultiNodeTo(tree, start, target)
+  else if (e.metaKey)
+    AriaTree.toggleSelectNode(tree._walker.currentNode = target)
+  else
+    AriaTree.selectNode(tree, target, { focus: notFocusIfTextArea })
 }
 
 const ranInt = max => Math.floor(Math.random() * Math.floor(max));
@@ -227,8 +224,7 @@ addEventListener("DOMContentLoaded", e => {
     tree.onkeydown = handleTreeKeydown
     tree.onclick = handleTreeClick
 
-    let firstNode = tree._walker.nextNode()
-    AriaTree.selectNode(tree, firstNode, firstNode)
+    AriaTree.selectNode(tree, tree._walker.nextNode())
   })
 })
 

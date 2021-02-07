@@ -109,6 +109,7 @@ dd {
 .fmodels>[role='group']>[role="treeitem"] {
   margin: .5rem 0;
   padding: .5rem 0;
+  border-radius: .25rem;
 }
 
 .fmodels>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
@@ -119,7 +120,7 @@ dd {
 
 [role="treeitem"] {
   border: 1px solid transparent;
-  border-radius: .25rem;
+  margin: 1px 0;
   overflow: hidden;
 }
 
@@ -129,12 +130,14 @@ dd {
 
 [role="treeitem"][aria-selected="true"] {
   /* text-blue-500 */
-  border-color: rgba(59, 130, 246, 1);
+  /* border-color: rgba(107, 114, 128, 1); */
+  /* border-color: rgba(59, 130, 246, 0.5); */
   /* background-color: var(--item-selected-bg-color); */
+  background-color: midnightblue;
 }
 
 [role="treeitem"][aria-selected="true"]>.h {
-  background-color: var(--item-selected-header-bg-color);
+  /* background-color: var(--item-selected-header-bg-color); */
 }
 
 [role="treeitem"][aria-selected="true"]:focus {
