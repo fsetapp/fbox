@@ -1,12 +1,16 @@
 import { render, html } from "uhtml"
 import * as T from "./type.js"
 
-export const renderRoot = (sch) =>
-  viewMain({
-    sch: sch,
-    ui: { level: 1, tab: 0, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
-    path: "", key: "root", parent: { type: sch.type, _box: sch._box }
-  })
+export const renderRoot = (sch) => {
+  try {
+    viewMain({
+      sch: sch,
+      ui: { level: 1, tab: 0, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
+      path: "", key: "root", parent: { type: sch.type, _box: sch._box }
+    })
+  }
+  catch (e) { }
+}
 
 const viewMain = (assigns) =>
   render(document.querySelector("#fmodel"), html`
@@ -15,15 +19,15 @@ const viewMain = (assigns) =>
       ${viewModel(assigns)}
     </ul>
   </theme>
-  ${null && debug()}
+  ${null && debug(assigns)}
 `)
 
 const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
-const debug = () =>
+const debug = (assigns) =>
   html`
 <section style="width: 50%">
-  <pre><code>${JSON.stringify(store, null, '  ')}</code></pre>
+  <pre><code>${JSON.stringify(assigns, null, '  ')}</code></pre>
 </section>`
 
 const viewModel = (assigns) => {

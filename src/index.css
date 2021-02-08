@@ -32,6 +32,7 @@ kbd {
   padding: .25rem .5rem;
   border-radius: .25rem;
   line-height: 2;
+  font-family: inherit;
 }
 
 dfn {
@@ -121,7 +122,7 @@ dd {
 [role="treeitem"] {
   border: 1px solid transparent;
   margin: 1px 0;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 [role="treeitem"][aria-selected] {
@@ -225,7 +226,6 @@ textarea {
   background-color: lavender;
   align-self: center;
 }
-
 textarea.no-resize {
   display: block;
   resize: none;
