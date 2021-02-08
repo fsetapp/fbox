@@ -85,11 +85,17 @@ const selectMultiNodeTo = (tree, start, target) => {
     case Node.DOCUMENT_POSITION_PRECEDING:
       tree._walker.currentNode = start
 
+      /* Fix Firefox lagging bug. (I don't know why, but this fix works like magic) */
+      setSelect(target.parentNode.closest(`[${ARIA_SELECTED}]`))
+
       selectStepNodeTo(tree, () => tree._walker.previousSibling(), target, {
         pre: (current, nextSibling) => {
           selectMultiNode(current, nextSibling, { focus: false })
         }
       })
+
+      /* Fix Firefox lagging bug. (I don't know why, but this fix works like magic) */
+      setDeselect(target.parentNode.closest(`[${ARIA_SELECTED}]`))
 
       tree._walker.currentNode = target
       setSelect(target)
