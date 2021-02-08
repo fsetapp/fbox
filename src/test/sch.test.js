@@ -240,6 +240,14 @@ describe("Sch operations", () => {
       move(store, { dstPath: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[d_union][][2]": [{ id: "0", index: 0 }] })
       assert.deepEqual(store.fields[store.order[1]], d_union)
     })
+
+    it("#move into one of selected items", () => {
+      let d_union = get(store, "[d_union][][2]")
+      assert.doesNotChange(
+        () => move(store, { dstPath: "[d_union][][2]", startIndex: 0 }, { "[d_union]": [{ id: "2", index: 2 }] }),
+        store, "fields"
+      )
+    })
   })
 
   describe("#update", () => {

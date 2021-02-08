@@ -159,9 +159,11 @@ const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
     .map((a, i) => { return { ...a, index: startIndex + i } })
 
   let dst = getPinedDst(store, pin)
-  let result_ = put(store, dst._pinned.path, rawSchs)
+  if (dst) {
+    let result_ = put(store, dst._pinned.path, rawSchs)
+    moved[dst._pinned.path] = result_.inserted
+  }
 
-  moved[dst._pinned.path] = result_.inserted
   return moved
 }
 

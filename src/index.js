@@ -146,9 +146,11 @@ function handleTreeKeydown(e) {
         const selectedPerParent = tree._clipboard()
 
         let moved = Sch.move(store, { dstPath, startIndex: 0 }, selectedPerParent)
-        View.renderRoot(store)
-        AriaTree.clearClipboard(tree)
-        AriaTree.reselectNodes(tree, moved)
+        if (Object.keys(moved).length != 0) {
+          View.renderRoot(store)
+          AriaTree.clearClipboard(tree)
+          AriaTree.reselectNodes(tree, moved)
+        }
       }
       break
     case "Enter":
@@ -159,8 +161,9 @@ function handleTreeKeydown(e) {
       else if (group == "keyed") editMode = "editKey"
 
       if (editMode) {
-        Sch.update(store, currentNode.id, (a, m) => Object.assign(a, { uiMode: editMode }))
+        Sch.update(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
         View.renderRoot(store)
+
         let textArea = tree.querySelector("textarea")
         textArea._treeItem = currentNode
         textArea.onblur = e => cancelTextArea(e, tree, textArea)

@@ -3,9 +3,12 @@
   --tree-bg-color: rgba(17, 24, 39, 1);
   /* text-gray-300 */
   --tree-color: rgba(209, 213, 219, 1);
-  /* bg-gray-700 */
-  --item-selected-bg-color: rgba(55, 65, 81, .25);
+
+  --item-selected-bg-color: midnightblue;
+  /* border-blue-500 */
+  --item-selected-border-color: rgba(59, 130, 246, 1);
   --item-selected-header-bg-color: rgba(55, 65, 81, 1);
+
   /*text-pink-400*/
   --type-color: rgba(244, 114, 182, 1);
   /* text-indigo-400 */
@@ -129,12 +132,14 @@ dd {
   outline: none;
 }
 
-[role="treeitem"][aria-selected="true"] {
-  /* text-blue-500 */
-  /* border-color: rgba(107, 114, 128, 1); */
-  /* border-color: rgba(59, 130, 246, 0.5); */
-  /* background-color: var(--item-selected-bg-color); */
-  background-color: midnightblue;
+.folder[role="treeitem"][aria-selected="false"]>.h:hover,
+.file[role="treeitem"][aria-selected="false"]:hover {
+  /* bg-gray-800 */
+  background-color: rgba(31, 41, 55, 1);
+}
+
+:not(.fmodels)[role="treeitem"][aria-selected="true"] {
+  background-color: var(--item-selected-bg-color);
 }
 
 [role="treeitem"][aria-selected="true"]>.h {
@@ -143,7 +148,7 @@ dd {
 
 [role="treeitem"][aria-selected="true"]:focus {
   /* text-blue-500 */
-  border-color: rgba(59, 130, 246, 1);
+  border-color: var(--item-selected-border-color);
 }
 
 [role="treeitem"][aria-selected="true"].item-cutting,

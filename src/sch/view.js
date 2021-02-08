@@ -170,7 +170,7 @@ const viewKeyNonRoot = (assigns) => {
   }
 }
 const editableKey = (assigns) =>
-  (assigns.sch?.uiMode == "editKey") ?
+  (assigns.sch.uiMode == "editKey") ?
     textInput("key-edit", assigns.parent.path, assigns.key) :
     html`${assigns.key}`
 
@@ -181,7 +181,7 @@ const viewTypeRoot = (assigns) =>
 const viewTypeNonRoot = (assigns) =>
   html`<span class="t">${editableType(assigns)}</span>`
 const editableType = (assigns) =>
-  (assigns.sch?.uiMode == "editType") ?
+  (assigns.sch.uiMode == "editType") ?
     textInput("type-edit", assigns.parent.path, assigns.sch.type) :
     html`${typeText(assigns.sch, assigns.ui)}`
 
