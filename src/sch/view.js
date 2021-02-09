@@ -1,12 +1,13 @@
 import { render, html } from "uhtml"
 import * as T from "./type.js"
 
-export const renderRoot = (sch) => {
+export { renderMeta } from "./view/meta.js"
+export const renderRoot = (root) => {
   try {
     viewMain({
-      sch: sch,
-      ui: { level: 1, tab: 0, models: sch.order.reduce((acc, m) => { acc[sch.fields[m].$anchor] = m; return acc }, {}) },
-      path: "", key: "root", parent: { type: sch.type, _box: sch._box }
+      sch: root,
+      ui: { level: 1, tab: 0, models: root.order.reduce((acc, m) => { acc[root.fields[m].$anchor] = m; return acc }, {}) },
+      path: "", key: "root", parent: { type: root.type, _box: root._box }
     })
   }
   catch (e) { }

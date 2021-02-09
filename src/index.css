@@ -1,7 +1,7 @@
 :root {
-  /* text-gray-900 */
+  /* gray-900 */
   --tree-bg-color: rgba(17, 24, 39, 1);
-  /* text-gray-300 */
+  /* gray-300 */
   --tree-color: rgba(209, 213, 219, 1);
 
   --item-selected-bg-color: midnightblue;
@@ -9,9 +9,9 @@
   --item-selected-border-color: rgba(59, 130, 246, 1);
   --item-selected-header-bg-color: rgba(55, 65, 81, 1);
 
-  /*text-pink-400*/
+  /* pink-400*/
   --type-color: rgba(244, 114, 182, 1);
-  /* text-indigo-400 */
+  /* indigo-400 */
   --ref-color: rgba(129, 140, 248, 1);
 }
 
@@ -147,7 +147,6 @@ dd {
 }
 
 [role="treeitem"][aria-selected="true"]:focus {
-  /* text-blue-500 */
   border-color: var(--item-selected-border-color);
 }
 
@@ -180,7 +179,7 @@ dd {
 
 [role="group"][data-group="indexed"]>[role="treeitem"]>.k,
 [role="group"][data-group="indexed"]>[role="treeitem"]>.h>.k {
-  /*text-gray-500*/
+  /* gray-500*/
   color: rgba(107, 114, 128, 1);
   /* font-mono */
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -191,7 +190,6 @@ dd {
 
 .def {
   margin-right: .5rem;
-  /* text-indigo-400 */
   color: var(--ref-color);
 }
 
@@ -216,7 +214,7 @@ dd {
 }
 
 .t>.value {
-  /* text-green-500 */
+  /* green-500 */
   color: rgba(16, 185, 129, 1);
 }
 
@@ -233,5 +231,45 @@ textarea {
 }
 textarea.no-resize {
   display: block;
+  resize: none;
+}
+
+
+sch-meta {
+  /* gray-900 */
+  background-color: rgba(17,24,39,1);
+  /* gray-400 */
+  color: rgba(156,163,175,1);
+  padding-right: 1rem;
+}
+sch-meta .text-input {
+  display: block;
+  margin: .25rem 0;
+  /* gray-700 */
+  background-color: rgba(55,65,81,.2);
+  /* gray-400 */
+  color: rgba(156,163,175,1);
+  /* gray-800 */
+  border: 1px solid rgba(31,41,55,1);
+}
+sch-meta .text-input:focus-within {
+  /* blue-500 */
+  color: rgba(59, 130, 246, 1);
+  border-color: rgba(59, 130, 246, 1);
+}
+sch-meta .text-input > .l {
+  margin: 0;
+  padding: .25rem .5rem;
+  font-size: .75rem;
+  line-height: 1rem;
+}
+sch-meta .text-input > textarea {
+  display: block;
+  padding: .5rem;
+  /* gray-300 */
+  color: rgba(209, 213, 219, 1);
+  background-color: transparent;
+  width: 100%;
+  outline: none;
   resize: none;
 }
