@@ -190,6 +190,7 @@ function handleTreeKeydown(e) {
 
           Sch.put(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
           View.renderRoot(store)
+          AriaTree.selectNode(tree, currentNode)
           break
       }
   }
@@ -244,6 +245,8 @@ document.addEventListener("sch-update", (e) => {
 })
 
 addEventListener("DOMContentLoaded", e => {
+  View.renderRoot(store)
+
   let tree = document.querySelector("[id='fmodel'] [role='tree']")
   if (tree) {
     AriaTree.createWalker(tree)
@@ -252,6 +255,7 @@ addEventListener("DOMContentLoaded", e => {
     tree._metaContainer = document.querySelector("sch-meta[id='fsch']")
 
     AriaTree.selectNode(tree, tree._walker.nextNode())
+    renderSch(tree)
   }
 })
 
@@ -262,5 +266,3 @@ for (var i = 0; i < 1000; i++)
 fixture.reverse().forEach((sch, i) =>
   Sch.put(store, "", [{ k: `model_${fixture.length - i}`, sch: sch, index: 0 }])
 )
-
-View.renderRoot(store)

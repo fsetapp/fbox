@@ -216,6 +216,7 @@ const keyedOrIndexed = (sch) => {
 }
 
 const modelTypeText = (sch, ui) => {
+  return "type"
   switch (true) {
     case sch.type == T.RECORD: return "record"; break
     case sch.type == T.LIST: return "list"; break
