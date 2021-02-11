@@ -21,15 +21,19 @@ customElements.define("sch-meta", class extends HTMLElement {
   }
 })
 
-export const renderMeta = (container, sch, root) =>
-  render(container, html.for(sch)`
-    <section id="sch-meta" data-path="${sch.path}">
+export const renderMeta = (container, sch, root) => {
+  try {
+    render(container, html.for(sch)`
+    <section data-path="${sch.path}">
       <p>${sch.key || "-"}</p>
       ${textInput("title", sch.title)}
       ${textInput("description", sch.description)}
-      <div>${renderTypeMeta(sch)}
+      ${renderTypeMeta(sch)}
     </section>
   `)
+  }
+  catch (e) { }
+}
 
 const stringInput = (sch) =>
   html``
@@ -74,8 +78,8 @@ const renderTypeMeta = (sch) => {
       ${numberInput("max", sch.schs.length, { keyDisplay: "Max Items", readonly: true })}
     `
     case sch.type == T.STRING: return html`
-      ${numberInput("min", null, { keyDisplay: "Min Length" })}
-      ${numberInput("max", null, { keyDisplay: "Max Length" })}
+      ${numberInput("min", null, { keyDisplay: "Min Length", min: 0 })}
+      ${numberInput("max", null, { keyDisplay: "Max Length", min: 0 })}
       ${textInput("pattern", "", { maxlength: 256 })}
     `
     case sch.type == T.NUMBER: return html`

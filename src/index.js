@@ -6,7 +6,7 @@ import * as AriaTree from "./aria_tree.js"
 "use strict"
 
 const allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.number, T.nil, () => T.value("\"json string\"")]
-var store = { ...T.record(), _box: T.FMODEL_BOX }
+var store = { ...T.putAnchor(T.record), _box: T.FMODEL_BOX }
 
 const deleteSelected = (tree) => {
   const indicesPerParent = AriaTree.selectedGroupedByParent(tree)
