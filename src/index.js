@@ -242,6 +242,7 @@ const ranInt = max => Math.floor(Math.random() * Math.floor(max));
 document.addEventListener("sch-update", (e) => {
   let { path, key, val } = e.detail
   Sch.update(store, path, (a, m) => { a[key] = val; return a })
+  View.renderRoot(store)
 })
 
 addEventListener("DOMContentLoaded", e => {

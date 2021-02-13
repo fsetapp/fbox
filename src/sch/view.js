@@ -53,6 +53,7 @@ const viewFolder = (assigns) =>
     <dfn class="h">
       ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
       ${viewType(assigns)}
+      ${viewMeta(assigns)}
     </dfn>
     <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
       ${viewItself(assigns)}
@@ -64,6 +65,7 @@ const viewFile = (assigns) =>
   <li id="${assigns.path}" .key="${assigns.key}" class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
     ${viewType(assigns)}
+    ${viewMeta(assigns)}
   </li>`
 
 const viewItself = (assigns) => {
@@ -224,4 +226,16 @@ const modelTypeText = (sch, ui) => {
     case sch.type == T.UNION: return "union"; break
     default: return "field"
   }
+}
+
+const viewMeta = (assigns) => {
+  let htmls
+  switch (true) {
+    case (assigns.parent.type == T.RECORD && assigns.sch.required):
+      htmls = [html`<span class="m"> · required</span>`]
+      break
+    default:
+      htmls = []
+  }
+  return htmls
 }

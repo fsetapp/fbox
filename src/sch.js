@@ -10,18 +10,18 @@ const walk = (sch, f, meta = { path: "", level: 1, parent: {} }) => {
   switch (true) {
     case [T.RECORD].includes(sch.type):
       for (let [k, sch_] of Object.entries(sch.fields)) {
-        let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1, parent: { _box: sch._box } }
+        let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
         sch.fields[k] = walk(sch_, f, nextMeta)
       }
       break
     case [T.TUPLE, T.UNION].includes(sch.type):
       sch.schs.forEach((sch_, i) => {
-        let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1, parent: { _box: sch._box } }
+        let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
         sch.schs[i] = walk(sch_, f, nextMeta)
       })
       break
     case [T.LIST].includes(sch.type):
-      let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1, parent: { _box: sch._box } }
+      let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
       sch.sch = walk(sch.sch, f, nextMeta)
       break
     default:
@@ -171,7 +171,7 @@ const changeType = (store, path, sch) =>
   update(store, path, (a, m) => a = T.putAnchor(sch, m.parent._box))
 
 const get = (currentNode, path) =>
-  getByAndUpdate(currentNode, (a, m) => m.path == path, (a, m) => a)
+  getByAndUpdate(currentNode, (a, m) => m.path == path, (a, m) => { a._meta = m; return a })
 
 const update = (currentNode, path, fupdate) =>
   getByAndUpdate(currentNode, (a, m) => m.path == path, fupdate)
