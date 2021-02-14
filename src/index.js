@@ -95,104 +95,154 @@ const handleTextAreaKeyDown = (e, tree) => {
   renderSch(tree)
 }
 
-const pressSelect = (e, tree, nextStepSiblingFn, nextStepNodeFn, endStepNodeFn) => {
-  if (e.shiftKey && e.metaKey)
-    AriaTree.selectMultiNodeTo(tree, tree._walker.currentNode, endStepNodeFn())
-  else if (e.shiftKey)
-    AriaTree.selectMultiNode(tree._walker.currentNode, nextStepSiblingFn())
-  else if (e.metaKey)
-    AriaTree.selectNode(tree, endStepNodeFn())
-  else
-    AriaTree.selectNode(tree, nextStepNodeFn())
+const selectMultiNodeUpTo = ({ tree }) => {
+  let current = tree._walker.currentNode
+  let upEnd = tree._walker.parentNode() && tree._walker.firstChild()
+  AriaTree.selectMultiNodeTo(tree, current, upEnd)
 }
+const selectMultiNodeDownTo = ({ tree }) => {
+  let current = tree._walker.currentNode
+  let downEnd = tree._walker.parentNode() && tree._walker.lastChild()
+  AriaTree.selectMultiNodeTo(tree, current, downEnd)
+}
+const selectMultiNodeUp = ({ tree }) => {
+  let current = tree._walker.currentNode
+  let upNext = tree._walker.previousSibling()
+  AriaTree.selectMultiNode(current, upNext)
+}
+const selectMultiNodeDown = ({ tree }) => {
+  let current = tree._walker.currentNode
+  let downNext = tree._walker.nextSibling()
+  AriaTree.selectMultiNode(current, downNext)
+}
+const selectUpEnd = ({ tree }) => {
+  let upEnd = tree._walker.parentNode() && tree._walker.firstChild()
+  AriaTree.selectNode(tree, upEnd)
+}
+const selectDownEnd = ({ tree }) => {
+  let upEnd = tree._walker.parentNode() && tree._walker.lastChild()
+  AriaTree.selectNode(tree, upEnd)
+}
+const selectUp = ({ tree }) =>
+  AriaTree.selectNode(tree, tree._walker.previousNode())
+
+const selectDown = ({ tree }) =>
+  AriaTree.selectNode(tree, tree._walker.nextNode())
+
+const selectRoot = ({ tree }) => {
+  while (tree._walker.parentNode()) { }
+  AriaTree.selectNode(tree, tree._walker.nextNode())
+}
+const selectLast = ({ tree }) => {
+  while (tree._walker.nextNode()) { }
+  AriaTree.selectNode(tree, tree._walker.currentNode)
+}
+
+const deleteSelected_ = ({ tree, store }) => {
+  let nextStepNode =
+    AriaTree.findUnselectedNode(() => tree._walker.nextSibling()) ||
+    AriaTree.findUnselectedNode(() => tree._walker.previousSibling()) ||
+    AriaTree.findUnselectedNode(() => tree._walker.parentNode())
+
+  deleteSelected(tree)
+  View.renderRoot(store)
+  AriaTree.selectNode(tree, nextStepNode)
+}
+
+const cut = ({ tree }) => {
+  AriaTree.clearClipboard(tree)
+
+  tree._clipboard = () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-cutting" })
+  for (let a of tree.querySelectorAll("[aria-selected='true']")) a.classList.add("item-cutting")
+}
+const paste = ({ tree, store }) => {
+  const dstSch = Sch.get(store, tree._walker.currentNode.id)
+  if (![T.RECORD, T.UNION, T.TUPLE].includes(dstSch.type)) return
+
+  if (tree._clipboard) {
+    const dstPath = tree._walker.currentNode.id
+    const selectedPerParent = tree._clipboard()
+
+    let moved = Sch.move(store, { dstPath, startIndex: 0 }, selectedPerParent)
+    if (Object.keys(moved).length != 0) {
+      View.renderRoot(store)
+      AriaTree.clearClipboard(tree)
+      AriaTree.reselectNodes(tree, moved)
+    }
+  }
+}
+
+const activateEdit = ({ tree, store, editMode }) => {
+  let currentNode = tree._walker.currentNode
+
+  Sch.update(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
+  View.renderRoot(store)
+
+  let textArea = tree.querySelector("textarea")
+  textArea._treeItem = currentNode
+  textArea.onblur = e => cancelTextArea(e, tree, textArea)
+  textArea.focus()
+}
+const activateEditKey = ({ tree, store }) => {
+  let group = tree._walker.currentNode.closest("[role='group']")?.dataset?.group
+  if (group == "keyed")
+    activateEdit({ tree, store, editMode: "editKey" })
+}
+const activateEditType = ({ tree, store }) => {
+  activateEdit({ tree, store, editMode: "editType" })
+}
+
+const addSch = ({ tree, store }) => {
+  let currentNode = tree._walker.currentNode
+  let randomSch = allSchs[ranInt(allSchs.length)]
+
+  Sch.put(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
+  View.renderRoot(store)
+  AriaTree.selectNode(tree, currentNode)
+}
+
+const toCmdkey = ({ shiftKey, metaKey, altKey, key }) => {
+  let cmd = []
+  if (shiftKey) cmd.push("shiftKey")
+  if (metaKey) cmd.push("metaKey")
+  if (altKey) cmd.push("altKey")
+  if (key) cmd.push(key)
+  return cmd.join("-")
+}
+var treeKeyDownCmd = new Map([
+  ["shiftKey-metaKey-ArrowUp", selectMultiNodeUpTo],
+  ["shiftKey-metaKey-ArrowDown", selectMultiNodeDownTo],
+  ["shiftKey-ArrowUp", selectMultiNodeUp],
+  ["shiftKey-ArrowDown", selectMultiNodeDown],
+  ["metaKey-ArrowUp", selectUpEnd],
+  ["metaKey-ArrowDown", selectDownEnd],
+  ["ArrowUp", selectUp],
+  ["ArrowDown", selectDown],
+  ["Delete", deleteSelected_],
+  ["metaKey-x", cut],
+  ["metaKey-v", paste],
+  ["Enter", activateEditKey],
+  ["shiftKey-Enter", activateEditType],
+  ["Home", selectRoot],
+  ["End", selectLast],
+  ["Escape", ({ tree }) => AriaTree.clearClipboard(tree)],
+  ["shiftKey-+", addSch],
+])
 
 function handleTreeKeydown(e) {
   let tree = this
-  let currentNode = tree._walker.currentNode
-
   if (e.target instanceof HTMLTextAreaElement) return handleTextAreaKeyDown(e, tree)
+
+  let command = treeKeyDownCmd.get(toCmdkey(e))
+  command && command({ tree, store })
 
   switch (e.code) {
     case "ArrowUp":
-      pressSelect(e, tree, () => tree._walker.previousSibling(), () => tree._walker.previousNode(), () => { tree._walker.parentNode(); return tree._walker.firstChild() })
       e.preventDefault()
       break
     case "ArrowDown":
-      pressSelect(e, tree, () => tree._walker.nextSibling(), () => tree._walker.nextNode(), () => { tree._walker.parentNode(); return tree._walker.lastChild() })
       e.preventDefault()
       break
-    case "Delete":
-      let nextStepNode =
-        AriaTree.findUnselectedNode(() => tree._walker.nextSibling()) ||
-        AriaTree.findUnselectedNode(() => tree._walker.previousSibling()) ||
-        AriaTree.findUnselectedNode(() => tree._walker.parentNode())
-
-      deleteSelected(tree)
-      View.renderRoot(store)
-      AriaTree.selectNode(tree, nextStepNode)
-      break
-    case "KeyX":
-      if (e.metaKey) {
-        AriaTree.clearClipboard(tree)
-
-        tree._clipboard = () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-cutting" })
-        for (let a of tree.querySelectorAll("[aria-selected='true']")) a.classList.add("item-cutting")
-      }
-      break
-    case "KeyV":
-      const dstSch = Sch.get(store, tree._walker.currentNode.id)
-      if (![T.RECORD, T.UNION, T.TUPLE].includes(dstSch.type)) return
-
-      if (e.metaKey && tree._clipboard) {
-        const dstPath = tree._walker.currentNode.id
-        const selectedPerParent = tree._clipboard()
-
-        let moved = Sch.move(store, { dstPath, startIndex: 0 }, selectedPerParent)
-        if (Object.keys(moved).length != 0) {
-          View.renderRoot(store)
-          AriaTree.clearClipboard(tree)
-          AriaTree.reselectNodes(tree, moved)
-        }
-      }
-      break
-    case "Enter":
-      let group = currentNode.closest("[role='group']")?.dataset?.group
-      let editMode
-
-      if (group && e.shiftKey) editMode = "editType"
-      else if (group == "keyed") editMode = "editKey"
-
-      if (editMode) {
-        Sch.update(store, currentNode.id, (a, m) => ({ ...a, uiMode: editMode }))
-        View.renderRoot(store)
-
-        let textArea = tree.querySelector("textarea")
-        textArea._treeItem = currentNode
-        textArea.onblur = e => cancelTextArea(e, tree, textArea)
-        textArea.focus()
-      }
-      break
-    case "Home":
-      while (tree._walker.parentNode()) { }
-      AriaTree.selectNode(tree, tree._walker.nextNode())
-      break
-    case "End":
-      while (tree._walker.nextNode()) { }
-      AriaTree.selectNode(tree, tree._walker.currentNode)
-      break
-    case "Escape":
-      AriaTree.clearClipboard(tree)
-      break
-    default:
-      switch (e.key) {
-        case "+":
-          let randomSch = allSchs[ranInt(allSchs.length)]
-
-          Sch.put(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
-          View.renderRoot(store)
-          AriaTree.selectNode(tree, currentNode)
-          break
-      }
   }
 
   renderSch(tree)
