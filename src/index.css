@@ -87,6 +87,22 @@ dd {
     opacity: 1;
   }
 }
+ @keyframes slide-in-top {
+  0% {
+    transform: translateY(-1.5rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+ @keyframes slide-in-bottom {
+  0% {
+    transform: translateY(1.5rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 
 .text-sm {
   font-size: .875rem;
@@ -166,6 +182,13 @@ dd {
 [role="treeitem"].item-pasted {
   animation: fadein;
   animation-duration: .25s;
+}
+
+[role="treeitem"].item-pasted.up {
+  animation: slide-in-bottom .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+}
+[role="treeitem"].item-pasted.down {
+  animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
 }
 
 .file {

@@ -201,6 +201,27 @@ const addSch = ({ tree, store }) => {
   AriaTree.selectNode(tree, currentNode)
 }
 
+const reorder = ({ tree, store, startIndex, direction }) => {
+  const indicesPerParent = AriaTree.selectedGroupedByParent(tree)
+  let moved
+
+  for (let dstPath of Object.keys(indicesPerParent)) {
+    let ascSelected = indicesPerParent[dstPath].sort((a, b) => a.index - b.index)
+    moved = Sch.move(store, { dstPath, startIndex: startIndex(ascSelected[0].index) }, indicesPerParent)
+  }
+
+  if (Object.keys(moved).length != 0) {
+    View.renderRoot(store)
+    AriaTree.reselectNodes(tree, moved, { direction })
+  }
+}
+const reorderUp = ({ tree, store }) =>
+  reorder({ tree, store, startIndex: i => i - 1, direction: "up" })
+
+const reorderDown = ({ tree, store }) =>
+  reorder({ tree, store, startIndex: i => i + 1, direction: "down" })
+
+
 const toCmdkey = ({ shiftKey, metaKey, altKey, key }) => {
   let cmd = []
   if (shiftKey) cmd.push("shiftKey")
@@ -227,6 +248,8 @@ var treeKeyDownCmd = new Map([
   ["End", selectLast],
   ["Escape", ({ tree }) => AriaTree.clearClipboard(tree)],
   ["shiftKey-+", addSch],
+  ["altKey-ArrowUp", reorderUp],
+  ["altKey-ArrowDown", reorderDown],
 ])
 
 function handleTreeKeydown(e) {

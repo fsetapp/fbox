@@ -48,7 +48,7 @@ const deselectAllNode = (tree) => {
     setDeselect(item)
 
   for (let a of tree.querySelectorAll(".item-pasted"))
-    a.classList.remove("item-pasted")
+    a.classList.remove("item-pasted", "up", "down")
 }
 
 const selectStepNodeTo = (tree, stepSiblingFn, target, opts = {}) => {
@@ -132,19 +132,22 @@ const filterMostOuters = (paths) => {
   })
 }
 
-const reselectNodes = (tree, childIncidesPerParent) => {
+const reselectNodes = (tree, childIncidesPerParent, opts = {}) => {
   deselectAllNode(tree)
 
   for (let parent of filterMostOuters(Object.keys(childIncidesPerParent))) {
     let indices = childIncidesPerParent[parent]
 
-    parent = tree.querySelector(`[id='${CSS.escape(parent)}'][aria-level]`)
+    if (parent == "") parent = tree.querySelector(`[id][aria-level]`)
+    else parent = tree.querySelector(`[id='${CSS.escape(parent)}'][aria-level]`)
+
     if (!parent) continue
     let dstLevel = parseInt(parent.getAttribute("aria-level"))
     let children = parent.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
 
     indices.map(({ index }) => children[index]).forEach(a => {
-      a.classList.add("item-pasted")
+      if (!a) return
+      a.classList.add("item-pasted", opts.direction)
       selectMultiNode(null, a)
       tree._walker.currentNode = a
     })

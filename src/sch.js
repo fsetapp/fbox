@@ -86,6 +86,12 @@ const put = (schema, path, rawSchs) => {
   let result = { original: clone(schema), inserted: [] }
   let ascRawSchs = rawSchs.sort((a, b) => a.index - b.index)
 
+  const boundIndex = (index, arr) => {
+    index = Math.max(index, 0)
+    index = Math.min(index, arr.length)
+    return index
+  }
+
   walk(schema, (sch_, meta) => {
     if (meta.path != path) return sch_
     else {
@@ -96,6 +102,7 @@ const put = (schema, path, rawSchs) => {
             k = k || `key_${Math.floor(Date.now() / 100)}`
             k = `${k}`
             while (sch_.fields[k]) k = `${k} –`
+            index = boundIndex(index, sch_.order)
 
             sch_.fields[k] = T.putAnchor(sch, sch_._box)
             sch_.order.splice(index, 0, k)
@@ -107,12 +114,14 @@ const put = (schema, path, rawSchs) => {
           break
         case T.TUPLE:
           for (let { k, sch, index } of ascRawSchs) {
+            index = boundIndex(index, sch_.schs)
             sch_.schs.splice(index, 0, T.putAnchor(sch, sch_._box))
             result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
           }
           break
         case T.UNION:
           for (let { k, sch, index } of ascRawSchs) {
+            index = boundIndex(index, sch_.schs)
             sch_.schs.splice(index, 0, T.putAnchor(sch, sch_._box))
             result.inserted.push({ k: k, sch: sch_.schs[index], index: index })
           }
@@ -126,6 +135,8 @@ const put = (schema, path, rawSchs) => {
 }
 
 const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
+  startIndex = Math.max(startIndex, 0)
+
   const pinDst = (store, dstPath, pin) =>
     update(store, dstPath, (a, m) => { a._pinId = pin; return a })
 
