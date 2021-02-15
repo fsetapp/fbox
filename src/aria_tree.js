@@ -169,6 +169,6 @@ const selectedGroupedByParent = (tree, opts = {}) =>
   }, {})
 
 const clearClipboard = (tree) => {
-  tree.querySelectorAll(".item-cutting").forEach(a => a.classList.remove("item-cutting"))
+  tree.querySelectorAll(".item-cutting, .item-copying").forEach(a => a.classList.remove("item-cutting", "item-copying"))
   tree._clipboard = null
 }

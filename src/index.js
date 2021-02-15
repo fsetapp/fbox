@@ -152,8 +152,14 @@ const deleteSelected_ = ({ tree, store }) => {
 const cut = ({ tree }) => {
   AriaTree.clearClipboard(tree)
 
-  tree._clipboard = () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-cutting" })
+  tree._clipboard = { type: "cut", ops: () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-cutting" }) }
   for (let a of tree.querySelectorAll("[aria-selected='true']")) a.classList.add("item-cutting")
+}
+const copy = ({ tree }) => {
+  AriaTree.clearClipboard(tree)
+
+  tree._clipboard = { type: "copy", ops: () => AriaTree.selectedGroupedByParent(tree, { ops: ".item-copying" }) }
+  for (let a of tree.querySelectorAll("[aria-selected='true']")) a.classList.add("item-copying")
 }
 const paste = ({ tree, store }) => {
   const dstSch = Sch.get(store, tree._walker.currentNode.id)
@@ -161,13 +167,23 @@ const paste = ({ tree, store }) => {
 
   if (tree._clipboard) {
     const dstPath = tree._walker.currentNode.id
-    const selectedPerParent = tree._clipboard()
+    const { type, ops } = tree._clipboard
+    let selectedPerParent = ops()
+    let result
 
-    let moved = Sch.move(store, { dstPath, startIndex: 0 }, selectedPerParent)
-    if (Object.keys(moved).length != 0) {
+    switch (type) {
+      case "copy":
+        result = Sch.putSelected(store, { dstPath }, selectedPerParent)
+        break
+      case "cut":
+        result = Sch.move(store, { dstPath }, selectedPerParent)
+        break
+    }
+
+    if (Object.keys(result).length != 0) {
       View.renderRoot(store)
       AriaTree.clearClipboard(tree)
-      AriaTree.reselectNodes(tree, moved)
+      AriaTree.reselectNodes(tree, result)
     }
   }
 }
@@ -241,6 +257,7 @@ var treeKeyDownCmd = new Map([
   ["ArrowDown", selectDown],
   ["Delete", deleteSelected_],
   ["metaKey-x", cut],
+  ["metaKey-c", copy],
   ["metaKey-v", paste],
   ["Enter", activateEditKey],
   ["shiftKey-Enter", activateEditType],

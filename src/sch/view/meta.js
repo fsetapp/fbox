@@ -57,7 +57,7 @@ const numberInput = (key, val, opts = {}) =>
 
 const boolInput = (key, val, opts = {}) =>
   labelA(key, html`
-    <input type="checkbox" ?readonly="${opts.readonly}">
+    <input type="checkbox" ?readonly="${opts.readonly}" ?checked="${val}">
   `, opts)
 
 const renderTypeMeta = (sch) => {
@@ -70,8 +70,8 @@ const renderTypeMeta = (sch) => {
       break
     case sch.type == T.LIST: htmls = [
       numberInput("min", 1, { keyDisplay: "Min Items", min: 1 }),
-      numberInput("max", null, { keyDisplay: "Max Items", min: 1 }),
-      boolInput("unique", null, { keyDisplay: "Item uniqueness" })
+      numberInput("max", sch.max, { keyDisplay: "Max Items", min: 1 }),
+      boolInput("unique", sch.unique, { keyDisplay: "Item uniqueness" })
     ]
       break
     case sch.type == T.TUPLE: htmls = [
@@ -80,15 +80,15 @@ const renderTypeMeta = (sch) => {
     ]
       break
     case sch.type == T.STRING: htmls = [
-      numberInput("min", null, { keyDisplay: "Min Length", min: 0 }),
-      numberInput("max", null, { keyDisplay: "Max Length", min: 0 }),
-      textInput("pattern", null, { keyDisplay: "Pattern", maxlength: 256 })
+      numberInput("min", sch.min, { keyDisplay: "Min Length", min: 0 }),
+      numberInput("max", sch.max, { keyDisplay: "Max Length", min: 0 }),
+      textInput("pattern", sch.pattern, { keyDisplay: "Pattern", maxlength: 256 })
     ]
       break
     case sch.type == T.NUMBER: htmls = [
-      numberInput("min", null, { keyDisplay: "Min" }),
-      numberInput("max", null, { keyDisplay: "Max" }),
-      numberInput("multipleOf", null, { keyDisplay: "Multiple of" })
+      numberInput("min", sch.min, { keyDisplay: "Min" }),
+      numberInput("max", sch.max, { keyDisplay: "Max" }),
+      numberInput("multipleOf", sch.multipleOf, { keyDisplay: "Multiple of" })
     ]
       break
     case sch.type == T.INTEGER: htmls = []
@@ -102,7 +102,7 @@ const renderTypeMeta = (sch) => {
   }
 
   if (sch._meta.parent.type == T.RECORD && sch._meta.parent._box != T.FMODEL_BOX)
-    htmls.push(boolInput("required", null, { keyDisplay: "Required" }))
+    htmls.push(boolInput("required", sch.required, { keyDisplay: "Required" }))
 
   return htmls
 }

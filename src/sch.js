@@ -1,5 +1,5 @@
 import * as T from "./sch/type.js"
-export { get, update, put, pop, move, changeType }
+export { get, update, put, putSelected, pop, move, changeType }
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj))
 
@@ -32,7 +32,7 @@ const walk = (sch, f, meta = { path: "", level: 1, parent: {} }) => {
 }
 
 const pop = (schema, path, indices) => {
-  let result = { original: clone(schema), popped: [] }
+  let result = { original: {}, popped: [] }
   let descIndices = indices.sort((a, b) => b - a)
 
   walk(schema, (sch_, meta) => {
@@ -83,7 +83,7 @@ const filterMostOuters = (paths) => {
 }
 
 const put = (schema, path, rawSchs) => {
-  let result = { original: clone(schema), inserted: [] }
+  let result = { original: {}, inserted: [] }
   let ascRawSchs = rawSchs.sort((a, b) => a.index - b.index)
 
   const boundIndex = (index, arr) => {
@@ -176,6 +176,22 @@ const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
   }
 
   return moved
+}
+
+const putSelected = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
+  let rawSchs = Object.values(selectedPerParent)
+    .flat()
+    .map((c, i) => {
+      let sch = get(store, c.id)
+      if (sch) return { k: c.key, sch: () => clone(sch), index: startIndex + i, id: c.id }
+    })
+    .filter(c => c && !dstPath.startsWith(c.id))
+
+  let pasted = {}
+  let result_ = put(store, dstPath, rawSchs)
+
+  if (result_.inserted.length != 0) pasted[dstPath] = result_.inserted
+  return pasted
 }
 
 const changeType = (store, path, sch) =>
