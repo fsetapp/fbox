@@ -237,6 +237,25 @@ const reorderUp = ({ tree, store }) =>
 const reorderDown = ({ tree, store }) =>
   reorder({ tree, store, startIndex: i => i + 1, direction: "down" })
 
+const cloneSelected = ({ tree, store, direction }, fStartIndex) => {
+  let indicesPerParent = AriaTree.selectedGroupedByParent(tree)
+  let result
+
+  for (let dstPath of Object.keys(indicesPerParent)) {
+    let ascSelected = indicesPerParent[dstPath].sort((a, b) => a.index - b.index)
+    result = Sch.putSelected(store, { dstPath, startIndex: fStartIndex(ascSelected) }, ascSelected)
+  }
+
+  if (Object.keys(result).length != 0) {
+    View.renderRoot(store)
+    AriaTree.reselectNodes(tree, result, { direction })
+  }
+}
+const cloneUp = ({ tree, store }) =>
+  cloneSelected({ tree, store, direction: "up" }, (ascSelected) => ascSelected[0].index)
+
+const cloneDown = ({ tree, store }) =>
+  cloneSelected({ tree, store, direction: "down" }, (ascSelected) => ascSelected[ascSelected.length - 1].index + 1)
 
 const toCmdkey = ({ shiftKey, metaKey, altKey, key }) => {
   let cmd = []
@@ -259,6 +278,8 @@ var treeKeyDownCmd = new Map([
   ["metaKey-x", cut],
   ["metaKey-c", copy],
   ["metaKey-v", paste],
+  ["shiftKey-altKey-ArrowUp", cloneUp],
+  ["shiftKey-altKey-ArrowDown", cloneDown],
   ["Enter", activateEditKey],
   ["shiftKey-Enter", activateEditType],
   ["Home", selectRoot],
