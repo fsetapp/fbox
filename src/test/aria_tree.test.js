@@ -11,15 +11,15 @@ describe("aria [role='tree']", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <ul id="tree" role="tree">
-        <li id="root" aria-selected="false" aria-level="1" role="treeitem">
+        <li id="root" aria-selected="false" aria-level="1" aria-posinset="1" role="treeitem">
           <ul role="group id="fmodels">
             <li></li>
-            <li id="first" aria-selected="false" role="treeitem" aria-level="2"></li>
-            <li id="second" aria-selected="false" role="treeitem" aria-level="2"></li>
-            <li id="root/last" aria-selected="false" role="treeitem" aria-level="2">
+            <li id="first" aria-selected="false" role="treeitem" aria-level="2" aria-posinset="1"></li>
+            <li id="second" aria-selected="false" role="treeitem" aria-level="2" aria-posinset="2"></li>
+            <li id="root/last" aria-selected="false" role="treeitem" aria-level="2" aria-posinset="3">
               <ul role="group">
-                <li aria-selected="false" role="treeitem" aria-level="3"></li>
-                <li id="nested-last" aria-selected="false" role="treeitem" aria-level="3"></li>
+                <li aria-selected="false" role="treeitem" aria-level="3" aria-posinset="1"></li>
+                <li id="nested-last" aria-selected="false" role="treeitem" aria-level="3" aria-posinset="2"></li>
               </ul>
             </li>
           </ul>

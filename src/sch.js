@@ -1,34 +1,58 @@
 import * as T from "./sch/type.js"
 export { get, update, put, putSelected, pop, move, changeType }
 
-const clone = (obj) => JSON.parse(JSON.stringify(obj))
+const clone = (obj) => {
+  let sch = JSON.parse(JSON.stringify(obj))
+  walk(sch, (a, m) => T.putAnchor(() => a, null, { force: true }))
+  return sch
+}
 
 /* Any computed data should be in meta variable.
    Anything needed to be saved across program restart should be in the sch.
  */
 const walk = (sch, f, meta = { path: "", level: 1, parent: {} }) => {
+  sch._halt = false
+  sch = f(sch, meta)
+  if (sch._halt) return sch
+
   switch (true) {
     case [T.RECORD].includes(sch.type):
-      for (let [k, sch_] of Object.entries(sch.fields)) {
+      let keys = Object.keys(sch.fields)
+
+      for (let i = keys.length - 1; i >= 0; i--) {
+        let k = keys[i]
+        let sch_ = sch.fields[k]
         let nextMeta = { path: `${meta.path}[${k}]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
-        sch.fields[k] = walk(sch_, f, nextMeta)
+        sch_ = walk(sch_, f, nextMeta)
+
+        sch.fields[k] = sch_
+        if (sch_._halt) return Object.assign(sch, { _halt: true })
       }
+
       break
     case [T.TUPLE, T.UNION].includes(sch.type):
-      sch.schs.forEach((sch_, i) => {
+      for (let i = 0; i < sch.schs.length; i++) {
+        let sch_ = sch.schs[i]
         let nextMeta = { path: `${meta.path}[][${i}]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
-        sch.schs[i] = walk(sch_, f, nextMeta)
-      })
+        sch_ = walk(sch_, f, nextMeta)
+
+        sch.schs[i] = sch_
+        if (sch_._halt) return Object.assign(sch, { _halt: true })
+      }
+
       break
     case [T.LIST].includes(sch.type):
       let nextMeta = { path: `${meta.path}[][0]`, level: meta.level + 1, parent: { _box: sch._box, type: sch.type } }
-      sch.sch = walk(sch.sch, f, nextMeta)
+      let sch_ = walk(sch.sch, f, nextMeta)
+
+      sch.sch = sch_
+      if (sch_._halt) return Object.assign(sch, { _halt: true })
       break
     default:
       sch
   }
 
-  return f(sch, meta)
+  return sch
 }
 
 const pop = (schema, path, indices) => {
@@ -179,13 +203,23 @@ const move = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
 }
 
 const putSelected = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
-  let rawSchs = Object.values(selectedPerParent)
-    .flat()
-    .map((c, i) => {
-      let sch = get(store, c.id)
-      if (sch) return { k: c.key, sch: () => clone(sch), index: startIndex + i, id: c.id }
-    })
-    .filter(c => c && !dstPath.startsWith(c.id))
+  let rawSchs = Object.values(selectedPerParent).reduce((acc, cc,) => {
+    let ids = cc.map(c => c.id)
+    let collector = []
+
+    getByAndUpdate(store, (a, m) => {
+      if (ids.includes(m.path)) { a._meta = m; collector.unshift(a) }
+      if (collector.length == ids.length) return true
+      return false
+    }, (a, m) => a)
+
+    for (let c of cc) {
+      if (dstPath.startsWith(c.id)) continue
+      let sch = collector.find(a => a._meta.path == c.id)
+      if (sch) acc.unshift({ k: c.key, sch: () => clone(sch), index: startIndex + acc.length, id: c.id })
+    }
+    return acc
+  }, [])
 
   let pasted = {}
   let result_ = put(store, dstPath, rawSchs)
@@ -206,8 +240,13 @@ const update = (currentNode, path, fupdate) =>
 const getByAndUpdate = (currentNode, fget, fupdate) => {
   let foundSch
   walk(currentNode, (sch_, meta) => {
-    if (fget(sch_, meta)) return foundSch = fupdate(sch_, meta)
+    if (fget(sch_, meta)) {
+      foundSch = fupdate(sch_, meta)
+      foundSch._halt = true
+      return foundSch
+    }
     else return sch_
   })
+  if (foundSch) foundSch._halt = false
   return foundSch
 }

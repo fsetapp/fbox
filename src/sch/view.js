@@ -41,7 +41,7 @@ const viewModel = (assigns) => {
 
 const viewFModels = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
-  <li id="${assigns.path}" .key="${assigns.key}" class="fmodels" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+  <li id="${assigns.path}" .key="${assigns.key}" .index="${assigns.ui.index}" aria-posinset="${assigns.ui.index + 1}" class="fmodels" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
       ${viewItself(assigns)}
     </ul>
@@ -49,7 +49,7 @@ const viewFModels = (assigns) =>
 
 const viewFolder = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
-  <li id="${assigns.path}" .key="${assigns.key}" class="folder" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+  <li id="${assigns.path}" .key="${assigns.key}" .index="${assigns.ui.index}" aria-posinset="${assigns.ui.index + 1}" class="folder" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     <dfn class="h">
       ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
       ${viewType(assigns)}
@@ -62,7 +62,7 @@ const viewFolder = (assigns) =>
 
 const viewFile = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
-  <li id="${assigns.path}" .key="${assigns.key}" class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+  <li id="${assigns.path}" .key="${assigns.key}" .index="${assigns.ui.index}" aria-posinset="${assigns.ui.index + 1}" class="file" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     ${viewKey(Object.assign(assigns, { key: wordBreakHtml(assigns.key) }))}
     ${viewType(assigns)}
     ${viewMeta(assigns)}
@@ -88,12 +88,12 @@ const viewItself = (assigns) => {
 }
 
 const viewKeyed = (assigns) =>
-  assigns.sch.order.map(k =>
+  assigns.sch.order.map((k, i) =>
     viewModel({
       key: k,
       sch: assigns.sch.fields[k],
       parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
-      ui: { ...assigns.ui, level: assigns.ui.level + 1 },
+      ui: { ...assigns.ui, level: assigns.ui.level + 1, index: i },
       path: `${assigns.path}[${k}]`
     })
   )
@@ -104,7 +104,7 @@ const viewIndexed = (assigns) =>
       key: i,
       sch: assigns.sch.schs[i],
       parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
-      ui: { ...assigns.ui, level: assigns.ui.level + 1 },
+      ui: { ...assigns.ui, level: assigns.ui.level + 1, index: i },
       path: `${assigns.path}[][${i}]`
     })
   )
@@ -114,7 +114,7 @@ const viewSingled = (assigns) =>
     key: 0,
     sch: assigns.sch.sch,
     parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
-    ui: { ...assigns.ui, level: assigns.ui.level + 1 },
+    ui: { ...assigns.ui, level: assigns.ui.level + 1, index: 0 },
     path: `${assigns.path}[][${0}]`
   })
 
@@ -124,7 +124,7 @@ const viewNonKeyed = (assigns) =>
       key: "",
       sch: assigns.sch.schs[i],
       parent: { type: assigns.sch.type, path: assigns.path, _box: assigns.sch._box },
-      ui: { ...assigns.ui, level: assigns.ui.level + 1 },
+      ui: { ...assigns.ui, level: assigns.ui.level + 1, index: i },
       path: `${assigns.path}[][${i}]`
     })
   )

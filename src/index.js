@@ -241,10 +241,10 @@ const cloneSelected = ({ tree, store, direction }, fStartIndex) => {
   let indicesPerParent = AriaTree.selectedGroupedByParent(tree)
   let result
 
-  for (let dstPath of Object.keys(indicesPerParent)) {
-    let ascSelected = indicesPerParent[dstPath].sort((a, b) => a.index - b.index)
-    result = Sch.putSelected(store, { dstPath, startIndex: fStartIndex(ascSelected) }, ascSelected)
-  }
+  for (let dstPath of Object.keys(indicesPerParent))
+    result = Sch.putSelected(store,
+      { dstPath, startIndex: fStartIndex(indicesPerParent[dstPath]) },
+      { [dstPath]: indicesPerParent[dstPath] })
 
   if (Object.keys(result).length != 0) {
     View.renderRoot(store)
@@ -375,6 +375,6 @@ let fixture = []
 for (var i = 0; i < 1000; i++)
   fixture.push(allSchs[ranInt(allSchs.length)])
 
-fixture.reverse().forEach((sch, i) =>
+fixture.forEach((sch, i) =>
   Sch.put(store, "", [{ k: `model_${fixture.length - i}`, sch: sch, index: 0 }])
 )

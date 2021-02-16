@@ -42,17 +42,21 @@ export const value = (v) => {
   }
 }
 
-export const putAnchor = (sch, box) => {
+export const putAnchor = (sch, box, opts = { force: false }) => {
   let newSch = sch()
 
   switch (true) {
     case box == FMODEL_BOX:
-      newSch.$anchor = newSch.$anchor?.startsWith(MODEL_PREFIX) ?
-        newSch.$anchor :
-        `${MODEL_PREFIX}${uuid()}`
+      if (!newSch.$anchor?.startsWith(MODEL_PREFIX))
+        newSch.$anchor = `${MODEL_PREFIX}${uuid()}`
       break
     default:
       newSch.$anchor = uuid()
+  }
+
+  if (opts.force) {
+    if (newSch.$anchor?.startsWith(MODEL_PREFIX))`${MODEL_PREFIX}${uuid()}`
+    else newSch.$anchor = uuid()
   }
 
   return newSch

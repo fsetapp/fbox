@@ -145,28 +145,32 @@ const reselectNodes = (tree, childIncidesPerParent, opts = {}) => {
     let dstLevel = parseInt(parent.getAttribute("aria-level"))
     let children = parent.querySelectorAll(`[aria-level='${dstLevel + 1}'][role='treeitem']`)
 
-    indices.map(({ index }) => children[index]).forEach(a => {
+    for (let i = 0; i < indices.length; i++) {
+      let index = indices[i].index
+      let a = children[index]
       if (!a) return
       a.classList.add("item-pasted", opts.direction)
-      selectMultiNode(null, a)
+      selectMultiNode(null, a, { focus: i == (indices.length - 1) })
       tree._walker.currentNode = a
-    })
+    }
   }
 }
 
-const selectedGroupedByParent = (tree, opts = {}) =>
-  [...tree.querySelectorAll(`${opts.ops || `[${ARIA_SELECTED}='true']`}`)].reduce((acc, child) => {
+const selectedGroupedByParent = (tree, opts = {}) => {
+  let selected = tree.querySelectorAll(`${opts.ops || `[${ARIA_SELECTED}='true']`}`)
+  let acc = {}
+
+  for (let i = 0; i < selected.length; i++) {
+    let child = selected[i]
     let parent = child.parentNode.closest("[role='treeitem']")
-    if (!parent) return acc
+    if (!parent) break
 
-    let parentLevel = parseInt(parent.getAttribute("aria-level"))
-    let children = parent.querySelectorAll(`[aria-level='${parentLevel + 1}'][role='treeitem']`)
-
-    child.index = [...children].indexOf(child)
+    child.index = child.index || parseInt(child.getAttribute("aria-posinset")) - 1
     acc[parent.id] = acc[parent.id] || []
     acc[parent.id].push(child)
-    return acc
-  }, {})
+  }
+  return acc
+}
 
 const clearClipboard = (tree) => {
   tree.querySelectorAll(".item-cutting, .item-copying").forEach(a => a.classList.remove("item-cutting", "item-copying"))
