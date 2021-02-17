@@ -294,7 +294,8 @@ sch-meta > section {
   gap: .25rem;
 }
 sch-meta .input[data-key='title'],
-sch-meta .input[data-key='description'] {
+sch-meta .input[data-key='description'],
+sch-meta .input[data-key='examples'] {
   min-width: 100%;
 }
 sch-meta .input {

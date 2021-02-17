@@ -1,5 +1,6 @@
 import { render, html } from "uhtml"
 import * as T from "./type.js"
+import { jEQ } from "../utils.js"
 
 export { renderMeta } from "./view/meta.js"
 export const renderRoot = (root) => {
@@ -22,8 +23,6 @@ const viewMain = (assigns) =>
   </theme>
   ${null && debug(assigns)}
 `)
-
-const jEQ = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)
 
 const debug = (assigns) =>
   html`

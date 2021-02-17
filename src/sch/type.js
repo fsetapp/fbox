@@ -33,7 +33,7 @@ export const value = (v) => {
     if (
       (v == null) ||
       ([STRING, NUMBER, BOOLEAN].includes(typeof v))
-    ) return { type: VALUE, "const": v }
+    ) return { type: VALUE, const: v }
     else
       return false
   }

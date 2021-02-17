@@ -2,6 +2,7 @@ import * as Sch from "./sch.js"
 import * as T from "./sch/type.js"
 import * as View from "./sch/view.js"
 import * as AriaTree from "./aria_tree.js"
+import { randInt } from "./utils.js"
 
 "use strict"
 
@@ -210,7 +211,7 @@ const activateEditType = ({ tree, store }) => {
 
 const addSch = ({ tree, store }) => {
   let currentNode = tree._walker.currentNode
-  let randomSch = allSchs[ranInt(allSchs.length)]
+  let randomSch = allSchs[randInt(allSchs.length)]
 
   Sch.put(store, currentNode.id, [{ k: null, sch: randomSch, index: 0 }])
   View.renderRoot(store)
@@ -348,12 +349,11 @@ function handleTreeClick(e) {
   renderSch(tree)
 }
 
-const ranInt = max => Math.floor(Math.random() * Math.floor(max));
-
 document.addEventListener("sch-update", (e) => {
   let { path, key, val } = e.detail
-  Sch.update(store, path, (a, m) => { a[key] = val; return a })
+  let sch = Sch.update(store, path, (a, m) => { a[key] = val; return a })
   View.renderRoot(store)
+  View.renderMeta(e.target.closest("sch-meta[id='fsch']"), sch, store)
 })
 
 addEventListener("DOMContentLoaded", e => {
@@ -373,7 +373,7 @@ addEventListener("DOMContentLoaded", e => {
 
 let fixture = []
 for (var i = 0; i < 1000; i++)
-  fixture.push(allSchs[ranInt(allSchs.length)])
+  fixture.push(allSchs[randInt(allSchs.length)])
 
 fixture.forEach((sch, i) =>
   Sch.put(store, "", [{ k: `model_${fixture.length - i}`, sch: sch, index: 0 }])

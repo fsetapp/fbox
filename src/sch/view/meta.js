@@ -1,5 +1,6 @@
 import { render, html } from "uhtml"
 import * as T from "../type.js"
+import * as Meta from "../meta.js"
 
 customElements.define("sch-meta", class extends HTMLElement {
   connectedCallback() {
@@ -26,69 +27,85 @@ export const renderMeta = (container, sch, root) => {
     render(container, html.for(sch)`
     <p>${sch.key || "-"}</p>
     <section data-path="${sch.path}">
-      ${textInput("title", sch.title, { keyDisplay: "Title" })}
-      ${textInput("description", sch.description, { keyDisplay: "Description" })}
+      ${textInput(sch, "title", { keyDisplay: "Title" })}
+      ${textInput(sch, "description", { keyDisplay: "Description" })}
       ${renderTypeMeta(sch)}
+      ${boolInput(sch, "readonly", { keyDisplay: "Readonly" })}
+      ${boolInput(sch, "writeonly", { keyDisplay: "Writeonly" })}
+      ${valueInput(sch, "default", { keyDisplay: "Default" })}
     </section>
   `)
   }
-  catch (e) { }
+  catch (e) { console.log(e) }
 }
-
-const stringInput = (sch) =>
-  html``
 
 const labelA = (key, children, opts = {}) => html`
   <label data-key="${key}" class="${opts.readonly && "input readonly" || "input"}">
-    <p class="l">${opts.keyDisplay || key} ${opts.readonly && html`<span>· calculated</span>`}</p>
+    <p class="l">${opts.keyDisplay || key} ${opts.readonly && html`<span>· readonly</span>`}</p>
     ${children}
   </label>
   `
 
-const textInput = (key, val, opts = {}) =>
+const textInput = (sch, key, opts = {}) =>
   labelA(key, html`
-    <textarea maxlength="${opts.maxlength}" minlength="${opts.minlength}" ?readonly="${opts.readonly}" rows="1" spellcheck="false">${val}</textarea>
+    <textarea maxlength="${opts.maxlength}" minlength="${opts.minlength}" ?readonly="${opts.readonly}" rows="1" spellcheck="false">${sch[key] || opts.value}</textarea>
   `, opts)
 
-const numberInput = (key, val, opts = {}) =>
+const numberInput = (sch, key, opts = {}) =>
   labelA(key, html`
-    <input type="number" inputmode="numeric" pattern="[0-9]*" min="${opts.min}" max="${opts.max}" value="${val}" ?readonly="${opts.readonly}">
+    <input type="number" inputmode="numeric" pattern="[0-9]*" min="${opts.min}" max="${opts.max}" value="${sch[key] || opts.value}" ?readonly="${opts.readonly}">
   `, opts)
 
-const boolInput = (key, val, opts = {}) =>
+const boolInput = (sch, key, opts = {}) =>
   labelA(key, html`
-    <input type="checkbox" ?readonly="${opts.readonly}" ?checked="${val}">
+    <input type="checkbox" ?disabled="${opts.readonly}" ?checked="${sch[key] || opts.value}">
   `, opts)
+
+const valueInput = (sch, key, opts = {}) => {
+  switch (sch.type) {
+    case T.BOOLEAN:
+      return boolInput(sch, key, opts)
+      break
+    case T.NUMBER:
+      return numberInput(sch, key, opts)
+      break
+    case T.STRING:
+      return textInput(sch, key, opts)
+      break
+    default:
+      return ``
+  }
+}
 
 const renderTypeMeta = (sch) => {
   let htmls
   switch (true) {
     case sch.type == T.RECORD: htmls = [
-      numberInput("min", Object.keys(sch.fields).length, { keyDisplay: "Min Properties", readonly: true }),
-      numberInput("max", Object.keys(sch.fields).length, { keyDisplay: "Max Properties", readonly: true })
+      numberInput(sch, "min", { keyDisplay: "Min Properties", value: Object.keys(sch.fields).length, readonly: true }),
+      numberInput(sch, "max", { keyDisplay: "Max Properties", value: Object.keys(sch.fields).length, readonly: true })
     ]
       break
     case sch.type == T.LIST: htmls = [
-      numberInput("min", 1, { keyDisplay: "Min Items", min: 1 }),
-      numberInput("max", sch.max, { keyDisplay: "Max Items", min: 1 }),
-      boolInput("unique", sch.unique, { keyDisplay: "Item uniqueness" })
+      numberInput(sch, "min", { keyDisplay: "Min Items", min: 1, value: 1 }),
+      numberInput(sch, "max", { keyDisplay: "Max Items", min: 1 }),
+      boolInput(sch, "unique", { keyDisplay: "Item uniqueness" })
     ]
       break
     case sch.type == T.TUPLE: htmls = [
-      numberInput("min", sch.schs.length, { keyDisplay: "Min Items", readonly: true }),
-      numberInput("max", sch.schs.length, { keyDisplay: "Max Items", readonly: true })
+      numberInput(sch, "min", { keyDisplay: "Min Items", value: sch.schs.length, readonly: true }),
+      numberInput(sch, "max", { keyDisplay: "Max Items", value: sch.schs.length, readonly: true })
     ]
       break
     case sch.type == T.STRING: htmls = [
-      numberInput("min", sch.min, { keyDisplay: "Min Length", min: 0 }),
-      numberInput("max", sch.max, { keyDisplay: "Max Length", min: 0 }),
-      textInput("pattern", sch.pattern, { keyDisplay: "Pattern", maxlength: 256 })
+      numberInput(sch, "min", { keyDisplay: "Min Length", min: 0 }),
+      numberInput(sch, "max", { keyDisplay: "Max Length", min: 0 }),
+      textInput(sch, "pattern", { keyDisplay: "Pattern", maxlength: 256 })
     ]
       break
     case sch.type == T.NUMBER: htmls = [
-      numberInput("min", sch.min, { keyDisplay: "Min" }),
-      numberInput("max", sch.max, { keyDisplay: "Max" }),
-      numberInput("multipleOf", sch.multipleOf, { keyDisplay: "Multiple of" })
+      numberInput(sch, "min", { keyDisplay: "Min" }),
+      numberInput(sch, "max", { keyDisplay: "Max" }),
+      numberInput(sch, "multipleOf", { keyDisplay: "Multiple of" })
     ]
       break
     case sch.type == T.INTEGER: htmls = []
@@ -102,7 +119,11 @@ const renderTypeMeta = (sch) => {
   }
 
   if (sch._meta.parent.type == T.RECORD && sch._meta.parent._box != T.FMODEL_BOX)
-    htmls.push(boolInput("required", sch.required, { keyDisplay: "Required" }))
+    htmls.push(boolInput(sch, "required", { keyDisplay: "Required" }))
 
   return htmls
 }
+
+const examples = (sch) =>
+  Meta.examples(sch).map((example, i) =>
+    labelA("examples", html`<pre style="padding: 0 .5rem;"><code>${JSON.stringify(example, null, '  ')}</code></pre>`, { keyDisplay: `Example ${i}` }))
