@@ -10,7 +10,10 @@ customElements.define("sch-meta", class extends HTMLElement {
     this.removeEventListener("change", this.handleMetaChange)
   }
   handleMetaChange(e) {
-    if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
+    if (e.target instanceof HTMLTextAreaElement ||
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLSelectElement) {
+
       let detail = {
         path: e.target.closest("[data-path]").dataset.path,
         key: e.target.closest("[data-key]").dataset.key,
@@ -30,8 +33,7 @@ export const renderMeta = (container, sch, root) => {
       ${textInput(sch, "title", { keyDisplay: "Title" })}
       ${textInput(sch, "description", { keyDisplay: "Description" })}
       ${renderTypeMeta(sch)}
-      ${boolInput(sch, "readonly", { keyDisplay: "Readonly" })}
-      ${boolInput(sch, "writeonly", { keyDisplay: "Writeonly" })}
+      ${enumInput(sch, "rw", { collection: [["r", "Readonly"], ["w", "Writeonly"], ["rw", "Read and Write"]], selected: "rw", keyDisplay: "Read / Write" })}
       ${valueInput(sch, "default", { keyDisplay: "Default" })}
     </section>
   `)
@@ -40,7 +42,7 @@ export const renderMeta = (container, sch, root) => {
 }
 
 const labelA = (key, children, opts = {}) => html`
-  <label data-key="${key}" class="${opts.readonly && "input readonly" || "input"}">
+  <label data-key="${key}" class="${opts.readonly && "meta-box readonly" || "meta-box"}">
     <p class="l">${opts.keyDisplay || key} ${opts.readonly && html`<span>· readonly</span>`}</p>
     ${children}
   </label>
@@ -77,6 +79,13 @@ const valueInput = (sch, key, opts = {}) => {
   }
 }
 
+const enumInput = (sch, key, opts = {}) =>
+  labelA(key, html`
+    <select ?disabled="${opts.readonly}">
+      ${(opts.collection).map(([v, t]) => html`<option value="${v}" ?selected="${(sch[key] || opts.selected) == v}">${t}</option>`)}
+    </select>
+  `, opts)
+
 const renderTypeMeta = (sch) => {
   let htmls
   switch (true) {
@@ -93,7 +102,7 @@ const renderTypeMeta = (sch) => {
       break
     case sch.type == T.TUPLE: htmls = [
       numberInput(sch, "min", { keyDisplay: "Min Items", value: sch.schs.length, readonly: true }),
-      numberInput(sch, "max", { keyDisplay: "Max Items", value: sch.schs.length, readonly: true })
+      numberInput(sch, "max", { keyDisplay: "Max Items", value: sch.max || sch.schs.length })
     ]
       break
     case sch.type == T.STRING: htmls = [

@@ -1,6 +1,23 @@
 import * as T from "./type.js"
 import { jEQ, randInt } from "../utils.js"
 
+export const isValid = (sch, key, val) => {
+  switch (key) {
+    case "title":
+    case "description":
+    case "default":
+    case "format":
+    case "min":
+    case "max":
+    case "unique":
+    case "multipleOf":
+    case "required":
+    case "rw":
+      return true
+    default: return false
+  }
+}
+
 export const examples = (sch) => {
   sch.examples = []
 

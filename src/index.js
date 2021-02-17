@@ -1,6 +1,7 @@
 import * as Sch from "./sch.js"
 import * as T from "./sch/type.js"
 import * as View from "./sch/view.js"
+import * as SchMeta from "./sch/meta.js"
 import * as AriaTree from "./aria_tree.js"
 import { randInt } from "./utils.js"
 
@@ -352,7 +353,10 @@ function handleTreeClick(e) {
 
 document.addEventListener("sch-update", (e) => {
   let { path, key, val } = e.detail
-  let sch = Sch.update(store, path, (a, m) => { a[key] = val; return a })
+  let sch = Sch.update(store, path, (a, m) => {
+    if (SchMeta.isValid(key)) a[key] = val;
+    return a
+  })
   View.renderRoot(store)
   View.renderMeta(e.target.closest("sch-meta[id='fsch']"), sch, store)
 })
