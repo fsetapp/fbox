@@ -258,37 +258,38 @@ const cloneUp = ({ tree, store }) =>
 const cloneDown = ({ tree, store }) =>
   cloneSelected({ tree, store, direction: "down" }, (ascSelected) => ascSelected[ascSelected.length - 1].index + 1)
 
-const toCmdkey = ({ shiftKey, metaKey, altKey, key }) => {
+const toCmdkey = ({ shiftKey, metaKey, altKey, ctrlKey, key }) => {
   let cmd = []
-  if (shiftKey) cmd.push("shiftKey")
-  if (metaKey) cmd.push("metaKey")
-  if (altKey) cmd.push("altKey")
+  if (shiftKey) cmd.push("shift")
+  if (metaKey) cmd.push("meta")
+  else if (ctrlKey) cmd.push("meta")
+  if (altKey) cmd.push("alt")
   if (key) cmd.push(key)
   return cmd.join("-")
 }
 var treeKeyDownCmd = new Map([
-  ["shiftKey-metaKey-ArrowUp", selectMultiNodeUpTo],
-  ["shiftKey-metaKey-ArrowDown", selectMultiNodeDownTo],
-  ["shiftKey-ArrowUp", selectMultiNodeUp],
-  ["shiftKey-ArrowDown", selectMultiNodeDown],
-  ["metaKey-ArrowUp", selectUpEnd],
-  ["metaKey-ArrowDown", selectDownEnd],
+  ["shift-meta-ArrowUp", selectMultiNodeUpTo],
+  ["shift-meta-ArrowDown", selectMultiNodeDownTo],
+  ["shift-ArrowUp", selectMultiNodeUp],
+  ["shift-ArrowDown", selectMultiNodeDown],
+  ["meta-ArrowUp", selectUpEnd],
+  ["meta-ArrowDown", selectDownEnd],
   ["ArrowUp", selectUp],
   ["ArrowDown", selectDown],
   ["Delete", deleteSelected_],
-  ["metaKey-x", cut],
-  ["metaKey-c", copy],
-  ["metaKey-v", paste],
-  ["shiftKey-altKey-ArrowUp", cloneUp],
-  ["shiftKey-altKey-ArrowDown", cloneDown],
+  ["meta-x", cut],
+  ["meta-c", copy],
+  ["meta-v", paste],
+  ["shift-alt-ArrowUp", cloneUp],
+  ["shift-alt-ArrowDown", cloneDown],
   ["Enter", activateEditKey],
-  ["shiftKey-Enter", activateEditType],
+  ["shift-Enter", activateEditType],
   ["Home", selectRoot],
   ["End", selectLast],
   ["Escape", ({ tree }) => AriaTree.clearClipboard(tree)],
-  ["shiftKey-+", addSch],
-  ["altKey-ArrowUp", reorderUp],
-  ["altKey-ArrowDown", reorderDown],
+  ["shift-+", addSch],
+  ["alt-ArrowUp", reorderUp],
+  ["alt-ArrowDown", reorderDown],
 ])
 
 function handleTreeKeydown(e) {
