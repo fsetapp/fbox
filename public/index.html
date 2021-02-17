@@ -13,14 +13,67 @@
 <body>
   <div style="display: flex;">
     <section class="help text-sm" style="flex: 1;">
+      <h3>Keyboard commands</h3>
+      <br>
       <h2>Add</h2>
+      </p>
       <dl>
         <dd>Add random schema to container types (record | union | tuple)</dd>
-        <dt><kbd>shift</kbd> + <kbd>+</kbd></dt>
+        <dt><kbd>Shift</kbd> + <kbd>+</kbd></dt>
       </dl>
+
+      <h2>Move</h2>
+      <dl>
+        <dd>Cut selected schemas</dd>
+        <dt><kbd>Cmd</kbd> + <kbd>x</kbd></dt>
+      </dl>
+      <dl>
+        <dd>Copy selected schemas</dd>
+        <dt><kbd>Cmd</kbd> + <kbd>c</kbd></dt>
+      </dl>
+      <dl>
+        <dd>
+          Paste schema from <kbd>Cmd</kbd> + <kbd>c</kbd> or <kbd>x</kbd>
+          <br>
+          <br>
+          To cancel copy or cut, press <kbd>Escape</kbd>
+        </dd>
+        <dt><kbd>Cmd</kbd> + <kbd>v</kbd></dt>
+      </dl>
+
+      <h2>Clone</h2>
+      <dl>
+        <dd>Clone selected schemas</dd>
+        <dt>
+          <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>ArrowUp</kbd>
+          <br>
+          <br>
+          <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>ArrowDown</kbd>
+        </dt>
+        <br>
+      </dl>
+
+      <h2>Reorder</h2>
+      <dl>
+        <dd>Reorder selected schemas up or down</dd>
+        <dt>
+          <kbd>Alt</kbd> + <kbd>ArrowUp</kbd>
+          <br>
+          <br>
+          <kbd>Alt</kbd> + <kbd>ArrowDown</kbd>
+        </dt>
+        <br>
+      </dl>
+
+      <h2>Delete</h2>
+      <dl>
+        <dd>Delete selected schemas</dd>
+        <dt><kbd>Delete</kbd></dt>
+      </dl>
+
       <h2>Select</h2>
       <dl>
-        <dd>Select schema</dd>
+        <dd>Select a schema</dd>
         <dt>
           <kbd>ArrowUp</kbd>
           <br>
@@ -28,44 +81,39 @@
         </dt>
       </dl>
       <dl>
-        <dd>Select mutiple schema</dd>
+        <dd>Select mutiple schemas</dd>
         <dt>
-          <kbd>shift</kbd> + <kbd>ArrowUp</kbd>
+          <kbd>Shift</kbd> + <kbd>ArrowUp</kbd>
           <br>
-          <kbd>shift</kbd> + <kbd>ArrowDown</kbd>
+          <kbd>Shift</kbd> + <kbd>ArrowDown</kbd>
         </dt>
       </dl>
       <dl>
         <dd>Select mutiple schema all the way</dd>
         <dt>
-          <kbd>shift</kbd> + <kbd>Meta</kbd> + <kbd>ArrowUp</kbd>
+          <kbd>Shift</kbd> + <kbd>Cmd</kbd> + <kbd>ArrowUp</kbd>
           <br>
           <br>
-          <kbd>shift</kbd> + <kbd>Meta</kbd> + <kbd>ArrowDown</kbd>
+          <kbd>Shift</kbd> + <kbd>Cmd</kbd> + <kbd>ArrowDown</kbd>
         </dt>
       </dl>
       <dl>
-        <dd>Select the first element of tree</dd>
+        <dd>Select the first child</dd>
+        <dt><kbd>Cmd</kbd> + <kbd>ArrowUp</kbd></dt>
+      </dl>
+      <dl>
+        <dd>Select the last child</dd>
+        <dt><kbd>Cmd</kbd> + <kbd>ArrowDown</kbd></dt>
+      </dl>
+      <dl>
+        <dd>Select the root element of tree</dd>
         <dt><kbd>Home</kbd></dt>
       </dl>
       <dl>
         <dd>Select the last element of tree</dd>
         <dt><kbd>End</kbd></dt>
       </dl>
-      <h2>Delete</h2>
-      <dl>
-        <dd>Delete selected schema</dd>
-        <dt><kbd>Delete</kbd></dt>
-      </dl>
-      <h2>Move</h2>
-      <dl>
-        <dd>Cut selected schema</dd>
-        <dt><kbd>cmd</kbd> + <kbd>x</kbd></dt>
-      </dl>
-      <dl>
-        <dd>Paste schema from (cmd + x) command</dd>
-        <dt><kbd>cmd</kbd> + <kbd>v</kbd></dt>
-      </dl>
+
       <h2>Rename key</h2>
       <dl>
         <dd>Enable key editing on a selected schema </dd>
@@ -79,10 +127,11 @@
         <dd>Cancel editing</dd>
         <dt><kbd>Escape</kbd></dt>
       </dl>
+
       <h2>Change type</h2>
       <dl>
         <dd>Enable type editing on a selected schema</dd>
-        <dt><kbd>shift</kbd> + <kbd>Enter</kbd></dt>
+        <dt><kbd>Shift</kbd> + <kbd>Enter</kbd></dt>
       </dl>
       <dl>
         <dd>Submit a changed type with current text input value</dd>
@@ -102,7 +151,9 @@
           <b>Value</b> type, type in any json value (e.g. "a", 1, false, null), array and object json is not allowed
           (for now).
         </dt>
-        <dl>
+      </dl>
+      <br>
+      <p>For Windows, use <kbd>Ctrl</kbd> in place of <kbd>Cmd</kbd></p>
     </section>
     <section id="fmodel" style="flex: 2;"></section>
     <sch-meta id="fsch" style="flex: 1;" tabindex="-1">
