@@ -172,11 +172,15 @@ const validateRegex = (sch, key, params) => {
   }
 }
 const validateMinMax = (sch, params) => {
-  if (params.min && params.max)
-    if (params.min > params.max) {
+  if (params.min && params.max) {
+    let min = parseNumber(params.min)
+    let max = parseNumber(params.max)
+
+    if ((min || min == 0) && (max || max == 0) && min > max) {
       addError(sch, "min", "min is greater than max")
       addError(sch, "max", "max is less than min")
     }
+  }
 }
 const validateNull = (sch, key, params) => {
   if (!params.hasOwnProperty(key)) return
