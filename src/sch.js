@@ -229,7 +229,15 @@ const putSelected = (store, { dstPath, startIndex = 0 }, selectedPerParent) => {
 }
 
 const changeType = (store, path, sch) =>
-  update(store, path, (a, m) => a = T.putAnchor(sch, m.parent._box))
+  update(store, path, (a, m) => {
+    let newSch = T.putAnchor(sch, m.parent._box)
+    if (a.type == newSch.type) return a
+    else {
+      let { title, description, rw } = a
+      Object.assign(newSch, { title, description, rw })
+      return newSch
+    }
+  })
 
 const get = (currentNode, path) =>
   getByAndUpdate(currentNode, (a, m) => m.path == path, (a, m) => { a._meta = m; return a })
