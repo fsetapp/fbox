@@ -12,6 +12,7 @@ export const save = (sch, metaForm) => {
   validateString(sch, "title", metaForm)
   validateString(sch, "description", metaForm)
   validateEnum(sch, "rw", ["rw", "r", "w"], metaForm)
+  validateBoolean(sch, "required", metaForm)
   validate(sch, metaForm)
 
   for (let key of Object.keys(sch.changes))
@@ -66,7 +67,6 @@ const validateTypeRecord = (sch, metaForm) => {
   validateInteger(sch, "min", metaForm, { min: 0 })
   validateInteger(sch, "max", metaForm, { min: 0 })
   validateMinMax(sch, metaForm)
-  validateBoolean(sch, "required", metaForm)
 }
 const validateTypeList = (sch, metaForm) => {
   validateInteger(sch, "min", metaForm, { min: 1 })
@@ -121,7 +121,8 @@ const validateString = (sch, key, params, opts = {}) => {
     sch.changes[key] = str
 }
 const validateBoolean = (sch, key, params) => {
-  if (!params.hasOwnProperty(key)) return
+  if (!params.hasOwnProperty(key)) return sch.changes[key] = false
+
   let bool = parseBool(params[key])
 
   if (bool == undefined)

@@ -233,8 +233,8 @@ const changeType = (store, path, sch) =>
     let newSch = T.putAnchor(sch, m.parent._box)
     if (a.type == newSch.type) return a
     else {
-      let { title, description, rw } = a
-      Object.assign(newSch, { title, description, rw })
+      let { title, description, rw, required } = a
+      Object.assign(newSch, { title, description, rw, required })
       return newSch
     }
   })
