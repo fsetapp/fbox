@@ -94,7 +94,7 @@ const handleTextAreaKeyDown = (e, tree) => {
       break
   }
 
-  renderSch(tree)
+  renderSchMeta(tree)
 }
 
 const selectMultiNodeUpTo = ({ tree }) => {
@@ -309,10 +309,10 @@ function handleTreeKeydown(e) {
       break
   }
 
-  renderSch(tree)
+  renderSchMeta(tree)
 }
 
-const renderSch = (tree) => {
+const renderSchMeta = (tree) => {
   let selected = tree.querySelectorAll("[id='fmodel'] [aria-selected='true']")
   if (selected.length == 1) {
     let sch = Sch.get(store, selected[0].id)
@@ -348,17 +348,15 @@ function handleTreeClick(e) {
   else
     AriaTree.selectNode(tree, target, { focus: notFocusIfTextArea })
 
-  renderSch(tree)
+  renderSchMeta(tree)
 }
 
 document.addEventListener("sch-update", (e) => {
-  let { path, key, val } = e.detail
-  let sch = Sch.update(store, path, (a, m) => {
-    if (SchMeta.isValid(key)) a[key] = val;
-    return a
-  })
+  let { path, attrs } = e.detail
+  let sch = Sch.update(store, path, (a, m) => SchMeta.save(a, attrs))
+
   View.renderRoot(store)
-  View.renderMeta(e.target.closest("sch-meta[id='fsch']"), sch, store)
+  View.renderMeta(e.target.closest("sch-meta"), sch, store)
 })
 
 addEventListener("DOMContentLoaded", e => {
@@ -369,10 +367,10 @@ addEventListener("DOMContentLoaded", e => {
     AriaTree.createWalker(tree)
     tree.onkeydown = handleTreeKeydown
     tree.onclick = handleTreeClick
-    tree._metaContainer = document.querySelector("sch-meta[id='fsch']")
-
     AriaTree.selectNode(tree, tree._walker.nextNode())
-    renderSch(tree)
+
+    tree._metaContainer = document.querySelector("sch-meta")
+    renderSchMeta(tree)
   }
 })
 

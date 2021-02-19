@@ -275,6 +275,7 @@ textarea {
   padding: 0 .5rem;
   border: 0;
   background-color: lavender;
+  color: black;
   align-self: center;
 }
 textarea.no-resize {
@@ -293,14 +294,14 @@ sch-meta {
   overflow: scroll;
   outline: none;
 }
-sch-meta > section {
+sch-meta > form {
   display: flex;
   flex-wrap: wrap;
   gap: .25rem;
 }
-sch-meta .meta-box[data-key='title'],
-sch-meta .meta-box[data-key='description'],
-sch-meta .meta-box[data-key='examples'] {
+sch-meta .meta-box.title,
+sch-meta .meta-box.description,
+sch-meta .meta-box.examples {
   min-width: 100%;
 }
 sch-meta .meta-box {
@@ -323,15 +324,24 @@ sch-meta .meta-box.readonly,
 sch-meta .meta-box.readonly input[readonly] {
   color: rgba(107, 114, 128, 1);
 }
-sch-meta .meta-box > .l {
+sch-meta form .l,
+sch-meta form .err {
   margin: 0;
   padding: .25rem .5rem;
   font-size: .75rem;
   line-height: 1rem;
 }
-sch-meta .meta-box > textarea,
-sch-meta .meta-box > input,
-sch-meta .meta-box > select {
+sch-meta form .err {
+  color: red;
+}
+sch-meta form input:invalid,
+sch-meta form textarea.invalid {
+  border-bottom: 1px solid red;
+  box-shadow: none;
+}
+sch-meta form textarea,
+sch-meta form input,
+sch-meta form select {
   display: block;
   padding: .5rem;
   /* gray-300 */
@@ -340,21 +350,22 @@ sch-meta .meta-box > select {
   width: 100%;
   outline: none;
 }
-sch-meta .meta-box > textarea {
+sch-meta form textarea {
   resize: none;
 }
-sch-meta .meta-box > input {
-  border: 0;
+sch-meta form input {
+  border: 1px solid transparent;
 }
-sch-meta .meta-box > input[type='checkbox']{
+sch-meta form input[type='checkbox']{
   margin: .5rem;
   width: auto;
 }
-sch-meta .meta-box > select {
+sch-meta form select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right .5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
+  padding-right: 3em;
   -webkit-print-color-adjust: exact;
   color-adjust: exact;
 
@@ -362,6 +373,6 @@ sch-meta .meta-box > select {
   -webkit-appearance: none;
   border: none;
 }
-sch-meta .meta-box > select > option {
+sch-meta form select > option {
   color: black;
 }
