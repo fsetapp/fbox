@@ -103,11 +103,11 @@ const validateString = (sch, key, params, opts = {}) => {
   if (!params.hasOwnProperty(key)) return
 
   let str = params[key]
-  let strLimit = 2 ** 20
+  let strLimit = 2 ** 18
   const byteSize = s => new Blob([s]).size;
 
   if (byteSize(str) > strLimit)
-    addError(sch, key, `must be less than or equal ${strLimit} bytes`)
+    addError(sch, key, `string size limit is ${Math.ceil(strLimit / 1024)} KB`)
   else if (opts.max && str.length > opts.max)
     addError(sch, key, `must be less than or equal ${opts.max} length`)
   else if (opts.min && str.length < opts.min)

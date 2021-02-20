@@ -1,7 +1,7 @@
 import { render, html } from "uhtml"
 import * as T from "../type.js"
 import * as Meta from "../meta.js"
-import * as Sch from "../../sch.js"
+import { autoResize } from "../../utils.js"
 
 customElements.define("sch-meta", class extends HTMLElement {
   connectedCallback() {
@@ -70,7 +70,7 @@ const labelA = (sch, key, children, opts = {}) => html`
 
 const textInput = (sch, key, opts = {}) =>
   labelA(sch, key, html`
-    <textarea name="${name(sch, key)}" maxlength="${opts.maxlength}" minlength="${opts.minlength}" ?readonly="${opts.readonly}" rows="1" spellcheck="false" class="${errors(sch, key) && "invalid"}">${sch[key] || opts.value}</textarea>
+    <textarea name="${name(sch, key)}" maxlength="${opts.maxlength}" minlength="${opts.minlength}" ?readonly="${opts.readonly}" rows="1" spellcheck="false" class="${errors(sch, key) && "invalid"}" oninput="${autoResize}">${sch[key] || opts.value}</textarea>
   `, opts)
 
 const numberInput = (sch, key, opts = {}) =>

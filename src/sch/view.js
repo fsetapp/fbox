@@ -1,6 +1,6 @@
 import { render, html } from "uhtml"
 import * as T from "./type.js"
-import { jEQ } from "../utils.js"
+import { jEQ, autoResize } from "../utils.js"
 
 export { renderMeta } from "./view/meta.js"
 export const renderRoot = (root) => {
@@ -132,7 +132,7 @@ const indent = (assigns) => `padding-left: ${((assigns.ui.level - 1) * 1.25) + a
 const textInput = (id, parentPath, content) =>
   html`<textarea id="${id}" class="no-resize" spellcheck="false" maxlength="256" rows="1" autofocus
   data-parent-path="${parentPath}"
-  oninput="${e => e.target.value = e.target.value.replace(/\n/g, "")}"
+  oninput="${autoResize}"
   >${content}</textarea>`
 
 
