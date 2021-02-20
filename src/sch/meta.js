@@ -3,11 +3,8 @@ import { jEQ, randInt } from "../utils.js"
 
 
 export const save = (sch, metaForm) => {
-  sch.errors ||= {}
-  sch.changes ||= {}
-
-  for (let key of Object.keys(sch.changes))
-    delete sch.errors[key]
+  sch.errors = {}
+  sch.changes = {}
 
   validateString(sch, "title", metaForm)
   validateString(sch, "description", metaForm)
@@ -18,8 +15,6 @@ export const save = (sch, metaForm) => {
   for (let key of Object.keys(sch.changes))
     if ((sch.errors[key] || []).length == 0)
       sch[key] = sch.changes[key]
-    else
-      delete sch[key]
 
   return sch
 }
@@ -48,7 +43,7 @@ const validateTypeString = (sch, metaForm) => {
   validateInteger(sch, "min", metaForm, { min: 0 })
   validateInteger(sch, "max", metaForm, { min: 0 })
   validateMinMax(sch, metaForm)
-  validateString(sch, "default", metaForm, getValidator(sch, ["min", "max", "pattern"]))
+  validateString(sch, "default", metaForm, Object.assign(getValidator(sch, ["min", "max", "pattern"]), { ignoreEmpty: true }))
 }
 const validateTypeBoolean = (sch, metaForm) => {
   validateBoolean(sch, "default", metaForm)
@@ -101,6 +96,7 @@ const getValidator = (sch, keys = []) => {
 
 const validateString = (sch, key, params, opts = {}) => {
   if (!params.hasOwnProperty(key)) return
+  if (opts.ignoreEmpty && params[key] == "") return
 
   let str = params[key]
   let strLimit = 2 ** 18

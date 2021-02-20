@@ -314,7 +314,7 @@ sch-meta .meta-box {
   /* gray-800 */
   border: 1px solid rgba(31,41,55,1);
   flex-grow: 1;
-  height: 100%;
+  min-height: 100%;
   word-break: break-all;
 }
 sch-meta .meta-box:focus-within {
