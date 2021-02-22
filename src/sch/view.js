@@ -40,7 +40,7 @@ const viewModel = (assigns) => {
 
 const viewFModels = (assigns) =>
   html.for(assigns.sch, assigns.sch.$anchor)`
-  <li id="${assigns.path}" .key="${assigns.key}" .index="${assigns.ui.index}" aria-posinset="${assigns.ui.index + 1}" class="fmodels" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
+  <li id="${assigns.path}" .key="${assigns.key}" .index="${0}" aria-posinset="${1}" class="fmodels" role="treeitem" aria-level="${assigns.ui.level}" aria-selected="false" tabindex="-1">
     <ul data-group="${keyedOrIndexed(assigns.sch)}" role="group">
       ${viewItself(assigns)}
     </ul>
