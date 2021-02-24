@@ -4,7 +4,7 @@ module.exports = {
   coverage: true,
   nodeResolve: true,
   esbuildTarget: "auto",
-  files: ["./src/test/**/*.test.js"],
+  files: ["./test/**/*.test.js"],
   coverageConfig: {
     exclude: ["**/*/_snowpack/**/*"],
   },

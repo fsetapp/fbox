@@ -1,22 +1,3 @@
-:root {
-  /* gray-900 */
-  --tree-bg-color: rgba(17, 24, 39, 1);
-  /* gray-300 */
-  --tree-color: rgba(209, 213, 219, 1);
-
-  --item-selected-bg-color: midnightblue;
-  /* border-blue-500 */
-  --item-selected-border-color: rgba(59, 130, 246, 1);
-  --item-selected-header-bg-color: rgba(55, 65, 81, 1);
-
-  /* pink-400*/
-  --type-color: rgba(244, 114, 182, 1);
-  /* indigo-400 */
-  --ref-color: rgba(129, 140, 248, 1);
-
-  color-scheme: dark;
-}
-
 html {
   /* font-sans */
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;

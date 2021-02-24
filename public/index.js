@@ -1,12 +1,8 @@
-import { init, update } from "./main.js"
-import * as Sch from "./sch.js"
-import * as T from "./sch/type.js"
-import { randInt } from "./utils.js"
+import { init, update, store, allSchs } from "../lib/main.js"
+import * as Sch from "../lib/sch.js"
+import { randInt } from "../lib/utils.js"
 
 "use strict"
-
-const allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.number, T.nil, () => T.value("\"json string\"")]
-var store = { ...T.putAnchor(T.record), _box: T.FMODEL_BOX, _allSchs: allSchs }
 
 let fixture = []
 for (var i = 0; i < 1000; i++)
