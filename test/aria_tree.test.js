@@ -3,7 +3,7 @@ import {
   createWalker,
   selectNode, selectMultiNode, selectMultiNodeTo, reselectNodes, selectedGroupedByParent, findUnselectedNode,
   clearClipboard
-} from "../aria_tree.js"
+} from "../lib/aria_tree.js"
 
 describe("aria [role='tree']", () => {
   var tree

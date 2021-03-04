@@ -1,6 +1,6 @@
 import { assert } from "@esm-bundle/chai";
-import { get, update, put, pop, move, changeType } from "../sch.js"
-import * as T from "../sch/type.js"
+import { get, update, put, pop, move, changeType } from "../lib/sch.js"
+import * as T from "../lib/sch/type.js"
 
 describe("Sch operations", () => {
   describe("#put", () => {

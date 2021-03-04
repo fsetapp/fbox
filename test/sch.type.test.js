@@ -1,6 +1,6 @@
 import { assert } from "@esm-bundle/chai";
-import * as T from "../sch/type.js"
-import * as Sch from "../sch.js"
+import * as T from "../lib/sch/type.js"
+import * as Sch from "../lib/sch.js"
 
 it("#putAnchor to fmodel box", () => {
   var store = { ...T.record(), _box: T.FMODEL_BOX }
