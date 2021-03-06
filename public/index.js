@@ -1,4 +1,4 @@
-import { initModelView, initFileView, update, createStore, allSchs } from "../lib/main.js"
+import { initModelView, initFileView, update, createStore, allSchs, isSingleSelect } from "../lib/main.js"
 import * as Sch from "../lib/sch.js"
 import * as T from "../lib/sch/type.js"
 import { randInt } from "../lib/utils.js"
@@ -8,7 +8,11 @@ import { randInt } from "../lib/utils.js"
 const FILE_TAG = "file"
 const PROJECT_TAG = "project"
 
-var projectStore = createStore({ tag: PROJECT_TAG, allowedSchs: [() => createStore({ tag: FILE_TAG })], put: "append" })
+var projectStore = createStore({
+  tag: PROJECT_TAG,
+  allowedSchs: [() => createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } })],
+  put: { pos: "append" }
+})
 
 const fmodelsFixture = (n, startId, opts) => {
   let fixture = []
@@ -64,19 +68,20 @@ customElements.define("sch-listener", class extends HTMLElement {
     this.removeEventListener("sch-update", this.handleSchUpdate)
   }
   handleTreeCommand(e) {
-    if (e.target.closest("[id='project']"))
+    if (e.target.closest("[id='project']") && e.detail.file != "")
       switch (true) {
-        case ["selectUp", "selectDown", "clickSelect"].includes(e.detail.command.name):
+        case isSingleSelect(e.detail.command.name):
           this.changeFile(projectStore, e.detail)
           break
-        case ["addSch"].includes(e.detail.command.name):
+        case ["addSch", "submitEdit"].includes(e.detail.command.name):
+          let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
           let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-          fmodelTree._render()
+
+          fmodelTree._render(fileStore)
       }
   }
   changeFile(projectStore, detail) {
-    let fileStore = Sch.get(projectStore, `[${detail.file}]`) || projectStore
-    fileStore.key = fileStore.key || detail.file
+    let fileStore = Sch.get(projectStore, `[${detail.file}]`)
 
     if (fileStore?._box == FILE_TAG) {
       initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
@@ -100,7 +105,7 @@ const fileToStore = (file, store) => {
   return T.putAnchor(() => store)
 }
 const projectToStore = (project, store) => {
-  for (let file of project.files) store.fields[file.key] = fileToStore(file, createStore({ tag: FILE_TAG }))
+  for (let file of project.files) store.fields[file.key] = fileToStore(file, createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } }))
   store.key = project.key
   store.order = project.order
   return T.putAnchor(() => store)
