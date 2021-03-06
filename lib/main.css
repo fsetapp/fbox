@@ -1,8 +1,3 @@
-html {
-  /* font-sans */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-}
-
 body {
   margin: 0;
 }
@@ -50,7 +45,7 @@ dd {
 .help dl {
   display: flex;
   align-items: baseline;
-  border-bottom: 1px dotted rgba(107, 114, 128, .75);
+  border-top: 1px dotted rgba(107, 114, 128, .75);
 }
 
 
@@ -104,7 +99,6 @@ dd {
   min-width: 374px;
   height: 100vh;
   overflow-y: scroll;
-  padding: .5rem;
   background-color: var(--tree-bg-color);
   color: var(--tree-color);
 }
@@ -116,20 +110,20 @@ dd {
   background-color: rgba(59, 130, 246, .5);
 }
 
-.fmodels {
+.root-item {
   padding: 0 .5rem;
 }
 
-.fmodels>[role='group']>[role="treeitem"] {
+.root-item>[role='group']>[role="treeitem"] {
   margin: .5rem 0;
   padding: .5rem 0;
   border-radius: .25rem;
 }
 
-.fmodels>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
+.root-item>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
   /* gray-800 */
   border-color: rgba(31,41,55,1);
-  background-color: rgba(14, 19, 31, 1);
+  background-color: var(--item-root-bg-color);
 }
 
 [role="treeitem"] {
@@ -148,7 +142,7 @@ dd {
   background-color: rgba(31, 41, 55, 1);
 }
 
-:not(.fmodels)[role="treeitem"][aria-selected="true"] {
+:not(.root-item)[role="treeitem"][aria-selected="true"] {
   background-color: var(--item-selected-bg-color);
 }
 
@@ -270,7 +264,7 @@ sch-meta {
   background-color: rgba(17,24,39,1);
   /* gray-400 */
   color: rgba(156,163,175,1);
-  padding-right: 1rem;
+  padding: 0 .5rem;
   height: 100vh;
   overflow: scroll;
   outline: none;

@@ -1,20 +1,43 @@
 @import "./lib/main.css";
 
+html {
+  /* font-sans */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+}
+
 :root {
-  /* gray-900 */
-  --tree-bg-color: rgba(17, 24, 39, 1);
-  /* gray-300 */
-  --tree-color: rgba(209, 213, 219, 1);
+  --gray-300: rgba(209, 213, 219, 1);
+  --gray-700: rgba(55, 65, 81, 1);
+  --gray-800: rgba(31,41,55,1);
+  --gray-900: rgba(17, 24, 39, 1);
+  --matte-black: rgba(14, 19, 31, 1);
+  --blue-500: rgba(59, 130, 246, 1);
+  --pink-400: rgba(244, 114, 182, 1);
+  --indigo-400: rgba(129, 140, 248, 1);
+  color-scheme: dark;
+}
+
+#fmodel [role="tree"] {
+  --tree-bg-color: var(--gray-900);
+  --tree-color: var(--gray-300);
+
+  --item-root-bg-color: var(--matte-black);
+  --item-selected-bg-color: midnightblue;
+  --item-selected-border-color: var(--blue-500);
+  --item-selected-header-bg-color: var(--gray-700);
+
+  --type-color: var(--pink-400);
+  --ref-color: var(--indigo-400);
+}
+
+#project [role="tree"] {
+  --tree-bg-color: var(--gray-900);
+  --tree-color: var(--gray-300);
 
   --item-selected-bg-color: midnightblue;
-  /* border-blue-500 */
-  --item-selected-border-color: rgba(59, 130, 246, 1);
-  --item-selected-header-bg-color: rgba(55, 65, 81, 1);
+  --item-selected-border-color: var(--blue-500);
+  --item-selected-header-bg-color: var(--gray-700);
 
-  /* pink-400*/
-  --type-color: rgba(244, 114, 182, 1);
-  /* indigo-400 */
-  --ref-color: rgba(129, 140, 248, 1);
-
-  color-scheme: dark;
+  --type-color: var(--pink-400);
+  --ref-color: var(--indigo-400);
 }
