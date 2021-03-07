@@ -1,4 +1,4 @@
-import { initModelView, initFileView, update, createStore, allSchs, isSingleSelect } from "../lib/main.js"
+import { initModelView, initFileView, update, createStore, allSchs, isItemchangedCmd } from "../lib/main.js"
 import * as Sch from "../lib/sch.js"
 import * as T from "../lib/sch/type.js"
 import { randInt } from "../lib/utils.js"
@@ -70,7 +70,7 @@ customElements.define("sch-listener", class extends HTMLElement {
   handleTreeCommand(e) {
     if (e.target.closest("[id='project']") && e.detail.file != "")
       switch (true) {
-        case isSingleSelect(e.detail.command.name):
+        case isItemchangedCmd(e.detail.command.name):
           this.changeFile(projectStore, e.detail)
           break
         case ["addSch", "submitEdit"].includes(e.detail.command.name):
