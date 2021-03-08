@@ -230,22 +230,21 @@ describe("Sch operations", () => {
 
     it("#move outer into subtree itself", () => {
       assert.doesNotChange(
-        () => move(store, { dstPath: "[d_union]", startIndex: 1 }, { "": [{ id: "2", index: 2 }] }),
-        store, "fields"
+        () => move(store, { dstPath: "[d_union][][2]", startIndex: 1 }, { "": [{ id: "[d_union]", index: 3 }] }),
+        store.fields, "d_union"
       )
     })
 
     it("#move mutiple src(s), some of which are subtree", () => {
-      let d_union = get(store, "[d_union][][2]")
+      let d_union_2_0 = get(store, "[d_union][][2]")
       move(store, { dstPath: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[d_union][][2]": [{ id: "0", index: 0 }] })
-      assert.deepEqual(store.fields[store.order[1]], d_union)
+      assert.deepEqual(store.fields[store.order[1]], d_union_2_0)
     })
 
     it("#move into one of selected items", () => {
-      let d_union = get(store, "[d_union][][2]")
       assert.doesNotChange(
-        () => move(store, { dstPath: "[d_union][][2]", startIndex: 0 }, { "[d_union]": [{ id: "2", index: 2 }] }),
-        store, "fields"
+        () => move(store, { dstPath: "[d_union]", startIndex: 1 }, { "": [{ id: "[d_union]", index: 3 }, { id: "[c_string]", index: 2 }] }),
+        store.fields, "d_union"
       )
     })
   })
