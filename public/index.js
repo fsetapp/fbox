@@ -85,6 +85,11 @@ customElements.define("sch-listener", class extends HTMLElement {
 
     if (fileStore?._box == FILE_TAG) {
       initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
+
+      if (!window._treeClipboard) {
+        let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
+        fmodelTree._aria.clearClipboard(fmodelTree)
+      }
       return true
     }
     else

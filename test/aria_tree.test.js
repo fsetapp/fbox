@@ -134,10 +134,10 @@ describe("aria [role='tree']", () => {
 
   it("#clearClipboard ", () => {
     tree.querySelectorAll("[role='treeitem']").forEach(a => a.classList.add("item-cutting"))
-    tree._clipboard = () => ""
+    window._treeClipboard = { type: "", storeKey: "", ops: () => { }, selected: {} }
     clearClipboard(tree)
 
-    assert.isNotOk(tree._clipboard)
+    assert.isNotOk(window._treeClipboard)
     tree.querySelectorAll("[role='treeitem']").forEach(a => assert.isNotOk(a.classList.contains("item-cutting")))
   })
 })
