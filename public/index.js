@@ -84,6 +84,7 @@ customElements.define("sch-listener", class extends HTMLElement {
     let fileStore = Sch.get(projectStore, `[${detail.file}]`)
 
     if (fileStore?._box == FILE_TAG) {
+      fileStore._models = anchorsModels(projectStore, fileStore)
       initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
 
       if (!window._treeClipboard) {
@@ -103,6 +104,16 @@ customElements.define("sch-listener", class extends HTMLElement {
   }
 })
 
+const anchorsModels = (projectStore, fileStore) => {
+  let modelsAcc = {}
+  for (let filename of projectStore.order) {
+    let file = projectStore.fields[filename]
+
+    for (let modelname of file.order)
+      modelsAcc[file.fields[modelname].$anchor] = filename != fileStore.key ? `${filename}.${modelname}` : modelname
+  }
+  return modelsAcc
+}
 const fileToStore = (file, store) => {
   for (let fmodel of file.fmodels) store.fields[fmodel.key] = fmodel.sch
   store.key = file.key
@@ -110,7 +121,9 @@ const fileToStore = (file, store) => {
   return T.putAnchor(() => store)
 }
 const projectToStore = (project, store) => {
-  for (let file of project.files) store.fields[file.key] = fileToStore(file, createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } }))
+  for (let file of project.files)
+    store.fields[file.key] = fileToStore(file, createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } }))
+
   store.key = project.key
   store.order = project.order
   return T.putAnchor(() => store)
@@ -121,6 +134,7 @@ addEventListener("DOMContentLoaded", e => {
   let current_file = project.files.find(f => f.id == project.current_file)
   let fileStore = Sch.get(projectStore, `[${current_file.key}]`)
 
+  fileStore._models = anchorsModels(projectStore, fileStore)
   initFileView({ store: projectStore, target: "[id='project']" })
   initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
 }, { once: true })
