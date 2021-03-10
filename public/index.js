@@ -1,62 +1,10 @@
-import { initModelView, initFileView, update, createStore, allSchs, isContextSwitchedCmd, isModelChangedCmd } from "../lib/main.js"
-import * as Sch from "../lib/sch.js"
-import * as T from "../lib/sch/type.js"
-import { randInt } from "../lib/utils.js"
+import { initModelView, initFileView, update, Project } from "../lib/main.js"
+import { project as projectFixture } from "./db_fixtures.js"
 
 "use strict"
 
-const FILE_TAG = "file"
-const PROJECT_TAG = "project"
-
-var projectStore = createStore({
-  tag: PROJECT_TAG,
-  allowedSchs: [() => createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } })],
-  put: { pos: "append" }
-})
-
-const fmodelsFixture = (n, startId, opts) => {
-  let fixture = []
-  for (var i = 0; i < n; i++)
-    fixture.push(allSchs[randInt(allSchs.length)])
-
-  return fixture.map((sch, i) => {
-    let fmodel = { id: startId + i, key: `model_${startId}_${fixture.length - i}`, sch: T.putAnchor(sch, T.FMODEL_BOX) }
-    return Object.assign(fmodel, opts)
-  })
-}
-
-let file_1_models = fmodelsFixture(10, 1, { file_id: 1 })
-let file_1 = {
-  id: 1,
-  key: "file_1",
-  project_id: 1,
-  order: file_1_models.map(m => m.key),
-  fmodels: file_1_models
-}
-let file_2_models = fmodelsFixture(1000, 11, { file_id: 2 })
-let file_2 = {
-  id: 2,
-  key: "file_2",
-  project_id: 1,
-  order: file_2_models.map(m => m.key),
-  fmodels: file_2_models
-}
-let file_3_models = fmodelsFixture(10, 21, { file_id: 3 })
-let file_3 = {
-  id: 3,
-  key: "file_3",
-  project_id: 1,
-  order: file_3_models.map(m => m.key),
-  fmodels: file_3_models
-}
-const project = {
-  id: 1,
-  key: "unclaimed_project",
-  files: [file_1, file_2, file_3],
-  order: ["file_1", "file_2", "file_3"],
-  entry_points: [{ id: 1, key: "model_1" }],
-  current_file: 1
-}
+var projectStore = Project.createProjectStore()
+var project = projectFixture
 
 customElements.define("sch-listener", class extends HTMLElement {
   connectedCallback() {
@@ -68,77 +16,22 @@ customElements.define("sch-listener", class extends HTMLElement {
     this.removeEventListener("sch-update", this.handleSchUpdate)
   }
   handleTreeCommand(e) {
-    if (e.target.closest("[id='project']") && e.detail.file != "")
-      switch (true) {
-        case isContextSwitchedCmd(e.detail.command.name):
-          this.changeFile(projectStore, e.detail.file)
-          break
-        case ["addSch", "submitEdit"].includes(e.detail.command.name):
-          let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
-          let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-          fmodelTree._render(fileStore)
-      }
-    else if (e.target.closest("[id='fmodel']"))
-      switch (true) {
-        case isModelChangedCmd(e.detail.command.name):
-          let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
-          fileStore._models = anchorsModels(projectStore, fileStore)
-          let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-          fmodelTree._render(fileStore)
-      }
-  }
-  changeFile(projectStore, filename) {
-    let fileStore = Sch.get(projectStore, `[${filename}]`)
-
-    if (fileStore?._box == FILE_TAG) {
-      fileStore._models = anchorsModels(projectStore, fileStore)
-      initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
-
-      if (!window._treeClipboard) {
-        let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-        fmodelTree._aria.clearClipboard(fmodelTree)
-      }
-    }
+    Project.handleProjectContext(projectStore, e.target, e.detail.file, e.detail.command)
   }
   handleSchUpdate(e) {
     let { detail, target } = e
-    let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
+    let fileStore = getFileStore(projectStore, e.detail.file)
     if (fileStore)
       update({ store: fileStore, detail, target })
   }
 })
 
-const anchorsModels = (projectStore, fileStore) => {
-  let modelsAcc = {}
-  for (let filename of projectStore.order) {
-    let file = projectStore.fields[filename]
-
-    for (let modelname of file.order)
-      modelsAcc[file.fields[modelname].$anchor] = filename != fileStore.key ? `${filename}.${modelname}` : modelname
-  }
-  return modelsAcc
-}
-const fileToStore = (file, store) => {
-  for (let fmodel of file.fmodels) store.fields[fmodel.key] = fmodel.sch
-  store.key = file.key
-  store.order = file.order
-  return T.putAnchor(() => store)
-}
-const projectToStore = (project, store) => {
-  for (let file of project.files)
-    store.fields[file.key] = fileToStore(file, createStore({ tag: FILE_TAG, paste: { deny: [FILE_TAG] } }))
-
-  store.key = project.key
-  store.order = project.order
-  return T.putAnchor(() => store)
-}
-
 addEventListener("DOMContentLoaded", e => {
-  projectToStore(project, projectStore)
+  Project.projectToStore(project, projectStore)
   let current_file = project.files.find(f => f.id == project.current_file)
-  let fileStore = Sch.get(projectStore, `[${current_file.key}]`)
+  let fileStore = Project.getFileStore(projectStore, current_file.key)
 
-  fileStore._models = anchorsModels(projectStore, fileStore)
+  fileStore._models = Project.anchorsModels(projectStore, fileStore)
   initFileView({ store: projectStore, target: "[id='project']" })
   initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
 }, { once: true })

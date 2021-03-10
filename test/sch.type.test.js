@@ -8,7 +8,7 @@ it("#putAnchor to fmodel box", () => {
   Sch.put(store, "", [{ k: "abc", sch: () => tAny, index: 0 }, { k: "abc", sch: () => T.ref(tAny.$anchor), index: 1 }])
 
   for (let model of Object.keys(store.fields))
-    assert.isOk(store.fields[model].$anchor.startsWith("def_"))
+    assert.isOk(store.fields[model].$anchor)
 })
 
 it("#value invalid json", () => {
