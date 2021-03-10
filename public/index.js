@@ -1,4 +1,4 @@
-import { initModelView, initFileView, update, createStore, allSchs, isItemchangedCmd } from "../lib/main.js"
+import { initModelView, initFileView, update, createStore, allSchs, isContextSwitchedCmd, isModelChangedCmd } from "../lib/main.js"
 import * as Sch from "../lib/sch.js"
 import * as T from "../lib/sch/type.js"
 import { randInt } from "../lib/utils.js"
@@ -70,18 +70,25 @@ customElements.define("sch-listener", class extends HTMLElement {
   handleTreeCommand(e) {
     if (e.target.closest("[id='project']") && e.detail.file != "")
       switch (true) {
-        case isItemchangedCmd(e.detail.command.name):
-          this.changeFile(projectStore, e.detail)
+        case isContextSwitchedCmd(e.detail.command.name):
+          this.changeFile(projectStore, e.detail.file)
           break
         case ["addSch", "submitEdit"].includes(e.detail.command.name):
           let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
           let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-
+          fmodelTree._render(fileStore)
+      }
+    else if (e.target.closest("[id='fmodel']"))
+      switch (true) {
+        case isModelChangedCmd(e.detail.command.name):
+          let fileStore = Sch.get(projectStore, `[${e.detail.file}]`)
+          fileStore._models = anchorsModels(projectStore, fileStore)
+          let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
           fmodelTree._render(fileStore)
       }
   }
-  changeFile(projectStore, detail) {
-    let fileStore = Sch.get(projectStore, `[${detail.file}]`)
+  changeFile(projectStore, filename) {
+    let fileStore = Sch.get(projectStore, `[${filename}]`)
 
     if (fileStore?._box == FILE_TAG) {
       fileStore._models = anchorsModels(projectStore, fileStore)
@@ -91,10 +98,7 @@ customElements.define("sch-listener", class extends HTMLElement {
         let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
         fmodelTree._aria.clearClipboard(fmodelTree)
       }
-      return true
     }
-    else
-      return false
   }
   handleSchUpdate(e) {
     let { detail, target } = e
