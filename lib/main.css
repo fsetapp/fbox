@@ -1,62 +1,5 @@
-body {
-  margin: 0;
-}
-
-*,
-:after,
-:before {
-  box-sizing: border-box;
-}
-
-kbd {
-  display: inline-block;
-  border: 1px solid gray;
-  margin: .25rem 0;
-  padding: .25rem .5rem;
-  border-radius: .25rem;
-  font-family: inherit;
-  font-size: .75rem;
-  line-height: 1;
-  box-shadow: 2px 2px 0 darkred;
-}
-
 dfn {
   font-style: normal;
-}
-
-ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-dd {
-  margin: 0;
-}
-
-.help {
-  padding: 0 .5rem;
-  height: 100vh;
-  overflow-y: scroll;
-  background-color: #19202f;
-  color: rgba(209, 213, 219, 1);
-}
-
-.help dl {
-  display: flex;
-  align-items: baseline;
-  border-top: 1px dotted rgba(107, 114, 128, .75);
-}
-
-
-.help h2 {
-  text-decoration: underline;
-  margin-bottom: 0;
-}
-.help dd,
-.help dt {
-  margin: .5rem .5rem .5rem 0;
-  flex: 1;
 }
 
 @keyframes fadein {
@@ -85,18 +28,8 @@ dd {
   }
 }
 
-.text-sm {
-  font-size: .875rem;
-  line-height: 1.25rem;
-}
-
-.text-xs {
-  font-size: .75rem;
-  line-height: 1rem;
-}
-
 [role="tree"] {
-  min-width: 374px;
+  min-width: var(--tree-min-width);
   height: 100vh;
   overflow-y: scroll;
   background-color: var(--tree-bg-color);
@@ -316,6 +249,11 @@ sch-meta form textarea.invalid {
   border-bottom: 1px solid red;
   box-shadow: none;
 }
+sch-meta form textarea:focus,
+sch-meta form input:focus,
+sch-meta form select:focus {
+  outline: none;
+}
 sch-meta form textarea,
 sch-meta form input,
 sch-meta form select {
@@ -325,7 +263,7 @@ sch-meta form select {
   color: rgba(209, 213, 219, 1);
   background-color: transparent;
   width: 100%;
-  outline: none;
+  min-width: 0;
 }
 sch-meta form textarea {
   resize: none;
