@@ -10,7 +10,7 @@ const fmodelsFixture = (n, startId, opts) => {
     fixture.push(allSchs[randInt(allSchs.length)])
 
   return fixture.map((sch, i) => {
-    let fmodel = { id: startId + i, key: `model_${startId}_${fixture.length - i}`, sch: T.putAnchor(sch, T.FMODEL_BOX) }
+    let fmodel = { id: startId + i, key: `model_${startId}_${fixture.length - i}`, sch: T.putAnchor(sch, T.FMODEL_TAG) }
     return Object.assign(fmodel, opts)
   })
 }

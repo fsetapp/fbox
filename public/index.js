@@ -20,7 +20,7 @@ customElements.define("sch-listener", class extends HTMLElement {
   }
   handleSchUpdate(e) {
     let { detail, target } = e
-    let fileStore = getFileStore(projectStore, e.detail.file)
+    let fileStore = Project.getFileStore(projectStore, e.detail.file)
     if (fileStore)
       update({ store: fileStore, detail, target })
   }
