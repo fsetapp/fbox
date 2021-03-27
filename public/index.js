@@ -5,6 +5,7 @@ import { project as projectFixture } from "./db_fixtures.js"
 
 var projectStore = Project.createProjectStore()
 var project = projectFixture
+var projectBaseStore
 
 customElements.define("sch-listener", class extends HTMLElement {
   connectedCallback() {
@@ -17,6 +18,11 @@ customElements.define("sch-listener", class extends HTMLElement {
   }
   handleTreeCommand(e) {
     Project.handleProjectContext(projectStore, e.target, e.detail.file, e.detail.command)
+    setTimeout(() => {
+      Project.handleProjectRemote(projectStore, projectBaseStore, e.detail.command, (diff) => {
+        projectBaseStore = JSON.parse(JSON.stringify(projectStore))
+      })
+    })
   }
   handleSchUpdate(e) {
     let { detail, target } = e
@@ -34,4 +40,6 @@ addEventListener("DOMContentLoaded", e => {
   fileStore._models = Project.anchorsModels(projectStore, fileStore)
   initFileView({ store: projectStore, target: "[id='project']" })
   initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
+
+  projectBaseStore = JSON.parse(JSON.stringify(projectStore))
 }, { once: true })
