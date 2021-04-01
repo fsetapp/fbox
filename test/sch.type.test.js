@@ -3,7 +3,7 @@ import * as T from "../lib/sch/type.js"
 import * as Sch from "../lib/sch.js"
 
 it("#putAnchor to fmodel box", () => {
-  var store = { ...T.record(), _tag: T.FMODEL_TAG }
+  var store = T.record()
   let tAny = T.any()
   Sch.put(store, "", [{ k: "abc", sch: () => tAny, index: 0 }, { k: "abc", sch: () => T.ref(tAny.$anchor), index: 1 }])
 
