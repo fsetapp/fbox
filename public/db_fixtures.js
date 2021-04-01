@@ -13,13 +13,13 @@ const fmodelsFixture = (n, startId, opts) => {
     let fmodel = {
       id: startId + i,
       key: `model_${startId}_${fixture.length - i}`,
-      sch: Object.assign(T.putAnchor(sch, T.FMODEL_TAG), { _tag: T.FMODEL_TAG })
+      sch: Object.assign(T.putAnchor(sch, { tag: T.FMODEL_TAG }))
     }
 
     Object.assign(fmodel, {
       anchor: fmodel.sch.$anchor,
       type: fmodel.sch.type,
-      is_entry: false,
+      isEntry: false,
     })
 
     return Object.assign(fmodel, opts)

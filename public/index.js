@@ -17,7 +17,7 @@ customElements.define("sch-listener", class extends HTMLElement {
     this.removeEventListener("sch-update", this.handleSchUpdate)
   }
   handleTreeCommand(e) {
-    Project.handleProjectContext(projectStore, e.target, e.detail.file, e.detail.command)
+    Project.handleProjectContext(projectStore, e.detail.target, e.detail.command)
     setTimeout(() => {
       Project.handleProjectRemote(projectStore, projectBaseStore, e.detail.command, (diff) => {
         projectBaseStore = JSON.parse(JSON.stringify(projectStore))
