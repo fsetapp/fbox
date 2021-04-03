@@ -30,12 +30,10 @@ dfn {
 
 [role="tree"] {
   min-width: var(--tree-min-width);
-  height: 100vh;
-  overflow-y: scroll;
   background-color: var(--tree-bg-color);
+  height: 100%;
   color: var(--tree-color);
 }
-
 [role="tree"] :not(textarea)::selection {
   background-color: transparent;
 }
@@ -45,14 +43,22 @@ dfn {
 
 .root-item {
   padding: 0 .5rem;
+  height: inherit;
+  display: flex;
+  flex-direction: column;
 }
-
+.root-item>.h {
+  padding: .5rem 0;
+}
+.root-item>[role='group'] {
+  overflow: auto;
+  flex: 1 1 auto;
+}
 .root-item>[role='group']>[role="treeitem"] {
   margin: .5rem 0;
   padding: .5rem 0;
   border-radius: .25rem;
 }
-
 .root-item>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
   /* gray-800 */
   border-color: rgba(31,41,55,1);
@@ -198,7 +204,6 @@ sch-meta {
   /* gray-400 */
   color: rgba(156,163,175,1);
   padding: 0 .5rem;
-  height: 100vh;
   overflow: scroll;
   outline: none;
 }
