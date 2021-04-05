@@ -95,11 +95,11 @@ dfn {
 
 [role="treeitem"][aria-selected="true"].item-cutting,
 [role="treeitem"].item-cutting {
-  border: 1px dotted red !important;
+  border: 1px solid darkred !important;
 }
 [role="treeitem"][aria-selected="true"].item-copying,
 [role="treeitem"].item-copying {
-  border: 1px dotted orange !important;
+  border: 1px solid darkorange !important;
 }
 
 [role="treeitem"].item-pasted {
