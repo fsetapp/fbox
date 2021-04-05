@@ -7,21 +7,34 @@ var projectStore = Project.createProjectStore()
 var project = projectFixture
 var projectBaseStore
 
+const buffer = function (func, wait, scope) {
+  var timer = null;
+  return function () {
+    if (timer) clearTimeout(timer)
+    var args = arguments
+    timer = setTimeout(function () {
+      timer = null
+      func.apply(scope, args)
+    }, wait)
+  }
+}
 customElements.define("sch-listener", class extends HTMLElement {
   connectedCallback() {
     this.addEventListener("tree-command", this.handleTreeCommand)
+    this.addEventListener("tree-command", buffer(this.handleProjectRemote, 1000))
     this.addEventListener("sch-update", this.handleSchUpdate)
   }
   disconnectedCallback() {
     this.removeEventListener("tree-command", this.handleTreeCommand)
+    this.removeEventListener("tree-command", buffer(this.handleProjectRemote, 1000))
     this.removeEventListener("sch-update", this.handleSchUpdate)
   }
   handleTreeCommand(e) {
     Project.handleProjectContext(projectStore, e.detail.target, e.detail.command)
-    setTimeout(() => {
-      Project.handleProjectRemote(projectStore, projectBaseStore, e.detail.command, (diff) => {
-        projectBaseStore = JSON.parse(JSON.stringify(projectStore))
-      })
+  }
+  handleProjectRemote(e) {
+    Project.handleProjectRemote(projectStore, projectBaseStore, e.detail.command, (diff) => {
+      projectBaseStore = JSON.parse(JSON.stringify(projectStore))
     })
   }
   handleSchUpdate(e) {
