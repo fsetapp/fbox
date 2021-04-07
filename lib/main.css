@@ -68,6 +68,7 @@ dfn {
 [role="treeitem"] {
   border: 1px solid transparent;
   margin: 1px 0;
+  position: relative;
   /* overflow: hidden; */
 }
 
@@ -113,6 +114,19 @@ dfn {
 [role="treeitem"].item-pasted.down {
   animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
 }
+
+[role="treeitem"] [data-diff]:after,
+[role="treeitem"] [data-diff]:after,
+[role="treeitem"] [data-diff]:after,
+[role="treeitem"] [data-diff]:after {
+  content: attr(data-diff);
+  position: absolute;
+  right: 1rem;
+}
+[role="treeitem"] [data-diff*="N"] { color: lightgreen; }
+[role="treeitem"] [data-diff*="R"]  { color: red; }
+[role="treeitem"] [data-diff*="M"] { color: blue; }
+[role="treeitem"] [data-diff*="C"] { color: darkorange; }
 
 .file {
   display: flex;
