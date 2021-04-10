@@ -115,18 +115,24 @@ dfn {
   animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
 }
 
-[role="treeitem"] [data-diff]:after,
-[role="treeitem"] [data-diff]:after,
-[role="treeitem"] [data-diff]:after,
 [role="treeitem"] [data-diff]:after {
-  content: attr(data-diff);
+  content: attr(data-sync);
   position: absolute;
   right: 1rem;
 }
-[role="treeitem"] [data-diff*="N"] { color: lightgreen; }
-[role="treeitem"] [data-diff*="R"]  { color: red; }
-[role="treeitem"] [data-diff*="M"] { color: blue; }
-[role="treeitem"] [data-diff*="C"] { color: darkorange; }
+[role="treeitem"] [data-diff]:before {
+  position: absolute;
+  width: 2px;
+  content: " ";
+  white-space: pre;
+  background-color: currentColor;
+}
+
+[role="treeitem"] [data-diff] {  color: transparent; }
+[role="treeitem"] [data-diff*="N"] {  color: lightgreen; }
+[role="treeitem"] [data-diff*="R"]  {  color: red; }
+[role="treeitem"] [data-diff*="M"] {  color: blue; }
+[role="treeitem"] [data-diff*="C"] {  color: darkorange; }
 
 .file {
   display: flex;
@@ -137,6 +143,7 @@ dfn {
   display: flex;
   align-items: baseline;
   width: 100%;
+  border: 1px solid transparent;
 }
 
 .k {
@@ -144,6 +151,7 @@ dfn {
   color: inherit;
   word-break: break-all;
   max-width: 40ch;
+  color: var(--key-color);
 }
 
 [role="group"][data-group="indexed"]>[role="treeitem"]>.k,

@@ -35,7 +35,6 @@ customElements.define("sch-listener", class extends HTMLElement {
   }
   handleProjectRemote(e) {
     Project.handleProjectRemote(projectStore, e.detail.command, (diff) => {
-      delete projectStore._diff
       projectBaseStore = JSON.parse(JSON.stringify(projectStore))
       this.runDiff()
       let projectTree = document.querySelector("[id='project'] [role='tree']")
