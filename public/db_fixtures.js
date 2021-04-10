@@ -1,4 +1,4 @@
-import { allSchs } from "../lib/main.js"
+import { allSchs } from "../lib/project/store.js"
 import * as T from "../lib/sch/type.js"
 import { randInt } from "../lib/utils.js"
 

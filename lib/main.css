@@ -61,25 +61,24 @@ dfn {
 }
 .root-item>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
   /* gray-800 */
-  border-color: rgba(31,41,55,1);
+  box-shadow: inset 0px 0px 0px 1px rgba(31,41,55,1);
   background-color: var(--item-root-bg-color);
 }
 
 [role="treeitem"] {
-  border: 1px solid transparent;
+  box-shadow: inset 0px 0px 0px 1px transparent;
+  outline: none;
   margin: 1px 0;
   position: relative;
-  /* overflow: hidden; */
 }
 
 [role="treeitem"][aria-selected] {
-  outline: none;
 }
 
 .folder[role="treeitem"][aria-selected="false"]>.h:hover,
 .file[role="treeitem"][aria-selected="false"]:hover {
   /* bg-gray-800 */
-  background-color: rgba(31, 41, 55, 1);
+  background-color: rgba(31, 41, 55, .75);
 }
 
 :not(.root-item)[role="treeitem"][aria-selected="true"] {
@@ -91,16 +90,16 @@ dfn {
 }
 
 [role="treeitem"][aria-selected="true"]:focus {
-  border-color: var(--item-selected-border-color);
+  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
 }
 
 [role="treeitem"][aria-selected="true"].item-cutting,
 [role="treeitem"].item-cutting {
-  border: 1px solid darkred !important;
+  box-shadow: inset 0px 0px 0px 1px darkred !important;
 }
 [role="treeitem"][aria-selected="true"].item-copying,
 [role="treeitem"].item-copying {
-  border: 1px solid darkorange !important;
+  box-shadow: inset 0px 0px 0px 1px darkorange !important;
 }
 
 [role="treeitem"].item-pasted {
@@ -144,6 +143,7 @@ dfn {
   align-items: baseline;
   width: 100%;
   border: 1px solid transparent;
+  outline: none;
 }
 
 .k {

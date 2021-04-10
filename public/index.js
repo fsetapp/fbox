@@ -1,4 +1,4 @@
-import { initModelView, initFileView, update, Project } from "../lib/main.js"
+import { FmodelTree, ProjectTree, SchMetaForm, Project } from "../lib/main.js"
 import { project as projectFixture } from "./db_fixtures.js"
 import * as Diff from "../lib/sch/diff.js"
 
@@ -31,26 +31,28 @@ customElements.define("sch-listener", class extends HTMLElement {
     this.removeEventListener("sch-update", this.handleSchUpdate)
   }
   handleTreeCommand(e) {
-    Project.handleProjectContext(projectStore, e.detail.target, e.detail.command, this.runDiff)
+    Project.controller(projectStore, e.detail.target, e.detail.command, this.runDiff)
   }
   handleProjectRemote(e) {
-    Project.handleProjectRemote(projectStore, e.detail.command, (diff) => {
+    Project.taggedDiff(projectStore, e.detail.command, (diff) => {
+      let file = e.detail.target.closest("[data-tag='file']")
+      let filename = file?.key
+      let fileStore = Project.getFileStore(projectStore, filename)
+
       projectBaseStore = JSON.parse(JSON.stringify(projectStore))
       this.runDiff()
-      let projectTree = document.querySelector("[id='project'] [role='tree']")
-      projectTree._render(projectStore)
-      let fmodelTree = document.querySelector("[id='fmodel'] [role='tree']")
-      fmodelTree._render()
+      projectStore.render()
+      fileStore.render()
     })
   }
   runDiff() {
     return Diff.diff(projectStore, projectBaseStore)
   }
   handleSchUpdate(e) {
-    let { detail, target } = e
+    let { detail } = e
     let fileStore = Project.getFileStore(projectStore, e.detail.file)
     if (fileStore)
-      update({ store: fileStore, detail, target })
+      Project.SchMeta.update({ store: fileStore, detail })
   }
 })
 
@@ -60,8 +62,9 @@ addEventListener("DOMContentLoaded", e => {
   let fileStore = Project.getFileStore(projectStore, current_file.key)
 
   fileStore._models = Project.anchorsModels(projectStore, fileStore)
-  initFileView({ store: projectStore, target: "[id='project']" })
-  initModelView({ store: fileStore, target: "[id='fmodel']", metaSelector: "sch-meta" })
+  ProjectTree({ store: projectStore, target: "[id='project']" })
+  FmodelTree({ store: fileStore, target: "[id='fmodel']" })
+  SchMetaForm({ store: fileStore, target: "[id='fsch']", treeTarget: "[id='fmodel']" })
 
   projectBaseStore = JSON.parse(JSON.stringify(projectStore))
 }, { once: true })
