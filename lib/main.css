@@ -130,7 +130,8 @@ dfn {
 [role="treeitem"] [data-diff] {  color: transparent; }
 [role="treeitem"] [data-diff*="N"] {  color: lightgreen; }
 [role="treeitem"] [data-diff*="R"]  {  color: red; }
-[role="treeitem"] [data-diff*="M"] {  color: blue; }
+/* blue-500 */
+[role="treeitem"] [data-diff*="M"] {  color: rgba(59, 130, 246, 1); }
 [role="treeitem"] [data-diff*="C"] {  color: darkorange; }
 
 .file {
