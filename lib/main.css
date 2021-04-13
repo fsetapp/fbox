@@ -108,10 +108,10 @@ dfn {
 }
 
 [role="treeitem"].item-pasted.up {
-  animation: slide-in-bottom .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+  animation: slide-in-bottom .05s cubic-bezier(0.230, 1.000, 0.320, 1.000);
 }
 [role="treeitem"].item-pasted.down {
-  animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+  animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000);
 }
 
 [role="treeitem"] [data-diff]:after {
@@ -128,11 +128,11 @@ dfn {
 }
 
 [role="treeitem"] [data-diff] {  color: transparent; }
-[role="treeitem"] [data-diff*="N"] {  color: lightgreen; }
-[role="treeitem"] [data-diff*="R"]  {  color: red; }
+[role="treeitem"] [data-diff*="N"] {  color: var(--diff-new-color); }
+[role="treeitem"] [data-diff*="R"]  {  color: var(--diff-removed-color); }
 /* blue-500 */
-[role="treeitem"] [data-diff*="M"] {  color: rgba(59, 130, 246, 1); }
-[role="treeitem"] [data-diff*="C"] {  color: darkorange; }
+[role="treeitem"] [data-diff*="M"] {  color: var(--diff-moved-color); }
+[role="treeitem"] [data-diff*="C"] {  color: var(--diff-changed-color); }
 
 .file {
   display: flex;
