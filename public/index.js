@@ -1,5 +1,5 @@
 import { FmodelTree, ProjectTree, SchMetaForm, Project } from "../lib/main.js"
-import { project as projectFixture } from "./db_fixtures.js"
+import { project as projectFixture } from "./backend_fixtures.js"
 import * as Diff from "../lib/sch/diff.js"
 
 "use strict"
@@ -58,9 +58,7 @@ customElements.define("sch-listener", class extends HTMLElement {
 
 addEventListener("DOMContentLoaded", e => {
   Project.projectToStore(project, projectStore)
-  let current_file = project.files.find(f => f.id == project.current_file)
-  let fileStore = Project.getFileStore(projectStore, current_file.key)
-
+  let fileStore = Project.getFileStore(projectStore, project.currentFileKey)
   fileStore._models = Project.anchorsModels(projectStore, fileStore)
   ProjectTree({ store: projectStore, target: "[id='project']" })
   FmodelTree({ store: fileStore, target: "[id='fmodel']" })
