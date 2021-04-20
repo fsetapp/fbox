@@ -21,7 +21,7 @@ const buffer = function (func, wait, scope) {
 }
 customElements.define("sch-listener", class extends HTMLElement {
   connectedCallback() {
-    this.addEventListener("tree-command", this.handleTreeCommand)
+    this.addEventListener("tree-command", buffer(this.handleTreeCommand.bind(this)))
     this.addEventListener("tree-command", buffer(this.handleProjectRemote.bind(this), 1000))
     this.addEventListener("sch-update", this.handleSchUpdate)
   }
@@ -34,7 +34,11 @@ customElements.define("sch-listener", class extends HTMLElement {
     Project.controller(projectStore, e.detail.target, e.detail.command, this.runDiff)
   }
   handleProjectRemote(e) {
-    Project.taggedDiff(projectStore, e.detail.command, (diff) => {
+    if (!Project.isDiffableCmd(e.detail.command.name))
+      return
+
+    projectStore._diffToRemote = this.runDiff()
+    Project.taggedDiff(projectStore, (diff) => {
       let file = e.detail.target.closest("[data-tag='file']")
       let filename = file?.key
       let fileStore = Project.getFileStore(projectStore, filename)

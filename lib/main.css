@@ -55,7 +55,7 @@ dfn {
   flex: 1 1 auto;
 }
 .root-item>[role='group']>[role="treeitem"] {
-  margin: .5rem 0;
+  margin: .5rem 1px;
   padding: .5rem 0;
   border-radius: .25rem;
 }
@@ -72,13 +72,13 @@ dfn {
   position: relative;
 }
 
-[role="treeitem"][aria-selected] {
+[role="treeitem"][aria-selected="false"] {
 }
 
 .folder[role="treeitem"][aria-selected="false"]>.h:hover,
 .file[role="treeitem"][aria-selected="false"]:hover {
   /* bg-gray-800 */
-  background-color: rgba(31, 41, 55, .75);
+  background: radial-gradient(rgba(31,41,55,1), rgba(31,41,55,.5));
 }
 
 :not(.root-item)[role="treeitem"][aria-selected="true"] {
@@ -142,7 +142,6 @@ dfn {
 .folder .h {
   display: flex;
   align-items: baseline;
-  width: 100%;
   outline: none;
 }
 
