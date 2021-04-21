@@ -37,7 +37,7 @@ customElements.define("sch-listener", class extends HTMLElement {
     if (!Project.isDiffableCmd(e.detail.command.name))
       return
 
-    projectStore._diffToRemote = this.runDiff()
+    Object.defineProperty(projectStore, "_diffToRemote", { value: this.runDiff(), writable: true })
     Project.taggedDiff(projectStore, (diff) => {
       let file = e.detail.target.closest("[data-tag='file']")
       let filename = file?.key
