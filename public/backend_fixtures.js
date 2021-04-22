@@ -26,28 +26,24 @@ let files = [
   {
     ...T.putAnchor(T.record),
     key: "file_1",
-    order: file_1_models.map(m => m.key),
-    fields: file_1_models.reduce((acc, a) => { acc[a.key] = a; return acc }, {})
+    fields: file_1_models
   },
   {
     ...T.putAnchor(T.record),
     key: "file_2",
-    order: file_2_models.map(m => m.key),
-    fields: file_2_models.reduce((acc, a) => { acc[a.key] = a; return acc }, {})
+    fields: file_2_models
   },
   {
     ...T.putAnchor(T.record),
     key: "file_3",
-    order: file_3_models.map(m => m.key),
-    fields: file_3_models.reduce((acc, a) => { acc[a.key] = a; return acc }, {})
+    fields: file_3_models
   }
 ]
 
 const project = {
   ...T.putAnchor(T.record),
   key: "unclaimed_project",
-  fields: files.reduce((acc, a) => { acc[a.key] = a; return acc }, {}),
-  order: files.map(a => a.key),
+  fields: files,
   schMetas: {},
   currentFileKey: files[0].key
 }
