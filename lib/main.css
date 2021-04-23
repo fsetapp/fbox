@@ -149,7 +149,6 @@ dfn {
   display: flex;
   color: inherit;
   word-break: break-all;
-  max-width: 40ch;
   color: var(--key-color);
 }
 
@@ -179,7 +178,6 @@ dfn {
   display: flex;
   color: var(--type-color);
   word-break: break-all;
-  max-width: 60ch;
   padding-right: .5rem;
 }
 
