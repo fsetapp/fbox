@@ -34,12 +34,13 @@ dfn {
   height: 100%;
   color: var(--tree-color);
 }
-[role="tree"] :not(textarea)::selection {
+
+/* [role="tree"] :not(textarea)::selection {
   background-color: transparent;
 }
 [role="tree"][data-shift-key="false"] *::selection {
   background-color: rgba(59, 130, 246, .5);
-}
+} */
 
 .root-item {
   padding: 0 .5rem;
@@ -49,6 +50,7 @@ dfn {
 }
 .root-item>.h {
   padding: .5rem 0;
+  word-break: break-all;
 }
 .root-item>[role='group'] {
   overflow: auto;
@@ -179,6 +181,7 @@ dfn {
   color: var(--type-color);
   word-break: break-all;
   padding-right: .5rem;
+  min-width: 4ch;
 }
 
 .m {
