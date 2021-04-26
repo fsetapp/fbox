@@ -70,6 +70,7 @@ dd {
   --gray-700: rgba(55, 65, 81, 1);
   --gray-800: rgba(31,41,55,1);
   --gray-900: rgba(17, 24, 39, 1);
+  --gray-meta: #19202f;
   --matte-black: rgba(14, 19, 31, 1);
   --blue-500: rgba(59, 130, 246, 1);
   --pink-400: rgba(244, 114, 182, 1);
@@ -114,4 +115,88 @@ dd {
   --diff-removed-color: rgba(255, 0, 0, .5);
   --diff-moved-color: rgba(59, 130, 246, .5);
   --diff-changed-color: rgba(255, 140, 0, .5);
+}
+
+#fsch {
+  background-color: var(--gray-900)
+}
+
+.fbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+}
+
+.fbox .box-label {
+  display: block;
+  background-color: var(--gray-meta);
+  color: var(--gray-400);
+  border: 1px solid var(--gray-800);
+  flex-grow: 1;
+  min-height: 100%;
+  word-break: break-all;
+}
+.fbox .box-label:focus-within {
+  color: var(--blue-500);
+  border-color: var(--blue-500);
+}
+.fbox .box-label.readonly,
+.fbox .box-label.readonly input[readonly] {
+  color: var(--gray-500);
+}
+.fbox .l,
+.fbox .err {
+  margin: 0;
+  padding: .25rem .5rem;
+  font-size: .75rem;
+  line-height: 1rem;
+}
+.fbox .err {
+  color: red;
+}
+.fbox input:not(:focus):not(:placeholder-shown):invalid,
+.fbox textarea:not(:focus):not(:placeholder-shown).invalid {
+  border-bottom: 1px solid red;
+  box-shadow: none;
+}
+.fbox textarea:focus,
+.fbox input:focus,
+.fbox select:focus {
+  outline: none;
+}
+.fbox textarea,
+.fbox input,
+.fbox select {
+  display: block;
+  padding: .5rem;
+  color: var(--gray-300);
+  background-color: transparent;
+  width: 100%;
+  min-width: 0;
+}
+.fbox textarea {
+  resize: none;
+}
+.fbox input {
+  border: 1px solid transparent;
+}
+.fbox input[type='checkbox']{
+  margin: .5rem;
+  width: auto;
+}
+.fbox select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right .5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 3em;
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+}
+.fbox select > option {
+  color: black;
 }
