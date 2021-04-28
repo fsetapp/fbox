@@ -78,6 +78,13 @@ dfn {
 :not(.root-item)[role="treeitem"][aria-selected="true"] {
   background-color: var(--item-selected-bg-color);
 }
+:not(.root-item)[role="treeitem"] > [aria-expanded="true"] {
+  outline: none;
+  display: block;
+}
+:not(.root-item)[role="treeitem"] > [aria-expanded="false"] {
+  display: none;
+}
 
 [role="treeitem"][aria-selected="true"]:focus {
   box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
