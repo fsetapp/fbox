@@ -63,7 +63,7 @@ customElements.define("sch-listener", class extends HTMLElement {
 addEventListener("DOMContentLoaded", e => {
   Project.projectToStore(project, projectStore)
   let fileStore = Project.getFileStore(projectStore, project.currentFileKey)
-  fileStore._models = Project.anchorsModels(projectStore, fileStore)
+  fileStore._models = Project.anchorsModels(projectStore)
   ProjectTree({ store: projectStore, target: "[id='project']" })
   FmodelTree({ store: fileStore, target: "[id='fmodel']" })
   SchMetaForm({ store: fileStore, target: "[id='fsch']", treeTarget: "[id='fmodel']" })
