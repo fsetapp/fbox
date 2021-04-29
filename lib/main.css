@@ -78,11 +78,11 @@ dfn {
 :not(.root-item)[role="treeitem"][aria-selected="true"] {
   background-color: var(--item-selected-bg-color);
 }
-:not(.root-item)[role="treeitem"] > [aria-expanded="true"] {
+:not(.root-item)[role="treeitem"][aria-expanded="true"] > [role='group'] {
   outline: none;
   display: block;
 }
-:not(.root-item)[role="treeitem"] > [aria-expanded="false"] {
+:not(.root-item)[role="treeitem"][aria-expanded="false"] > [role='group'] {
   display: none;
 }
 
