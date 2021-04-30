@@ -46,7 +46,7 @@ customElements.define("sch-listener", class extends HTMLElement {
       projectBaseStore = JSON.parse(JSON.stringify(projectStore))
       this.runDiff()
       projectStore.render()
-      fileStore.render()
+      fileStore?.render()
     })
   }
   runDiff() {
