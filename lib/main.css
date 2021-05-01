@@ -123,7 +123,9 @@ dfn {
   white-space: pre;
   background-color: var(--d-color);
 }
-.setnu [role="treeitem"] [data-diff]:before {
+.setnu [role="treeitem"].folder > .h:before,
+.setnu [role="treeitem"].file:before {
+  position: absolute;
   width: 2rem;
   content: counter(line);
   color: var(--gray-700);
