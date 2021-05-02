@@ -44,6 +44,7 @@ customElements.define("sch-listener", class extends HTMLElement {
       let fileStore = Project.getFileStore(projectStore, filename)
 
       projectBaseStore = JSON.parse(JSON.stringify(projectStore))
+      Diff.buildBaseIndices(projectBaseStore)
       this.runDiff()
       projectStore.render()
       fileStore?.render()
@@ -69,4 +70,5 @@ addEventListener("DOMContentLoaded", e => {
   SchMetaForm({ store: fileStore, target: "[id='fsch']", treeTarget: "[id='fmodel']" })
 
   projectBaseStore = JSON.parse(JSON.stringify(projectStore))
+  Diff.buildBaseIndices(projectBaseStore)
 }, { once: true })
