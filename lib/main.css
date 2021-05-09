@@ -152,20 +152,21 @@ dfn {
 
 .file {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
 }
 
 .folder .h {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   outline: none;
 }
 
 .k {
   display: flex;
   color: inherit;
-  word-break: break-all;
+  word-break: break-word;
   color: var(--key-color);
+  max-width: 42.5%
 }
 
 [role="group"][data-group="indexed"]>[role="treeitem"]>.k,
@@ -193,9 +194,10 @@ dfn {
 .t {
   display: flex;
   color: var(--type-color);
-  word-break: break-all;
-  padding-right: .5rem;
-  min-width: 4ch;
+  word-break: break-word;
+  margin-right: .5rem;
+  max-width: 42.5%;
+  flex-grow: 1;
 }
 
 .m {

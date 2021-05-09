@@ -203,3 +203,9 @@ dd {
 .fbox select > option {
   color: black;
 }
+
+sch-meta > .meta-def {
+  padding: 1rem 0;
+  word-break: break-all;
+  --meta-def-color: var(--indigo-400);
+}
