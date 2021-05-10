@@ -50,6 +50,7 @@ dfn {
 .root-item>[role='group'] {
   overflow: auto;
   flex: 1 1 auto;
+  outline: none;
 }
 .root-item>[role='group']>[role="treeitem"] {
   margin: 0 1px;
