@@ -8,7 +8,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = T.record()
-      allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.number, T.nil, () => T.value("\"json string\"")]
+      allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.int16, T.nil, () => T.value("\"json string\"")]
     });
 
     it("#put a child", () => {
@@ -46,7 +46,7 @@ describe("Sch operations", () => {
     })
 
     it("#put a dup key", () => {
-      put(store, "", [{ k: `key`, sch: T.number, index: 0 }])
+      put(store, "", [{ k: `key`, sch: T.int16, index: 0 }])
       put(store, "", [{ k: `key`, sch: T.nil, index: 0 }])
 
       store.fields[0].key == "key –"
@@ -55,14 +55,14 @@ describe("Sch operations", () => {
     })
 
     it("#put null key", () => {
-      put(store, "", [{ k: null, sch: T.number, index: 0 }])
+      put(store, "", [{ k: null, sch: T.int16, index: 0 }])
 
       assert.equal(store.fields.length, 1)
       assert.match(store.fields[0].key, /^key_/)
     })
 
     it("#put index number as key", () => {
-      put(store, "", [{ k: 0, sch: T.number, index: 0 }])
+      put(store, "", [{ k: 0, sch: T.int16, index: 0 }])
 
       assert.equal(store.fields.length, 1)
       assert.equal(store.fields[0].key, "0")
@@ -74,7 +74,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = T.record()
-      allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.number, T.nil, () => T.value("\"json string\"")]
+      allSchs = [T.record, T.list, T.tuple, T.union, T.any, T.string, T.bool, T.int16, T.nil, () => T.value("\"json string\"")]
       allSchs.reverse().forEach((sch, i) =>
         put(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
       )
@@ -140,8 +140,8 @@ describe("Sch operations", () => {
       changeType(store, "[a]", T.list)
       assert.equal(store.fields.find(a => a.key == "a").type, T.LIST)
 
-      changeType(store, "[a]", T.number)
-      assert.equal(store.fields.find(a => a.key == "a").type, T.NUMBER)
+      changeType(store, "[a]", T.int16)
+      assert.equal(store.fields.find(a => a.key == "a").type, T.INT16)
 
       changeType(store, "[a]", () => T.value("\"json\""))
       assert.equal(store.fields.find(a => a.key == "a").type, T.VALUE)
@@ -195,10 +195,10 @@ describe("Sch operations", () => {
       ])
       put(store, "[b_tuple]", [
         { k: null, sch: T.nil, index: 1 },
-        { k: null, sch: T.number, index: 2 }
+        { k: null, sch: T.int16, index: 2 }
       ])
       put(store, "[d_union]", [
-        { k: null, sch: T.number, index: 1 },
+        { k: null, sch: T.int16, index: 1 },
         { k: null, sch: T.record, index: 2 }
       ])
     })
@@ -215,14 +215,14 @@ describe("Sch operations", () => {
 
     it("#move 1 indexed-src to 1 indexed-dst, one items", () => {
       move(store, { dstPath: "[b_tuple]", startIndex: 0 }, { "[d_union]": [{ id: "2", index: 2 }] })
-      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.type), [T.RECORD, T.ANY, T.NULL, T.NUMBER])
-      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.type), [T.ANY, T.NUMBER])
+      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.type), [T.RECORD, T.ANY, T.NULL, T.INT16])
+      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.type), [T.ANY, T.INT16])
     })
 
     it("#move 2 indexed-src to 1 keyed-dst", () => {
       move(store, { dstPath: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[b_tuple]": [{ id: "2", index: 2 }] })
       assert.deepEqual(store.fields.map(a => a.key), ["a_list", "2", "2 –", "b_tuple", "c_string", "d_union"])
-      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.type), [T.ANY, T.NUMBER])
+      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.type), [T.ANY, T.INT16])
       assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.type), [T.ANY, T.NULL])
     })
 
