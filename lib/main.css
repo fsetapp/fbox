@@ -222,7 +222,8 @@ dfn {
   color: orangered;
 }
 
-.t>.value {
+.t>.value,
+.k.tag {
   /* green-500 */
   color: rgba(16, 185, 129, 1);
 }
