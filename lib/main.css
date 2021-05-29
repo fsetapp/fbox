@@ -172,20 +172,15 @@ dfn {
 .k[data-required='true']:before {
   content: "!";
   position: absolute;
-  margin-left: -.5rem;
+  margin-left: -1ch;
   /* gray-500 */
-  color: rgba(107, 114, 128, 1);
+  color: var(--type-color);
 }
 
 [role="group"][data-group="indexed"]>[role="treeitem"]>.k,
 [role="group"][data-group="indexed"]>[role="treeitem"]>.h>.k {
   /* gray-500*/
   color: rgba(107, 114, 128, 1);
-  /* font-mono */
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  /* text-xs */
-  font-size: 0.75rem;
-  line-height: 1.25rem;
 }
 
 .def {
