@@ -166,6 +166,8 @@ dd {
 .fbox input:focus,
 .fbox select:focus {
   outline: none;
+  border-color: transparent;
+  box-shadow: transparent;
 }
 .fbox textarea,
 .fbox input,
@@ -176,6 +178,7 @@ dd {
   background-color: transparent;
   width: 100%;
   min-width: 0;
+  border: 0;
 }
 .fbox textarea {
   resize: none;

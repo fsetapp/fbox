@@ -167,7 +167,8 @@ dfn {
   color: inherit;
   word-break: break-word;
   color: var(--key-color);
-  max-width: 42.5%
+  max-width: 42.5%;
+  box-sizing: content-box;
 }
 .k[data-required='true']:before {
   content: "!";
@@ -223,19 +224,24 @@ dfn {
   color: rgba(16, 185, 129, 1);
 }
 
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  height: inherit;
+[role="tree"] textarea {
   margin: 0;
   padding: 0 .5rem;
   border: 0;
-  background-color: lavender;
-  color: black;
+  background-color: var(--input-bg-color);
+  color: var(--input-color);
   align-self: center;
+  font-size: inherit;
+  line-height: inherit;
+  border-radius: .125rem;
+  outline: none;
 }
-textarea.no-resize {
+[role="tree"] textarea:focus,
+[role="tree"] textarea:focus-visible {
+  box-shadow: 0 0 0 1px var(--blue-500);
+}
+
+[role="tree"] textarea.no-resize {
   display: block;
   resize: none;
 }
