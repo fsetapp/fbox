@@ -44,6 +44,5 @@ const project = {
   ...T.putAnchor(T.record),
   key: "unclaimed_project",
   fields: files,
-  schMetas: {},
   currentFileKey: files[0].key
 }
