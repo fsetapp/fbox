@@ -62,7 +62,13 @@ customElements.define("sch-listener", class extends HTMLElement {
 })
 
 addEventListener("DOMContentLoaded", e => {
+  let files = project.fields
+  project.fields = []
   Project.projectToStore(project, projectStore)
+
+  for (let file of files)
+    projectStore.fields.push(Project.fileToStore(file))
+
   let fileStore = Project.getFileStore(projectStore, project.currentFileKey)
   fileStore._models = Project.anchorsModels(projectStore)
   ProjectTree({ store: projectStore, target: "[id='project']" })
