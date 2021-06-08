@@ -100,17 +100,17 @@ dfn {
   box-shadow: inset 0px 0px 0px 1px darkorange !important;
 }
 
-[role="treeitem"].item-pasted {
+/* [role="treeitem"].item-pasted {
   animation: fadein;
   animation-duration: .25s;
-}
+} */
 
-[role="treeitem"].item-pasted.up {
+/* [role="treeitem"].item-pasted.up {
   animation: slide-in-bottom .05s cubic-bezier(0.230, 1.000, 0.320, 1.000);
 }
 [role="treeitem"].item-pasted.down {
   animation: slide-in-top .05s cubic-bezier(0.230, 1.000, 0.320, 1.000);
-}
+} */
 
 [role="treeitem"] [data-diff]:after {
   content: attr(data-sync);

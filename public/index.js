@@ -46,8 +46,8 @@ customElements.define("sch-listener", class extends HTMLElement {
       projectBaseStore = JSON.parse(JSON.stringify(projectStore))
       Diff.buildBaseIndices(projectBaseStore)
       this.runDiff()
-      projectStore.render()
-      fileStore?.render()
+      // projectStore.render()
+      // fileStore?.render()
     })
   }
   runDiff() {
@@ -66,8 +66,13 @@ addEventListener("DOMContentLoaded", e => {
   project.fields = []
   Project.projectToStore(project, projectStore)
 
-  for (let file of files)
-    projectStore.fields.push(Project.fileToStore(file))
+  Object.defineProperty(projectStore, "parent", { value: parent })
+  for (let file of files) {
+    let fileStore = Project.fileToStore(file)
+    Object.defineProperty(fileStore, "parent", { value: projectStore })
+    projectStore.fields.push(fileStore)
+  }
+
 
   let fileStore = Project.getFileStore(projectStore, project.currentFileKey)
   fileStore._models = Project.anchorsModels(projectStore)
