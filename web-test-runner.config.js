@@ -6,7 +6,7 @@ module.exports = {
   esbuildTarget: "auto",
   files: ["./test/**/*.test.js"],
   coverageConfig: {
-    exclude: ["**/*/_snowpack/**/*"],
+    exclude: ["**/*/_snowpack/**/*", "**/node_modules/**/*", "**/test/**/*"],
   },
   /* plugins: [require("@snowpack/web-test-runner-plugin")()], */
 }
