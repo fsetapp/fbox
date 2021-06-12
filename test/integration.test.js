@@ -1,8 +1,9 @@
 import { assert } from "@esm-bundle/chai";
-import { Fixture, Cmd, all, one, oneById } from "./test_helper.js"
+import { Cmd, all, one, oneById } from "./test_helper.js"
 import { start } from "../public/app.js"
+import * as T from "../lib/sch/type.js"
 
-var project = Fixture.record("root", [])
+var project = T.record()
 var projectTree, fmodelTree
 start({ project, diff: false, async: false })
 

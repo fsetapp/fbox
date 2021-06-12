@@ -1,8 +1,9 @@
-import * as T from "../lib/sch/type.js"
+import { Project } from "../lib/main.js"
 
-export const Fixture = {
-  record: (key, fields) => ({ ...T.putAnchor(T.record), key: key, fields: fields }),
-  string: key => ({ ...T.putAnchor(T.string), key: key })
+export const toStore = (project) => {
+  let projectStore = Project.projectToStore(project, Project.createProjectStore())
+  projectStore.fields = project.fields.map(file => Project.fileToStore(file))
+  return projectStore
 }
 
 export const Cmd = {
