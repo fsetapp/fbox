@@ -26,7 +26,7 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
 
   it("renders blank project", () => {
     assert.isOk(projectTree)
-    assert.isNotOk(fmodelTree)
+    assert.equal(fmodelTree.outerHTML, `<ul role="tree"></ul>`)
   })
 
   it("adds files", () => {
@@ -223,13 +223,11 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     // Add fmodel_A field
     Cmd.selectDown(fmodelTree)
     Cmd.addItem(fmodelTree)
-    Cmd.selectUp(fmodelTree)
 
     assert.equal(one(projectTree, { lv: 2, i: 1 }).querySelector("[data-group-size]").dataset.groupSize, "1")
     assert.equal(one(projectTree, { lv: 2, i: 2 }).querySelector("[data-group-size]").dataset.groupSize, "0")
 
     // Cut fmodel_A from file 1 and paste to file 2
-    Cmd.selectDown(fmodelTree)
     Cmd.cut(fmodelTree)
     Cmd.tabBack(fmodelTree) // at file 1
     Cmd.selectDown(projectTree) // at file 2

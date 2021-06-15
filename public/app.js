@@ -20,33 +20,35 @@ export const start = ({ project, diff = true, async = true }) =>
       this.addEventListener("sch-update", this.handleSchUpdate)
     }
     disconnectedCallback() {
-      this.removeEventListener("tree-command", this.handleTreeCommand)
+      this.removeEventListener("tree-command", this.buffer(this.handleTreeCommand.bind(this)))
       this.removeEventListener("tree-command", this.buffer(this.handleProjectRemote.bind(this), 1000))
       this.removeEventListener("sch-update", this.handleSchUpdate)
     }
     handleTreeCommand(e) {
-      Project.controller(this.projectStore, e.detail.target, e.detail.command, this.runDiff)
+      Project.controller(this.projectStore, e.detail.target, e.detail.command)
+      // this.diffRender(e)
     }
     handleProjectRemote(e) {
       if (!diff) return
       if (!Project.isDiffableCmd(e.detail.command.name))
         return
 
-      Object.defineProperty(this.projectStore, "_diffToRemote", { value: this.runDiff(), writable: true })
+      this.diffRender(e)
       Project.taggedDiff(this.projectStore, (diff) => {
-        let file = e.detail.target.closest("[data-tag='file']")
-        let filename = file?.key
-        let fileStore = Project.getFileStore(this.projectStore, filename)
-
         this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
         Diff.buildBaseIndices(this.projectBaseStore)
-        this.runDiff()
-        // this.projectStore.render()
-        // fileStore?.render()
+        // this.diffRender(e)
       })
     }
     runDiff() {
       return Diff.diff(this.projectStore, this.projectBaseStore)
+    }
+    diffRender(e) {
+      Object.defineProperty(this.projectStore, "_diffToRemote", { value: this.runDiff(), writable: true })
+      let file = e.detail.target.closest("[data-tag='file']")
+      let filename = file?.key
+      let fileStore = Project.getFileStore(this.projectStore, filename)
+      fileStore?.render()
     }
     handleSchUpdate(e) {
       let { detail } = e
