@@ -47,8 +47,14 @@ describe("#taggedDiff", () => {
       assert.equal(reorder.fmodels["[file_1][A1]"].index, 0)
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 1)
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 2)
-      for (let parent of Object.keys(reorder.fmodels))
+      for (let parent of Object.keys(reorder.fmodels)) {
         assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
+        assert.isOk(reorder.fmodels[parent].$a)
+        assert.isOk(reorder.fmodels[parent].t)
+        assert.isOk(reorder.fmodels[parent].key)
+        assert.isNumber(reorder.fmodels[parent].index)
+        assert.isNotOk(reorder.fmodels[parent].sch)
+      }
     })
   })
 
@@ -86,8 +92,14 @@ describe("#taggedDiff", () => {
       assert.deepEqual(reorder.files, {})
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 0)
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 1)
-      for (let parent of Object.keys(reorder.fmodels))
+      for (let parent of Object.keys(reorder.fmodels)) {
         assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
+        assert.isOk(reorder.fmodels[parent].$a)
+        assert.isOk(reorder.fmodels[parent].t)
+        assert.isOk(reorder.fmodels[parent].key)
+        assert.isNumber(reorder.fmodels[parent].index)
+        assert.isNotOk(reorder.fmodels[parent].sch)
+      }
     })
   })
 
@@ -122,8 +134,14 @@ describe("#taggedDiff", () => {
       assert.deepEqual(reorder.files, {})
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 0)
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 1)
-      for (let parent of Object.keys(reorder.fmodels))
+      for (let parent of Object.keys(reorder.fmodels)) {
         assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
+        assert.isOk(reorder.fmodels[parent].$a)
+        assert.isOk(reorder.fmodels[parent].t)
+        assert.isOk(reorder.fmodels[parent].key)
+        assert.isNumber(reorder.fmodels[parent].index)
+        assert.isNotOk(reorder.fmodels[parent].sch)
+      }
     })
   })
 })

@@ -78,11 +78,14 @@ dfn {
   box-shadow: inset 0px 0px 0px 1px darkorange !important;
 }
 
-[role="treeitem"] [data-diff]:after {
-  content: attr(data-sync);
+/* [role="treeitem"][data-tag='fmodel'] > [data-diff='']:after,
+[role="treeitem"][data-tag='fmodel'][data-diff='']:after {
+  content: "✓";
   position: absolute;
-  right: 1rem;
-}
+  right: .75rem;
+  font-size: .75rem;
+  color: var(--gray-700);
+} */
 [role="treeitem"] [data-diff]:before {
   position: absolute;
   width: 2px;
