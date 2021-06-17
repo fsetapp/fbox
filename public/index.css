@@ -99,6 +99,7 @@ dd {
   --diff-removed-color: rgba(255, 0, 0, .5);
   --diff-moved-color: rgba(59, 130, 246, .5);
   --diff-changed-color: rgba(255, 140, 0, .5);
+  /* --diff-reorder-color: var(--diff-moved-color); */
 }
 
 #project [role="tree"] {
@@ -118,6 +119,7 @@ dd {
   --diff-removed-color: rgba(255, 0, 0, .5);
   --diff-moved-color: rgba(59, 130, 246, .5);
   --diff-changed-color: rgba(255, 140, 0, .5);
+  /* --diff-reorder-color: var(--diff-moved-color); */
 }
 
 #fsch {

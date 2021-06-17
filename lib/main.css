@@ -88,36 +88,26 @@ dfn {
 } */
 [role="treeitem"] [data-diff]:before {
   position: absolute;
-  width: 2px;
-  content: " ";
-  white-space: pre;
-  background-color: var(--d-color);
+  color: var(--gray-700);
+  display: block;
+  box-shadow: 2px 0 0 0 var(--d-color);
+  background-color: transparent;
+  padding: 0 .5em;
+  font-size: .75rem;
 }
 .setnu [role="treeitem"].folder > .h:before,
 .setnu [role="treeitem"].file:before {
-  position: absolute;
-  width: 2rem;
+  min-width: 2rem;
   content: counter(line);
-  color: var(--gray-700);
-  display: block;
-  border-right: 2px solid var(--d-color);
-  background-color: transparent;
-  margin-left: 2px;
   text-align: center;
-  font-size: .75rem;
+  font-family: monospace;
 }
-/* .setnu :not(.root-item)[role="treeitem"][aria-selected='true'] [data-diff]:before,
-.setnu :not(.root-item)[role="treeitem"][aria-selected='true'][data-diff]:before {
-  color: var(--gray-500);
-}
-.setnu :not(.root-item)[role="treeitem"][aria-selected="false"] [data-diff]:hover:before,
-.setnu :not(.root-item)[role="treeitem"][aria-selected="false"]:hover[data-diff]:before {
-  color: var(--gray-500);
-} */
+
 [role="treeitem"] [data-diff] { --d-color: transparent; }
 [role="treeitem"] [data-diff*="N"] { --d-color: var(--diff-new-color); }
 [role="treeitem"] [data-diff*="R"]  { --d-color: var(--diff-removed-color); }
 [role="treeitem"] [data-diff*="M"] { --d-color: var(--diff-moved-color); }
+[role="treeitem"] [data-diff*="O"] { --d-color: var(--diff-reorder-color); }
 [role="treeitem"] [data-diff*="C"] { --d-color: var(--diff-changed-color); }
 
 .file {
