@@ -80,37 +80,37 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
     assert.equal(document.activeElement, one(projectTree, { lv: 1, i: 1 }))
   })
 
-  it("clones file up, async reselect", () => {
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 1 })
+  // it("clones file up, async reselect", () => {
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 1 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.cloneUp(projectTree)
-    assert.equal(item, one(projectTree, { lv: 2, i: 2 }))
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.cloneUp(projectTree)
+  //   assert.equal(item, one(projectTree, { lv: 2, i: 2 }))
 
-    let clonedItem = one(projectTree, { lv: 2, i: 1 })
-    assert.isOk(clonedItem)
+  //   let clonedItem = one(projectTree, { lv: 2, i: 1 })
+  //   assert.isOk(clonedItem)
 
-    assert.isOk(document.activeElement)
-    assert.equal(document.activeElement, clonedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.equal(document.activeElement, clonedItem)
+  // })
 
 
-  it("clones file down, async reselect", () => {
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 1 })
+  // it("clones file down, async reselect", () => {
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 1 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.cloneDown(projectTree)
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.cloneDown(projectTree)
 
-    assert.equal(item, one(projectTree, { lv: 2, i: 1 }))
-    let clonedItem = one(projectTree, { lv: 2, i: 2 })
-    assert.isOk(clonedItem)
+  //   assert.equal(item, one(projectTree, { lv: 2, i: 1 }))
+  //   let clonedItem = one(projectTree, { lv: 2, i: 2 })
+  //   assert.isOk(clonedItem)
 
-    assert.isOk(document.activeElement)
-    assert.isOk(clonedItem)
-    assert.equal(document.activeElement, clonedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.isOk(clonedItem)
+  //   assert.equal(document.activeElement, clonedItem)
+  // })
 
   it("reorders file up", () => {
     Cmd.addItem(projectTree)
