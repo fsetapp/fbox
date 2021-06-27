@@ -78,14 +78,14 @@ dfn {
   box-shadow: inset 0px 0px 0px 1px darkorange !important;
 }
 
-/* [role="treeitem"][data-tag='fmodel'] > [data-diff='']:after,
-[role="treeitem"][data-tag='fmodel'][data-diff='']:after {
-  content: "✓";
+[role="treeitem"][data-tag="fmodel"][data-err="ref"] { --err-msg: "being referenced"}
+[role="treeitem"][data-tag="fmodel"][data-err] > .h:after {
+  content: var(--err-msg);
   position: absolute;
   right: .75rem;
   font-size: .75rem;
-  color: var(--gray-700);
-} */
+  color: var(--err-msg-color, red);
+}
 [role="treeitem"] [data-diff]:before {
   position: absolute;
   color: var(--gray-700);
@@ -160,6 +160,9 @@ dfn {
   margin-right: .5rem;
   max-width: 42.5%;
   flex-grow: 1;
+}
+[data-group="indexed"] .t {
+  max-width: 60%;
 }
 
 .m {
