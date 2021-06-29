@@ -151,6 +151,42 @@ describe("#taggedDiff", () => {
   })
 
   it("removes fmodel one by one", () => {
+    let project = T.putAnchor(T.record)
+    Sch.put(project, "", [
+      { k: "file_1", sch: T.record, index: 0 },
+      { k: "file_2", sch: T.record, index: 1 },
+    ])
+    Sch.put(project, "[file_1]", [
+      { k: "fmodel_A", sch: T.record, index: 0 },
+      { k: "fmodel_B", sch: T.record, index: 1 },
+    ])
+    Sch.put(project, "[file_1][fmodel_A]", [
+      { k: "A1", sch: T.string, index: 0 },
+    ])
+
+    let current = toStore(project)
+    let base = asBase(current)
+
+    let poppedPerSrc = Sch.popToRawSchs(current, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] })
+    assert.deepEqual(poppedPerSrc["[file_1][fmodel_A]"][0].sch(), Sch.get(base, "[file_1][fmodel_A][A1]"))
+    let file1 = Sch.get(current, "[file_1]")
+
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, {})
+      assert.deepEqual(added.fmodels, {})
+
+      assert.deepEqual(removed.files, {})
+      assert.deepEqual(removed.fmodels, {})
+
+      assert.deepEqual(changed.files, {})
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
+
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
+    })
+
   })
 })
 describe("#taggedDiff from actions#addSch ", () => {
