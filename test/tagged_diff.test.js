@@ -29,6 +29,8 @@ describe("#taggedDiff", () => {
     let base = asBase(current)
 
     Sch.move(current, { dstPath: "[file_1]" }, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] })
+    let file1 = Sch.get(current, "[file_1]")
+
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
@@ -40,7 +42,7 @@ describe("#taggedDiff", () => {
       assert.deepEqual(removed.fmodels, {})
 
       assert.deepEqual(changed.files, {})
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
       assert.equal(Object.keys(changed.fmodels).length, 1)
 
       assert.deepEqual(reorder.files, {})
@@ -48,7 +50,7 @@ describe("#taggedDiff", () => {
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 1)
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 2)
       for (let parent of Object.keys(reorder.fmodels)) {
-        assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
+        assert.equal(reorder.fmodels[parent].pa, file1.$a)
         assert.isOk(reorder.fmodels[parent].$a)
         assert.isOk(reorder.fmodels[parent].t)
         assert.isOk(reorder.fmodels[parent].key)
@@ -58,7 +60,7 @@ describe("#taggedDiff", () => {
     })
   })
 
-  it("moves subfmodel to be fmodel", () => {
+  it("moves fmodel to be subfmodel", () => {
     let project = T.putAnchor(T.record)
     Sch.put(project, "", [
       { k: "file_1", sch: T.record, index: 0 },
@@ -107,6 +109,7 @@ describe("#taggedDiff", () => {
     let project = T.putAnchor(T.record)
     Sch.put(project, "", [
       { k: "file_1", sch: T.record, index: 0 },
+      { k: "file_2", sch: T.record, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: T.record, index: 0 },
@@ -116,24 +119,26 @@ describe("#taggedDiff", () => {
     let current = toStore(project)
     let base = asBase(current)
 
-    let moved = Sch.move(current, { dstPath: "[file_1]" }, { "[file_1]": [{ id: "[file_1][fmodel_B]", index: 1 }] })
-    moved = moved["[file_1]"][0].sch
+    let moved = Sch.move(current, { dstPath: "[file_2]" }, { "[file_1]": [{ id: "[file_1][fmodel_A]", index: 0 }] })
+    moved = moved["[file_2]"][0].sch
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
       assert.deepEqual(added.files, {})
-      assert.deepEqual(added.fmodels, {})
+      assert.deepEqual(added.fmodels["[file_2][fmodel_A]"], Sch.get(current, "[file_2][fmodel_A]"))
+      assert.equal(Object.keys(added.fmodels).length, 1)
 
       assert.deepEqual(removed.files, {})
-      assert.deepEqual(removed.fmodels, {})
+      assert.deepEqual(removed.fmodels["[file_2][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
+      assert.equal(Object.keys(removed.fmodels).length, 1)
 
       assert.deepEqual(changed.files, {})
       assert.deepEqual(changed.fmodels, {})
 
       assert.deepEqual(reorder.files, {})
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 0)
-      assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 1)
+      assert.equal(Object.keys(reorder.fmodels).length, 1)
       for (let parent of Object.keys(reorder.fmodels)) {
         assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
         assert.isOk(reorder.fmodels[parent].$a)
@@ -143,6 +148,9 @@ describe("#taggedDiff", () => {
         assert.isNotOk(reorder.fmodels[parent].sch)
       }
     })
+  })
+
+  it("removes fmodel one by one", () => {
   })
 })
 describe("#taggedDiff from actions#addSch ", () => {
