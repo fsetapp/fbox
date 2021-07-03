@@ -135,6 +135,14 @@ dfn {
   margin-left: -1ch;
   color: var(--type-color);
 }
+.k[data-is-pattern='true'] { font-family: var(--key-pattern-font); }
+.k[data-is-pattern='true']:before,
+.k[data-is-pattern='true']:after {
+  content: "/";
+  white-space: pre;
+  color: var(--yellow-500);
+  letter-spacing: -.5px;
+}
 
 [role="group"][data-group="indexed"]>[role="treeitem"]>.k,
 [role="group"][data-group="indexed"]>[role="treeitem"]>.h>.k {

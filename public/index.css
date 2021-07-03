@@ -76,9 +76,12 @@ dd {
   --gray-meta: #19202f;
   --matte-black: rgba(14, 19, 31, 1);
   --blue-500: rgba(59, 130, 246, 1);
+  --yellow-500: rgba(245, 158, 11, 1);
   --pink-400: rgba(244, 114, 182, 1);
   --indigo-400: rgba(129, 140, 248, 1);
   color-scheme: dark;
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 #fmodel [role="tree"] {
@@ -92,6 +95,7 @@ dd {
   --item-selected-header-bg-color: var(--gray-700);
 
   --key-color: var(--gray-300);
+  --key-pattern-font: var(--font-mono);
   --type-color: var(--pink-400);
   --ref-color: var(--indigo-400);
 
