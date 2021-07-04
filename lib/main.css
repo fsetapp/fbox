@@ -135,7 +135,10 @@ dfn {
   margin-left: -1ch;
   color: var(--type-color);
 }
-.k[data-is-pattern='true'] { font-family: var(--key-pattern-font); }
+.k[data-is-pattern='true'] {
+  font-family: var(--key-pattern-font);
+  margin-left: -.5ch;
+}
 .k[data-is-pattern='true']:before,
 .k[data-is-pattern='true']:after {
   content: "/";
