@@ -181,6 +181,9 @@ dfn {
   color: rgba(107, 114, 128, 1);
   margin: 0 .5rem;
 }
+.m.pattern {
+  font-family: var(--font-mono);
+}
 
 .t>.ref {
   color: var(--ref-color);
