@@ -48,8 +48,8 @@ dfn {
   margin: 0;
 }
 
-.folder[role="treeitem"][aria-selected="false"]>.h:hover,
-.file[role="treeitem"][aria-selected="false"]:hover {
+.node[role="treeitem"][aria-selected="false"]>.h:hover,
+.leaf[role="treeitem"][aria-selected="false"]:hover {
   /* bg-gray-800 */
   background: radial-gradient(rgba(31,41,55,1), rgba(31,41,55,.5));
 }
@@ -95,8 +95,8 @@ dfn {
   padding: 0 .5em;
   font-size: .75rem;
 }
-.setnu [role="treeitem"].folder > .h:before,
-.setnu [role="treeitem"].file:before {
+.setnu [role="treeitem"].node > .h:before,
+.setnu [role="treeitem"].leaf:before {
   min-width: 2rem;
   content: counter(line);
   text-align: center;
@@ -110,12 +110,12 @@ dfn {
 [role="treeitem"] [data-diff*="O"] { --d-color: var(--diff-reorder-color); }
 [role="treeitem"] [data-diff*="C"] { --d-color: var(--diff-changed-color); }
 
-.file {
+.leaf {
   display: flex;
   align-items: flex-start;
 }
 
-.folder .h {
+.node .h {
   display: flex;
   align-items: flex-start;
   outline: none;

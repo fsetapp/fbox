@@ -5,9 +5,9 @@
   that we can integration test those edge of libaries.
 */
 
-import { ProjectTree, Project } from "../lib/main.js"
+import { ProjectTree, FileTree, Project } from "../lib/main.js"
 import * as Diff from "../lib/sch/diff.js"
-import { buffer } from "../lib/utils.js"
+import { buffer, writable } from "../lib/utils.js"
 
 export const start = ({ project, diff = true, async = true }) =>
   customElements.define("sch-listener", class extends HTMLElement {
@@ -51,7 +51,8 @@ export const start = ({ project, diff = true, async = true }) =>
       return Diff.diff(this.projectStore, this.projectBaseStore)
     }
     diffRender(e) {
-      Object.defineProperty(this.projectStore, "_diffToRemote", { value: this.runDiff(), writable: true })
+      writable(this.projectStore, "_diffToRemote", this.runDiff())
+
       let file = e.detail.target.closest("[data-tag='file']")
       let filename = file?.key
       let fileStore = Project.getFileStore(this.projectStore, filename)
@@ -65,12 +66,12 @@ export const start = ({ project, diff = true, async = true }) =>
         Project.SchMeta.update({ store: fileStore, detail })
     }
     remoteConnected() {
-      let files = project.fields
-      project.fields = []
       this.projectStore = Project.projectToStore(project, Project.createProjectStore())
-      for (let file of files) this.projectStore.fields.push(Project.fileToStore(file))
+      this.projectStore.fields = project.fields
+      project.fields = []
+      Project.walkFile(this.projectStore, (file, m) => Project.fileToStore(file, null, this.projectStore))
 
-      ProjectTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileKey}]` })
+      FileTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileKey}]` })
       Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileKey, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))

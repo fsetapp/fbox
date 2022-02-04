@@ -1,9 +1,9 @@
 import { assert } from "@esm-bundle/chai";
-import { Cmd, all, one, oneById } from "./test_helper.js"
+import { Cmd, all, one, oneById, cleanup } from "./test_helper.js"
 import { start } from "../public/app.js"
 import * as T from "../lib/sch/type.js"
 
-var project = T.record()
+var project = T.folder()
 var projectTree, fmodelTree
 start({ project, diff: false, async: false })
 

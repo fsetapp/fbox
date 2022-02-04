@@ -1,10 +1,10 @@
 import { Project } from "../lib/main.js"
 
-export const toStore = (project) => {
-  let projectStore = Project.projectToStore(project, Project.createProjectStore())
-  projectStore.fields = project.fields.map(file => Project.fileToStore(file))
-  return projectStore
-}
+export const initStore = (project) =>
+  Project.projectToStore(project, Project.createProjectStore())
+
+export const initFileStore = (projectStore) =>
+  Project.walkFile(projectStore, (file, m) => Project.fileToStore(file, null, projectStore))
 
 export const Cmd = {
   markAsMain: (tree) => keydown(tree, { key: "m" }),
@@ -28,7 +28,16 @@ export const Cmd = {
   selectUp: (tree) => keydown(tree, { key: "ArrowUp" }),
   selectDown: (tree) => keydown(tree, { key: "ArrowDown" }),
   multiSelectUp: (tree) => keydown(tree, { key: "ArrowUp", shiftKey: true, metaKey: true }),
-  multiSelectDown: (tree) => keydown(tree, { key: "ArrowDown", shiftKey: true, metaKey: true })
+  multiSelectDown: (tree) => keydown(tree, { key: "ArrowDown", shiftKey: true, metaKey: true }),
+}
+
+export const cleanup = (tree) => {
+  // delete all files
+  Cmd.click(tree, "")
+  Cmd.selectDown(tree)
+  Cmd.multiSelectDown(tree)
+  Cmd.remove(tree)
+  Cmd.click(tree, "")
 }
 
 export const keydown = (el, { key, altKey, ctrlKey, metaKey, shiftKey }) => {
