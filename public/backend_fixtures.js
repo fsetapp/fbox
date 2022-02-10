@@ -23,38 +23,53 @@ const fmodelsFixture = (n, startId, opts) => {
 let file_1_models = fmodelsFixture(10, 1)
 let file_2_models = fmodelsFixture(1000, 11)
 let file_3_models = fmodelsFixture(10, 21)
-let files = [{
+
+let folder_a = {
   ...T.putAnchor(T.folder),
   key: "folder_a",
-  fields: [{
-    ...T.putAnchor(T.file),
-    key: "file_1",
-    tag: "file",
-    fields: file_1_models
-  }]
-},
-{
+}
+let folder_b = {
   ...T.putAnchor(T.folder),
   key: "folder_b",
-  fields: [{
-    ...T.putAnchor(T.folder),
-    key: "folder_b1",
-    fields: [{
-      ...T.putAnchor(T.file),
-      key: "file_2",
-      tag: "file",
-      fields: file_2_models
-    }]
-  }]
-},
-{
-  ...T.putAnchor(T.file),
-  key: "file_3",
-  tag: "file",
-  fields: file_3_models
-}]
+}
+let folder_b1 = {
+  ...T.putAnchor(T.folder),
+  key: "folder_b1",
+}
+let folder_b2 = {
+  ...T.putAnchor(T.folder),
+  key: "folder_b2",
+}
 
-const project = {
+let b2_keep = folder_b2.fields[0]
+folder_b2.fields = []
+
+let files = [
+  {
+    ...T.putAnchor(T.file),
+    key: "file_1",
+    fields: file_1_models,
+    lpath: [folder_a]
+  },
+  {
+    ...T.putAnchor(T.file),
+    key: "file_2",
+    fields: file_2_models,
+    lpath: [folder_b, folder_b1]
+  },
+  {
+    ...T.putAnchor(T.file),
+    key: "file_3",
+    fields: file_3_models,
+    lpath: []
+  },
+  {
+    ...b2_keep,
+    lpath: [folder_b, folder_b2]
+  }
+]
+
+let project = {
   ...T.putAnchor(T.folder),
   key: "unclaimed_project",
   tag: "project",

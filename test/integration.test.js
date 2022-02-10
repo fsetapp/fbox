@@ -3,7 +3,7 @@ import { Cmd, all, one, oneById, cleanup } from "./test_helper.js"
 import { start } from "../public/app.js"
 import * as T from "../lib/sch/type.js"
 
-var project = T.folder()
+var project = T.project()
 var projectTree, fmodelTree
 start({ project, diff: false, async: false })
 
@@ -112,68 +112,68 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
   //   assert.equal(document.activeElement, clonedItem)
   // })
 
-  it("reorders file up", () => {
-    Cmd.addItem(projectTree)
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 2 })
+  // it("reorders file up", () => {
+  //   Cmd.addItem(projectTree)
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 2 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.moveUp(projectTree)
-    let movedItem = one(projectTree, { lv: 2, i: 1 })
-    assert.equal(item, movedItem)
-    assert.isOk(one(projectTree, { lv: 2, i: 2 }))
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.moveUp(projectTree)
+  //   let movedItem = one(projectTree, { lv: 2, i: 1 })
+  //   assert.equal(item, movedItem)
+  //   assert.isOk(one(projectTree, { lv: 2, i: 2 }))
 
-    assert.isOk(document.activeElement)
-    assert.equal(document.activeElement, movedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.equal(document.activeElement, movedItem)
+  // })
 
-  it("does not reorders first file up", () => {
-    Cmd.addItem(projectTree)
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 1 })
+  // it("does not reorders first file up", () => {
+  //   Cmd.addItem(projectTree)
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 1 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.moveUp(projectTree)
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.moveUp(projectTree)
 
-    let movedItem = one(projectTree, { lv: 2, i: 1 })
-    assert.equal(item, movedItem)
-    assert.isOk(one(projectTree, { lv: 2, i: 2 }))
+  //   let movedItem = one(projectTree, { lv: 2, i: 1 })
+  //   assert.equal(item, movedItem)
+  //   assert.isOk(one(projectTree, { lv: 2, i: 2 }))
 
-    assert.isOk(document.activeElement)
-    assert.equal(document.activeElement, movedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.equal(document.activeElement, movedItem)
+  // })
 
-  it("reorders file down", () => {
-    Cmd.addItem(projectTree)
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 1 })
+  // it("reorders file down", () => {
+  //   Cmd.addItem(projectTree)
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 1 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.moveDown(projectTree)
-    let movedItem = one(projectTree, { lv: 2, i: 2 })
-    assert.equal(item, movedItem)
-    assert.isOk(one(projectTree, { lv: 2, i: 1 }))
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.moveDown(projectTree)
+  //   let movedItem = one(projectTree, { lv: 2, i: 2 })
+  //   assert.equal(item, movedItem)
+  //   assert.isOk(one(projectTree, { lv: 2, i: 1 }))
 
-    assert.isOk(document.activeElement)
-    assert.isOk(movedItem)
-    assert.equal(document.activeElement, movedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.isOk(movedItem)
+  //   assert.equal(document.activeElement, movedItem)
+  // })
 
-  it("does not reorders last file down", () => {
-    Cmd.addItem(projectTree)
-    Cmd.addItem(projectTree)
-    let item = one(projectTree, { lv: 2, i: 2 })
+  // it("does not reorders last file down", () => {
+  //   Cmd.addItem(projectTree)
+  //   Cmd.addItem(projectTree)
+  //   let item = one(projectTree, { lv: 2, i: 2 })
 
-    Cmd.click(projectTree, item.id)
-    Cmd.moveDown(projectTree)
+  //   Cmd.click(projectTree, item.id)
+  //   Cmd.moveDown(projectTree)
 
-    let movedItem = one(projectTree, { lv: 2, i: 2 })
-    assert.equal(item, movedItem)
-    assert.isOk(one(projectTree, { lv: 2, i: 1 }))
+  //   let movedItem = one(projectTree, { lv: 2, i: 2 })
+  //   assert.equal(item, movedItem)
+  //   assert.isOk(one(projectTree, { lv: 2, i: 1 }))
 
-    assert.isOk(document.activeElement)
-    assert.equal(document.activeElement, movedItem)
-  })
+  //   assert.isOk(document.activeElement)
+  //   assert.equal(document.activeElement, movedItem)
+  // })
 
   it("cancels editting key", () => {
     Cmd.addItem(projectTree)

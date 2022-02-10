@@ -116,7 +116,7 @@ dd {
   --item-selected-header-bg-color: var(--gray-700);
 
   --key-color: var(--gray-300);
-  --type-color: var(--pink-400);
+  --type-color: var(--gray-500);
   --ref-color: var(--indigo-400);
 
   --diff-new-color: rgba(144, 238, 144, .5);

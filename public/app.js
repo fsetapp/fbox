@@ -69,7 +69,8 @@ export const start = ({ project, diff = true, async = true }) =>
       this.projectStore = Project.projectToStore(project, Project.createProjectStore())
       this.projectStore.fields = project.fields
       project.fields = []
-      Project.walkFile(this.projectStore, (file, m) => Project.fileToStore(file, null, this.projectStore))
+      this.projectStore.fields = this.projectStore.fields.map(file => Project.fileToStore(file, null, this.projectStore))
+      Project.buildFolderTree(this.projectStore)
 
       FileTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileKey}]` })
       Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileKey, fmodelname: location.hash.replace("#", "") })

@@ -12,7 +12,7 @@ describe("#taggedDiff", () => {
   const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
 
   it("moves subfmodel to be fmodel", () => {
-    let project = T.putAnchor(T.folder)
+    let project = T.putAnchor(T.project)
     project = initStore(project)
 
     Sch.put(project, "", [
@@ -63,7 +63,7 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be subfmodel", () => {
-    let project = T.putAnchor(T.folder)
+    let project = T.putAnchor(T.project)
     project = initStore(project)
 
     Sch.put(project, "", [
@@ -110,7 +110,7 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be fmodel", () => {
-    let project = T.putAnchor(T.folder)
+    let project = T.putAnchor(T.project)
     project = initStore(project)
 
     Sch.put(project, "", [
@@ -157,7 +157,7 @@ describe("#taggedDiff", () => {
   })
 
   it("removes fmodel one by one", () => {
-    let project = T.putAnchor(T.folder)
+    let project = T.putAnchor(T.project)
     project = initStore(project)
 
     Sch.put(project, "", [
