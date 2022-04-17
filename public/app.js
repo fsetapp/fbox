@@ -1,16 +1,27 @@
 /* This file is used for both development and test environments */
 /* Please keep this file as library Call Site only */
 /*
-  <sch-listener> emulates production use case such as `Project.controller` so
+  <project-store> emulates production use case such as `Project.controller` so
   that we can integration test those edge of libaries.
 */
 
-import { ProjectTree, FileTree, Project } from "../lib/main.js"
+import { FileTree, Project } from "../lib/main.js"
 import * as Diff from "../lib/sch/diff.js"
 import { buffer, writable } from "../lib/utils.js"
 
+import * as Proj from "../lib/pkgs/proj.js"
+import * as Html from "../lib/pkgs/html.js"
+import * as Model from "../lib/pkgs/model.js"
+import { s } from "../lib/pkgs/registry.js"
+
+const structSheet = {
+  [s(Proj).t]: Proj.structSheet,
+  [s(Html).t]: Html.structSheet,
+  [s(Model).t]: Model.structSheet
+}
+
 export const start = ({ project, diff = true, async = true }) =>
-  customElements.define("sch-listener", class extends HTMLElement {
+  customElements.define("project-store", class extends HTMLElement {
     connectedCallback() {
       this.remoteConnected()
 
@@ -53,27 +64,26 @@ export const start = ({ project, diff = true, async = true }) =>
     diffRender(e) {
       writable(this.projectStore, "_diffToRemote", this.runDiff())
 
-      let file = e.detail.target.closest("[data-tag='file']")
-      let filename = file?.key
-      let fileStore = Project.getFileStore(this.projectStore, filename)
-      fileStore?.render()
+      let fileStore = e.detail.target.closest("[data-tag='file']")?.sch
+      if (fileStore && fileStore.render)
+        fileStore.render()
       this.projectStore.render()
     }
     handleSchUpdate(e) {
       let { detail } = e
-      let fileStore = Project.getFileStore(this.projectStore, e.detail.file)
+      let fileStore = e.detail.target.closest("[data-tag='file']").sch
       if (fileStore)
         Project.SchMeta.update({ store: fileStore, detail })
     }
     remoteConnected() {
-      this.projectStore = Project.projectToStore(project, Project.createProjectStore())
+      this.projectStore = Project.projectToStore(project, Project.createProjectStore({ structSheet }))
       this.projectStore.fields = project.fields
       project.fields = []
-      this.projectStore.fields = this.projectStore.fields.map(file => Project.fileToStore(file, null, this.projectStore))
+      this.projectStore.fields = this.projectStore.fields.map(file => file)
       Project.buildFolderTree(this.projectStore)
 
-      FileTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileKey}]` })
-      Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileKey, fmodelname: location.hash.replace("#", "") })
+      FileTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileId}]` })
+      Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
       Diff.buildBaseIndices(this.projectBaseStore)

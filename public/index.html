@@ -12,16 +12,33 @@
 </head>
 
 <body>
-  <sch-listener>
-    <div style="display: flex; height: 100vh; background-color: var(--gray-900); color: var(--gray-300);">
-      <div id="project" style="display:flex; flex-direction: column; flex: 1; overflow:hidden;"></div>
-      <section style="display:flex; flex-direction: column;flex: 2; overflow:hidden;">
-        <div id="fmodel" style="flex: 1; overflow: hidden;"></div>
+  <project-store>
+    <div class="flex" style="height: 100vh; background-color: var(--gray-900); color: var(--gray-300);">
+      <div id="project" class="flex flex-1" style="flex-direction: column; overflow:hidden;"></div>
+      <section class="flex" style="flex-direction: column;flex: 2; overflow:hidden;">
+        <file-body style="flex: 1; overflow: hidden;"></file-body>
       </section>
-      <sch-meta id="fsch" style="flex: 1; overflow: auto;" tabindex="-1">
+      <sch-meta id="fsch" class="block flex-1 overflow-auto" tabindex="-1">
       </sch-meta>
+      <template>
+        categories
+        - git based cms
+        - headless cms (api | file; json)
+        - ssg (html+css+js)
+        - non-techie focus
+        - desktop app (using sqlite)
+
+        git based cms use case
+        - settings
+        - game items
+        - ad hoc for marketing / sale / content strategy (just just eex template (ssg) | template literal (csr))
+        - travel planing (itinerary)
+        - Use fset map as primary source, we use google map for single route at a time
+        (app generates map url for each edge, be it train/walk/drive)
+        - menu (coffee/tea)
+      </template>
     </div>
-  </sch-listener>
+  </project-store>
 </body>
 
 </html>

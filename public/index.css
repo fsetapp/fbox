@@ -5,15 +5,19 @@ html {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
-body {
-  margin: 0;
-}
+body { margin: 0; }
 
 *,
 :after,
 :before {
   box-sizing: border-box;
 }
+
+.block { display: block;}
+.flex { display: flex;}
+.flex-1 { flex: 1; }
+.overflow-auto { overflow: auto; }
+.hidden { display: none;}
 
 kbd {
   display: inline-block;
@@ -74,6 +78,7 @@ dd {
   --gray-800: rgba(31,41,55,1);
   --gray-900: rgba(17, 24, 39, 1);
   --gray-meta: #19202f;
+  --gray-meta-75: rgba(25, 32, 47, .75);
   --matte-black: rgba(14, 19, 31, 1);
   --blue-500: rgba(59, 130, 246, 1);
   --yellow-500: rgba(245, 158, 11, 1);
@@ -84,13 +89,35 @@ dd {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-#fmodel [role="tree"] {
+file-body[type="fmodel"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);
 
   --item-root-bg-color: var(--matte-black);
   --item-selected-bg-color: midnightblue;
+  --item-selected-border-color: var(--blue-500);
+  --item-selected-header-bg-color: var(--gray-700);
+
+  --key-color: var(--gray-300);
+  --key-pattern-font: var(--font-mono);
+  --type-color: var(--pink-400);
+  --ref-color: var(--indigo-400);
+
+  --diff-new-color: rgba(144, 238, 144, .5);
+  --diff-removed-color: rgba(255, 0, 0, .5);
+  --diff-moved-color: rgba(59, 130, 246, .5);
+  --diff-changed-color: rgba(255, 140, 0, .5);
+  /* --diff-reorder-color: var(--diff-moved-color); */
+}
+
+file-body[type="html"] [role="tree"] {
+  --tree-min-width: 374px;
+  --tree-bg-color: var(--gray-900);
+  --tree-color: var(--gray-300);
+
+  --item-root-bg-color: var(--matte-black);
+  --item-selected-bg-color: var(--gray-meta-75);;
   --item-selected-border-color: var(--blue-500);
   --item-selected-header-bg-color: var(--gray-700);
 

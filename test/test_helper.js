@@ -1,7 +1,18 @@
 import { Project } from "../lib/main.js"
 
+import * as Proj from "../lib/pkgs/proj.js"
+import * as Html from "../lib/pkgs/html.js"
+import * as Model from "../lib/pkgs/model.js"
+import { s } from "../lib/pkgs/registry.js"
+
+const structSheet = {
+  [s(Proj).t]: Proj.structSheet,
+  [s(Html).t]: Html.structSheet,
+  [s(Model).t]: Model.structSheet
+}
+
 export const initStore = (project) =>
-  Project.projectToStore(project, Project.createProjectStore())
+  Project.projectToStore(project, Project.createProjectStore({ structSheet }))
 
 export const initFileStore = (projectStore) =>
   Project.walkFile(projectStore, (file, m) => Project.fileToStore(file, null, projectStore))

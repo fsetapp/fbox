@@ -1,43 +1,53 @@
-import { allSchs } from "../lib/project/store.js"
-import * as T from "../lib/sch/type.js"
+import { TOPLV_TAG, putAnchor } from "../lib/pkgs/core.js"
+
+import { file, folder, JSON_DATA_EXT, HTML_EXT, MODEL_EXT } from "../lib/pkgs/proj.js"
+import * as M from "../lib/pkgs/model.js"
+import { s } from "../lib/pkgs/registry.js"
+
 import { randInt } from "../lib/utils.js"
 
 export { project }
 
-const fmodelsFixture = (n, startId, opts) => {
+const fmodelsFixture = (n, startId) => {
   let fixture = []
   for (var i = 0; i < n; i++)
-    fixture.push(allSchs[randInt(allSchs.length)])
+    fixture.push(M.all[randInt(M.all.length)])
 
   return fixture.map((sch, i) => {
-    let fmodel = T.putAnchor(sch)
+    let fmodel = putAnchor(sch)
 
+    // fmodel.t = [s(M), fmodel.t]
     fmodel.key = `model_${startId}_${fixture.length - i}`
     fmodel.isEntry = false
-    fmodel.tag = T.FMODEL_TAG
+    fmodel.tag = TOPLV_TAG
 
     return fmodel
   })
 }
 
+const dataFixture = (n) => {
+
+}
+
 let file_1_models = fmodelsFixture(10, 1)
 let file_2_models = fmodelsFixture(1000, 11)
 let file_3_models = fmodelsFixture(10, 21)
+let file_2_data = dataFixture(10)
 
 let folder_a = {
-  ...T.putAnchor(T.folder),
+  ...putAnchor(folder),
   key: "folder_a",
 }
 let folder_b = {
-  ...T.putAnchor(T.folder),
+  ...putAnchor(folder),
   key: "folder_b",
 }
 let folder_b1 = {
-  ...T.putAnchor(T.folder),
+  ...putAnchor(folder),
   key: "folder_b1",
 }
 let folder_b2 = {
-  ...T.putAnchor(T.folder),
+  ...putAnchor(folder),
   key: "folder_b2",
 }
 
@@ -46,19 +56,30 @@ folder_b2.fields = []
 
 let files = [
   {
-    ...T.putAnchor(T.file),
+    ...putAnchor(() => file({ ext: MODEL_EXT })),
     key: "file_1",
     fields: file_1_models,
     lpath: [folder_a]
   },
   {
-    ...T.putAnchor(T.file),
+    ...putAnchor(() => file({ ext: JSON_DATA_EXT })),
+    key: "file_2",
+    fields: [],
+    lpath: [folder_a]
+  },
+  {
+    ...putAnchor(() => file({ ext: HTML_EXT })),
+    key: "file_3",
+    lpath: [folder_a]
+  },
+  {
+    ...putAnchor(() => file({ ext: MODEL_EXT })),
     key: "file_2",
     fields: file_2_models,
     lpath: [folder_b, folder_b1]
   },
   {
-    ...T.putAnchor(T.file),
+    ...putAnchor(() => file({ ext: MODEL_EXT })),
     key: "file_3",
     fields: file_3_models,
     lpath: []
@@ -70,9 +91,9 @@ let files = [
 ]
 
 let project = {
-  ...T.putAnchor(T.folder),
+  ...putAnchor(folder),
   key: "unclaimed_project",
   tag: "project",
   fields: files,
-  currentFileKey: files[0].key
+  currentFileId: files[0].$a
 }

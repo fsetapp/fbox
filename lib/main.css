@@ -233,3 +233,62 @@ dfn {
   word-break: break-word;
   letter-spacing: .5px;
 }
+
+
+file-body[type="html"] root-item > [role="group"] > [role="treeitem"] {
+  padding: .75rem;
+}
+file-body[type="html"] [role="treeitem"] {
+  padding: .25rem 1.5rem;
+  margin: 1px 0;
+  /* box-shadow: inset 0px 0px 0px .5px var(--gray-800); */
+}
+file-body[type="html"] [role="treeitem"] .t:before {
+  content: "<";
+  color: var(--gray-800);
+}
+file-body[type="html"] [role="treeitem"] .t:after {
+  content: ">";
+  color: var(--gray-800);
+}
+file-body[type="html"] [role="treeitem"][data-level-kind="odd"] {
+  /* background-color: var(--gray-meta); */
+}
+file-body[type="html"] [role="treeitem"][data-level-kind="even"] {
+  /* background-color: var(--matte-black); */
+}
+file-body[type="html"] [data-level-kind="odd"] > [role="group"] {
+  /* padding: 1px 2px; */
+  /* box-shadow: inset 0 0 0 1px var(--matte-black); */
+}
+file-body[type="html"] [data-level-kind="even"] > [role="group"] {
+  /* padding: 1px 2px; */
+  /* box-shadow: inset 0 0 0 1px var(--gray-800); */
+}
+file-body[type="html"] .t {
+  max-width: unset;
+  flex-grow: unset;
+  margin-right: unset;
+  color: var(--diff-new-color);
+}
+file-body[type="html"] .h > .t {
+  border-radius: .25rem;
+  margin-bottom: 1px;
+  color: var(--diff-new-color);
+}
+file-body[type="html"] [data-level-kind="even"] .t {
+  /* background-color: var(--gray-meta); */
+  /* box-shadow: 0 0 0 1px var(--matte-black); */
+}
+file-body[type="html"] [data-level-kind="odd"] .t {
+  /* background-color: var(--matte-black); */
+  /* box-shadow: 0 0 0 1px var(--gray-meta); */
+}
+file-body[type="html"] [role="treeitem"] [data-diff]:before {
+  display: block;
+  box-shadow: 2px 0 0 0 var(--d-color);
+  background-color: transparent;
+  padding: 0 .5em;
+  font-size: .75rem;
+  color: var(--d-color);
+}

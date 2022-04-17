@@ -1,24 +1,23 @@
 import { assert } from "@esm-bundle/chai";
 import { Cmd, all, one, oneById, cleanup } from "./test_helper.js"
 import { start } from "../public/app.js"
-import * as T from "../lib/sch/type.js"
+import { project } from "../lib/pkgs/proj.js"
 
-var project = T.project()
 var projectTree, fmodelTree
-start({ project, diff: false, async: false })
+start({ project: project(), diff: false, async: false })
 
 describe("projectTree actions by mouse or keyboard and rendering", () => {
   const projectTree_ = () => document.querySelector("[id='project'] [role='tree']")
-  const fmodelTree_ = () => document.querySelector("[id='fmodel'] [role='tree']")
+  const fmodelTree_ = () => document.querySelector("file-body [role='tree']")
 
   beforeEach(() => {
     /* integration test expects all 3 elements to be present */
     document.body.innerHTML = `
-      <sch-listener>
+      <project-store>
         <section id="project"></section>
-        <section id="fmodel"></section>
+        <file-body type='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
-      </sch-listener>
+      </project-store>
     `
     projectTree = projectTree_()
     fmodelTree = fmodelTree_()
@@ -195,16 +194,16 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
 //
 describe("fmodelTree and projectTree: dependent rendering actions", () => {
   const projectTree_ = () => document.querySelector("[id='project'] [role='tree']")
-  const fmodelTree_ = () => document.querySelector("[id='fmodel'] [role='tree']")
+  const fmodelTree_ = () => document.querySelector("file-body [role='tree']")
 
   beforeEach(() => {
     /* integration test expects all 3 elements to be present */
     document.body.innerHTML = `
-      <sch-listener>
+      <project-store>
         <section id="project"></section>
-        <section id="fmodel"></section>
+        <file-body type='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
-      </sch-listener>
+      </project-store>
     `
     projectTree = projectTree_()
     fmodelTree = fmodelTree_()
@@ -213,6 +212,7 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     // Add 2 files
     Cmd.addItem(projectTree)
     Cmd.addItem(projectTree)
+
     // at file 1
     Cmd.selectDown(projectTree)
     fmodelTree = fmodelTree_()
@@ -246,7 +246,8 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     assert.equal(one(projectTree, { lv: 2, i: 1 }).querySelector("[data-group-size]").dataset.groupSize, "1")
     assert.equal(one(projectTree, { lv: 2, i: 2 }).querySelector("[data-group-size]").dataset.groupSize, "0")
     assert.equal(document.activeElement, one(fmodelTree, { lv: 2, i: 1 }))
-    assert.isOk(one(fmodelTree, { lv: 3, i: 1 }))
+    // console.log(fmodelTree)
+    assert.isOk(one(fmodelTree, { lv: 3, i: 1 })) // Assumble a record with one field so we check level 3 instead of 2
 
     // assert the moved fmodel is gone
     Cmd.tabBack(fmodelTree) // at file 1

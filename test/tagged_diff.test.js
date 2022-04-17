@@ -3,28 +3,33 @@ import { initStore, initFileStore } from "./test_helper.js"
 import { buildBaseIndices, diff } from "../lib/sch/diff.js"
 import { taggedDiff } from "../lib/project/tagged_diff.js"
 
+import { putAnchor, TOPLV_TAG } from "../lib/pkgs/core.js"
+import * as M from "../lib/pkgs/model.js"
+import * as P from "../lib/pkgs/proj.js"
+
 import * as Sch from "../lib/sch.js"
-import * as T from "../lib/sch/type.js"
 import { writable } from "../lib/utils.js";
+
+const Mfile = () => P.file({ ext: P.MODEL_EXT })
 
 describe("#taggedDiff", () => {
   const asBase = (store) => buildBaseIndices(JSON.parse(JSON.stringify(store)))
   const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
 
   it("moves subfmodel to be fmodel", () => {
-    let project = T.putAnchor(T.project)
+    let project = putAnchor(P.project)
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: T.file, index: 0 },
+      { k: "file_1", sch: Mfile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
-      { k: "fmodel_A", sch: T.record, index: 0 },
-      { k: "fmodel_B", sch: T.record, index: 1 },
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
+      { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
     Sch.put(project, "[file_1][fmodel_A]", [
-      { k: "A1", sch: T.record, index: 0 },
-      { k: "A2", sch: T.record, index: 1 }
+      { k: "A1", sch: M.record, index: 0 },
+      { k: "A2", sch: M.record, index: 1 }
     ])
 
     let current = initFileStore(project)
@@ -63,16 +68,16 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be subfmodel", () => {
-    let project = T.putAnchor(T.project)
+    let project = putAnchor(P.project)
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: T.file, index: 0 },
+      { k: "file_1", sch: Mfile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
-      { k: "A1", sch: T.string, index: 0 },
-      { k: "fmodel_A", sch: T.record, index: 1 },
-      { k: "fmodel_B", sch: T.record, index: 2 },
+      { k: "A1", sch: M.string, index: 0 },
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
+      { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 2 },
     ])
 
     let current = initFileStore(project)
@@ -110,16 +115,16 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be fmodel", () => {
-    let project = T.putAnchor(T.project)
+    let project = putAnchor(P.project)
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: T.file, index: 0 },
-      { k: "file_2", sch: T.file, index: 1 },
+      { k: "file_1", sch: Mfile, index: 0 },
+      { k: "file_2", sch: Mfile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
-      { k: "fmodel_A", sch: T.record, index: 0 },
-      { k: "fmodel_B", sch: T.record, index: 1 },
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
+      { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
 
     let current = initFileStore(project)
@@ -157,19 +162,19 @@ describe("#taggedDiff", () => {
   })
 
   it("removes fmodel one by one", () => {
-    let project = T.putAnchor(T.project)
+    let project = putAnchor(P.project)
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: T.file, index: 0 },
-      { k: "file_2", sch: T.file, index: 1 },
+      { k: "file_1", sch: Mfile, index: 0 },
+      { k: "file_2", sch: Mfile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
-      { k: "fmodel_A", sch: T.record, index: 0 },
-      { k: "fmodel_B", sch: T.record, index: 1 },
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
+      { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
     Sch.put(project, "[file_1][fmodel_A]", [
-      { k: "A1", sch: T.string, index: 0 },
+      { k: "A1", sch: M.string, index: 0 },
     ])
 
     let current = initFileStore(project)
