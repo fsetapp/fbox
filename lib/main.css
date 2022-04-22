@@ -86,6 +86,13 @@ dfn {
   font-size: .75rem;
   color: var(--err-msg-color, red);
 }
+[role="treeitem"][data-tag="fmodel"][data-sig]:after {
+  content: attr(data-sig);
+  position: absolute;
+  right: .75rem;
+  font-size: .75rem;
+  color: var(--err-msg-color, red);
+}
 [role="treeitem"] [data-diff]:before {
   position: absolute;
   color: var(--gray-700);
@@ -239,7 +246,7 @@ file-body[type="html"] root-item > [role="group"] > [role="treeitem"] {
   padding: .75rem;
 }
 file-body[type="html"] [role="treeitem"] {
-  padding: .25rem 1.5rem;
+  padding: .25rem 0 0 1.5rem;
   margin: 1px 0;
   /* box-shadow: inset 0px 0px 0px .5px var(--gray-800); */
 }
@@ -269,12 +276,12 @@ file-body[type="html"] .t {
   max-width: unset;
   flex-grow: unset;
   margin-right: unset;
-  color: var(--diff-new-color);
+  color: darkorange;
 }
 file-body[type="html"] .h > .t {
   border-radius: .25rem;
   margin-bottom: 1px;
-  color: var(--diff-new-color);
+  color: darkorange;
 }
 file-body[type="html"] [data-level-kind="even"] .t {
   /* background-color: var(--gray-meta); */

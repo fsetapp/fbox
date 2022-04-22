@@ -9,12 +9,14 @@ import { FileTree, Project } from "../lib/main.js"
 import * as Diff from "../lib/sch/diff.js"
 import { buffer, writable } from "../lib/utils.js"
 
+import * as Core from "../lib/pkgs/core.js"
 import * as Proj from "../lib/pkgs/proj.js"
 import * as Html from "../lib/pkgs/html.js"
 import * as Model from "../lib/pkgs/model.js"
 import { s } from "../lib/pkgs/registry.js"
 
 const structSheet = {
+  [s(Core).t]: Core.structSheet,
   [s(Proj).t]: Proj.structSheet,
   [s(Html).t]: Html.structSheet,
   [s(Model).t]: Model.structSheet

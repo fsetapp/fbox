@@ -10,8 +10,6 @@ import * as P from "../lib/pkgs/proj.js"
 import * as Sch from "../lib/sch.js"
 import { writable } from "../lib/utils.js";
 
-const Mfile = () => P.file({ ext: P.MODEL_EXT })
-
 describe("#taggedDiff", () => {
   const asBase = (store) => buildBaseIndices(JSON.parse(JSON.stringify(store)))
   const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
@@ -21,7 +19,7 @@ describe("#taggedDiff", () => {
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: Mfile, index: 0 },
+      { k: "file_1", sch: P.modelFile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -72,7 +70,7 @@ describe("#taggedDiff", () => {
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: Mfile, index: 0 },
+      { k: "file_1", sch: P.modelFile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "A1", sch: M.string, index: 0 },
@@ -119,8 +117,8 @@ describe("#taggedDiff", () => {
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: Mfile, index: 0 },
-      { k: "file_2", sch: Mfile, index: 1 },
+      { k: "file_1", sch: P.modelFile, index: 0 },
+      { k: "file_2", sch: P.modelFile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -166,8 +164,8 @@ describe("#taggedDiff", () => {
     project = initStore(project)
 
     Sch.put(project, "", [
-      { k: "file_1", sch: Mfile, index: 0 },
-      { k: "file_2", sch: Mfile, index: 1 },
+      { k: "file_1", sch: P.modelFile, index: 0 },
+      { k: "file_2", sch: P.modelFile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },

@@ -1,6 +1,6 @@
 import { TOPLV_TAG, putAnchor } from "../lib/pkgs/core.js"
 
-import { file, folder, JSON_DATA_EXT, HTML_EXT, MODEL_EXT } from "../lib/pkgs/proj.js"
+import { modelFile, htmlFile, dataFile, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 import { s } from "../lib/pkgs/registry.js"
 
@@ -56,30 +56,30 @@ folder_b2.fields = []
 
 let files = [
   {
-    ...putAnchor(() => file({ ext: MODEL_EXT })),
+    ...putAnchor(modelFile),
     key: "file_1",
     fields: file_1_models,
     lpath: [folder_a]
   },
   {
-    ...putAnchor(() => file({ ext: JSON_DATA_EXT })),
+    ...putAnchor(dataFile),
     key: "file_2",
     fields: [],
     lpath: [folder_a]
   },
   {
-    ...putAnchor(() => file({ ext: HTML_EXT })),
+    ...putAnchor(htmlFile),
     key: "file_3",
     lpath: [folder_a]
   },
   {
-    ...putAnchor(() => file({ ext: MODEL_EXT })),
+    ...putAnchor(modelFile),
     key: "file_2",
     fields: file_2_models,
     lpath: [folder_b, folder_b1]
   },
   {
-    ...putAnchor(() => file({ ext: MODEL_EXT })),
+    ...putAnchor(modelFile),
     key: "file_3",
     fields: file_3_models,
     lpath: []
@@ -91,9 +91,8 @@ let files = [
 ]
 
 let project = {
-  ...putAnchor(folder),
+  ...putAnchor(project_),
   key: "unclaimed_project",
-  tag: "project",
   fields: files,
   currentFileId: files[0].$a
 }

@@ -15,7 +15,7 @@ export const initStore = (project) =>
   Project.projectToStore(project, Project.createProjectStore({ structSheet }))
 
 export const initFileStore = (projectStore) =>
-  Project.walkFile(projectStore, (file, m) => Project.fileToStore(file, null, projectStore))
+  Project.walkFile(projectStore, (file, m) => file)
 
 export const Cmd = {
   markAsMain: (tree) => keydown(tree, { key: "m" }),

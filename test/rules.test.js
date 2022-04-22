@@ -5,17 +5,11 @@ import * as Core from "../lib/pkgs/core.js"
 
 const { structSheet } = M
 
-const childrenRules = (structSheet, sch) => {
-  for (let row of structSheet.sheet)
-    switch (true) {
-      case match(sch, row.selector):
-        return row.rules.children
-    }
-}
+const childrenRules = (structSheet, sch) =>
+  structSheet.sheet(sch.t).children
 
-describe("#match", () => {
-  it("matchs an attribute whose value is array", () => {
-    const { allowedSchs } = childrenRules(structSheet, M.record())
-    assert.notSameDeepMembers(allowedSchs, [Core.blank()])
+describe("#", () => {
+  it("tests nothing yet", () => {
+
   })
 })
