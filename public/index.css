@@ -30,7 +30,7 @@ kbd {
   line-height: 1;
   box-shadow: 2px 2px 0 darkred;
 }
-ul {
+ul, ol {
   padding: 0;
   margin: 0;
   list-style: none;
