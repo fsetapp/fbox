@@ -13,13 +13,15 @@ import * as Core from "../lib/pkgs/core.js"
 import * as Proj from "../lib/pkgs/proj.js"
 import * as Html from "../lib/pkgs/html.js"
 import * as Model from "../lib/pkgs/model.js"
+import * as Json from "../lib/pkgs/json.js"
 import { s } from "../lib/pkgs/registry.js"
 
 const structSheet = {
   [s(Core).t]: Core.structSheet,
   [s(Proj).t]: Proj.structSheet,
   [s(Html).t]: Html.structSheet,
-  [s(Model).t]: Model.structSheet
+  [s(Model).t]: Model.structSheet,
+  [s(Json).t]: Json.structSheet
 }
 
 export const start = ({ project, diff = true, async = true }) =>

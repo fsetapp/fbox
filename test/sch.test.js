@@ -71,6 +71,10 @@ describe("Sch operations", () => {
       assert.equal(store.fields.length, 1)
       assert.equal(store.fields[0].key, "0")
     })
+
+    // TODO:
+    // it("#put child.index does not exceed total length", () => {
+    // })
   })
 
   describe("#pop", () => {
