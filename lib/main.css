@@ -217,6 +217,7 @@ dfn {
   align-self: center;
   border-radius: .125rem;
   outline: none;
+  box-sizing: content-box;
 
   font-size: inherit;
   font-family: inherit;
