@@ -1,10 +1,10 @@
 import { TOPLV_TAG, putAnchor } from "../lib/pkgs/core.js"
-
-import { modelFile, htmlFile, dataFile, folder, project as project_ } from "../lib/pkgs/proj.js"
+import { modelFile, htmlFile, dataFile, jsonFile, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
-import { s } from "../lib/pkgs/registry.js"
+import * as J from "../lib/pkgs/json.js"
+import { randInt, reduce } from "../lib/utils.js"
 
-import { randInt } from "../lib/utils.js"
+import json from "./sample.json"
 
 export { project }
 
@@ -25,14 +25,42 @@ const fmodelsFixture = (n, startId) => {
   })
 }
 
-const dataFixture = (n) => {
+const jsonFixture = (json_) => {
+  let sch
+  switch (true) {
+    case json_ == null: sch = J.nil(); break
+    case typeof json_ == "string": sch = J.string({ v: json_ }); break
+    case typeof json_ == "number": sch = J.number({ v: json_ }); break
+    case typeof json_ == "boolean": sch = J.boolean({ v: json_ }); break
+    case Array.isArray(json_):
+      sch = J.array({
+        schs:
+          reduce(json_, (acc, item) => {
+            acc.push(jsonFixture(item))
+            return acc
+          }, [])
+      })
+      break
+    case typeof json_ == "object":
+      sch = J.object({
+        fields:
+          reduce(Object.keys(json_), (acc, k) => {
+            let sch_ = jsonFixture(json_[k])
+            sch_.key = k
+            acc.push(sch_)
+            return acc
+          }, [])
+      })
+      break
+  }
 
+  return putAnchor(() => sch)
 }
 
 let file_1_models = fmodelsFixture(10, 1)
 let file_2_models = fmodelsFixture(1000, 11)
 let file_3_models = fmodelsFixture(10, 21)
-let file_2_data = dataFixture(10)
+let file_4_json_toplv = jsonFixture(json)
 
 let folder_a = {
   ...putAnchor(folder),
@@ -70,6 +98,13 @@ let files = [
   {
     ...putAnchor(htmlFile),
     key: "file_3",
+    lpath: [folder_a]
+  },
+  {
+    ...putAnchor(() => jsonFile({
+      fields: [{ ...file_4_json_toplv, key: "entry", tag: TOPLV_TAG }]
+    })),
+    key: "file_4",
     lpath: [folder_a]
   },
   {

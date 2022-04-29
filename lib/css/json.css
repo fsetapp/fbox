@@ -1,0 +1,84 @@
+file-body[type="json"] [role="treeitem"][aria-selected="true"]:focus {
+  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+  border-radius: 3px;
+}
+file-body[type="json"] [role="treeitem"][aria-expanded="false"] > .h > .s {
+  transform: rotate(90deg);
+  margin-left: 1rem;
+}
+
+file-body[type="json"] .root-item > [role="group"] > [role="treeitem"] {
+  padding: .75rem;
+}
+
+file-body[type="json"] [role="group"] {
+  border-left: 1px dashed var(--gray-800);
+}
+/* Experiment */
+/* file-body[type="json"] .h:hover + [role="group"] {
+  border-left: 1px dashed var(--indigo-400);
+}
+file-body[type="json"] [role="treeitem"] + [role="treeitem"]:hover > [role="group"] {
+  border-left: 1px dashed var(--indigo-400);
+} */
+
+/* May use Core.blank as default with min 1 instead */
+file-body[type="json"] [data-group="keyed"] {
+  min-height: 1.5rem;
+}
+file-body[type="json"] [data-group="indexed"] > [role="treeitem"] > [data-group="keyed"] {
+  border-left: 1px solid var(--gray-600);
+  border-radius: 3px;
+}
+/* file-body[type="json"] [data-group="keyed"]:before {
+  content: "{";
+  color: var(--gray-500);
+} */
+/* file-body[type="json"] [data-group="keyed"]:after {
+  content: "}";
+  color: var(--gray-500);
+} */
+/* file-body[type="json"] [data-group="indexed"]:before {
+  content: "[";
+  color: var(--gray-700);
+} */
+file-body[type="json"] [data-group="indexed"]:after {
+  content: "]";
+  color: var(--gray-500);
+}
+
+file-body[type="json"] [role="treeitem"] {
+  padding: .1rem 0 .1rem 1.5rem;
+  margin: 1px 0;
+}
+file-body[type="json"] [data-group="keyed"] > [role="treeitem"].leaf {
+  display: grid;
+  grid-template-columns: fit-content(40%) 2ch 1fr;
+}
+
+
+file-body[type="json"] .k { max-width: unset; }
+file-body[type="json"] .t.obj { --val-color: var(--gray-600);}
+file-body[type="json"] .t.arr { --val-color: var(--gray-600); }
+file-body[type="json"] .t.str { --val-color: var(--blue-500); }
+/* file-body[type="json"] .t.str:before { content: "\""; color: var(--blue-500); } */
+file-body[type="json"] .t.str { --val-color: var(--blue-500); }
+/* file-body[type="json"] .t.str:after { content: "\""; color: var(--blue-500); } */
+file-body[type="json"] .t.num { --val-color: var(--indigo-400); }
+file-body[type="json"] .t.bool { --val-color: var(--yellow-500); }
+file-body[type="json"] .t.nil { --val-color: var(--pink-400); }
+file-body[type="json"] .t {
+  display: inline-flex;
+  max-width: unset;
+  flex-grow: unset;
+  margin-right: unset;
+  color: var(--val-color, darkorange);
+
+  /* Overflow scroll add more 5 seconds painting time */
+  /* overflow: scroll; */
+}
+file-body[type="json"] .t  textarea {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
