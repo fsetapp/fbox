@@ -12,7 +12,7 @@ const structSheet = {
 }
 
 export const initStore = (project) =>
-  Project.projectToStore(project, Project.createProjectStore({ structSheet }))
+  Project.projectToStore(project, { structSheet })
 
 export const initFileStore = (projectStore) =>
   Project.walkFile(projectStore, (file, m) => file)

@@ -7,7 +7,7 @@
 
 import { FileTree, Project } from "../lib/main.js"
 import * as Diff from "../lib/sch/diff.js"
-import { buffer, writable } from "../lib/utils.js"
+import { buffer } from "../lib/utils.js"
 
 import * as Core from "../lib/pkgs/core.js"
 import * as Proj from "../lib/pkgs/proj.js"
@@ -55,9 +55,9 @@ export const start = ({ project, diff = true, async = true }) =>
       Project.taggedDiff(this.projectStore, (diff) => {
         // simulute websocket push latency
         setTimeout(() => {
-          // Diff.mergeToBase(this.projectBaseStore, diff)
-          this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
-          Diff.buildBaseIndices(this.projectBaseStore)
+          Diff.mergeToBase(this.projectBaseStore, diff)
+          // this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
+          // Diff.buildBaseIndices(this.projectBaseStore)
           this.diffRender(e)
         }, 0)
       })
@@ -66,7 +66,7 @@ export const start = ({ project, diff = true, async = true }) =>
       return Diff.diff(this.projectStore, this.projectBaseStore)
     }
     diffRender(e) {
-      writable(this.projectStore, "_diffToRemote", this.runDiff())
+      // writable(this.projectStore, "_diffToRemote", this.runDiff())
 
       let fileStore = e.detail.target.closest("[data-tag='file']")?.sch
       if (fileStore && fileStore.render)
@@ -80,13 +80,13 @@ export const start = ({ project, diff = true, async = true }) =>
         Project.SchMeta.update({ store: fileStore, detail })
     }
     remoteConnected() {
-      this.projectStore = Project.projectToStore(project, Project.createProjectStore({ structSheet }))
+      this.projectStore = Project.projectToStore(project, { structSheet })
       this.projectStore.fields = project.fields
       project.fields = []
       this.projectStore.fields = this.projectStore.fields.map(file => file)
       Project.buildFolderTree(this.projectStore)
 
-      FileTree({ store: this.projectStore, target: "[id='project']", select: `[${project.currentFileId}]` })
+      FileTree(this.projectStore, { target: "[id='project']", select: `[${project.currentFileId}]` })
       Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
