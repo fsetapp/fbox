@@ -89,7 +89,8 @@ dd {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-file-body[type="fmodel"] [role="tree"] {
+file-body[type="fmodel"] [role="tree"],
+[data-ext="fmodel"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);

@@ -4,7 +4,7 @@
   "description": "Standalone offline fset",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "node ./es_build.js",
     "preview": "vite preview",
     "build:standalone": "vite build --config vite.config.standalone.js",
     "test": "web-test-runner || exit 0"
@@ -29,6 +29,7 @@
     "@web/dev-server-esbuild": "^0.2.12",
     "@web/test-runner": "^0.12.20",
     "esbuild": "^0.14.38",
+    "model": "file:lib/pkgs/model",
     "postcss": "^8.3.0",
     "postcss-cli": "^8.3.1",
     "rollup-plugin-analyzer": "^4.0.0",

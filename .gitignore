@@ -3,3 +3,4 @@ build
 coverage
 standalone/html
 standalone/json
+dist
