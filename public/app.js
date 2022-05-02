@@ -8,16 +8,22 @@
 // Debug mode, import local files
 // import { FileTree, Project } from "../lib/main.js"
 // import * as Model from "../lib/pkgs/model/index.js"
+// import * as Json from "../lib/pkgs/json/index.js"
+// import * as Html from "../lib/pkgs/html/index.js"
 
 // Preview mode, import bundled packages
 import { FileTree, Project } from "fset"
 import * as Model from "fset/pkgs/model.js"
+import * as Json from "fset/pkgs/json.js"
+import * as Html from "fset/pkgs/html.js"
 
 import * as Diff from "../lib/sch/diff.js"
 import { buffer } from "../lib/utils.js"
 
 const structSheet = Object.assign({},
   Model.structSheet,
+  Json.structSheet,
+  Html.structSheet
 )
 
 export const start = ({ project, diff = true, async = true }) =>
@@ -83,7 +89,7 @@ export const start = ({ project, diff = true, async = true }) =>
       this.projectStore.fields = this.projectStore.fields.map(file => file)
       Project.buildFolderTree(this.projectStore)
 
-      FileTree(this.projectStore, { target: "[id='project']", select: `[${project.currentFileId}]` })
+      FileTree({ target: "[id='project']", select: `[${project.currentFileId}]` }, this.projectStore)
       Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))

@@ -89,7 +89,6 @@ dd {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-file-body[type="fmodel"] [role="tree"],
 [data-ext="fmodel"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
@@ -112,7 +111,7 @@ file-body[type="fmodel"] [role="tree"],
   /* --diff-reorder-color: var(--diff-moved-color); */
 }
 
-file-body[type="html"] [role="tree"] {
+[data-ext="html"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);
@@ -134,7 +133,7 @@ file-body[type="html"] [role="tree"] {
   /* --diff-reorder-color: var(--diff-moved-color); */
 }
 
-file-body[type="json"] [role="tree"] {
+[data-ext="json"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);

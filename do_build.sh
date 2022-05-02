@@ -17,6 +17,7 @@ gzip -c ./lib/pkgs/fset/dist/main.css > ./lib/pkgs/fset/dist/fset.css.gz
 # Standalone
 gzip -c ./lib/pkgs/model/dist/model.es.js > ./lib/pkgs/model/dist/model.es.js.gz
 gzip -c ./lib/pkgs/json/dist/json.es.js > ./lib/pkgs/json/dist/json.es.js.gz
+gzip -c ./lib/pkgs/html/dist/html.es.js > ./lib/pkgs/html/dist/html.es.js.gz
 
 # Report
 echo "minified"

@@ -8,6 +8,12 @@
     },
     "./pkgs/model.js": {
       "default": "./dist/pkgs/model/index.js"
+    },
+    "./pkgs/json.js": {
+      "default": "./dist/pkgs/json/index.js"
+    },
+    "./pkgs/html.js": {
+      "default": "./dist/pkgs/html/index.js"
     }
   },
   "scripts": {

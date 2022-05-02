@@ -30,9 +30,14 @@ const buildOne = pkg => {
 
 buildOne("model")
 buildOne("json")
+buildOne("html")
 result = esbuild.build({
   ...commonOpts,
-  entryPoints: ["lib/main.js", "lib/pkgs/model/index.js", "lib/main.css"],
+  entryPoints: ["lib/main.js", "lib/main.css",
+    "lib/pkgs/model/index.js",
+    "lib/pkgs/json/index.js",
+    "lib/pkgs/html/index.js"
+  ],
   entryNames: "[dir]/[name]",
   chunkNames: "chunks/[name]-[hash]",
   mainFields: ["main"],

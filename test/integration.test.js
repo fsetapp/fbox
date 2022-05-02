@@ -15,7 +15,7 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
     document.body.innerHTML = `
       <project-store>
         <section id="project"></section>
-        <file-body type='fmodel'></file-body>
+        <file-body data-ext='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
       </project-store>
     `
@@ -201,7 +201,7 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     document.body.innerHTML = `
       <project-store>
         <section id="project"></section>
-        <file-body type='fmodel'></file-body>
+        <file-body data-ext='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
       </project-store>
     `
