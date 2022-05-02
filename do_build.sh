@@ -6,7 +6,8 @@ npm run build
 # Lets do moving the whoe npm package instead
 # cp ./lib/pkgs/fset/dist/main.js ~/dev/product/fset/assets/js/vendor/fbox.js
 # cp ./lib/pkgs/fset/dist/main.js.map ~/dev/product/fset/assets/js/vendor/fbox.js.map
-cp -r ./lib/pkgs/fset ~/dev/product/fset/assets/js/pkgs/
+rm -rf ~/dev/product/fset/assets/js/internal/
+cp -r ./lib/pkgs/fset ~/dev/product/fset/assets/js/internal/
 # We are trying to link css in shadow dom instead, seems easier to distribute
 # cp ./lib/pkgs/fset/dist/fset.min.css ~/dev/product/fset/assets/css/vendor/fbox.css
 # cp ./lib/pkgs/fset/dist/fset.min.css.map ~/dev/product/fset/assets/css/vendor/fbox.css.map

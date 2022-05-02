@@ -1,7 +1,8 @@
 import { assert } from "@esm-bundle/chai";
 import { initStore, initFileStore } from "./test_helper.js"
-import { buildBaseIndices, diff } from "../lib/sch/diff.js"
-import { taggedDiff } from "../lib/project/tagged_diff.js"
+import * as Store from "../lib/repo/store.js"
+import { taggedDiff } from "../lib/repo/tagged_diff.js"
+import { diff } from "../lib/sch/diff.js"
 
 import { putAnchor, TOPLV_TAG } from "../lib/pkgs/core.js"
 import * as M from "../lib/pkgs/model.js"
@@ -11,7 +12,7 @@ import * as Sch from "../lib/sch.js"
 import { writable } from "../lib/utils.js";
 
 describe("#taggedDiff", () => {
-  const asBase = (store) => buildBaseIndices(JSON.parse(JSON.stringify(store)))
+  const asBase = (store) => Store.Indice.buildBaseIndices(JSON.parse(JSON.stringify(store)))
   const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
 
   it("moves subfmodel to be fmodel", () => {

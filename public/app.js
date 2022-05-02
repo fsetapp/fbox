@@ -1,23 +1,29 @@
 /* This file is used for both development and test environments */
 /* Please keep this file as library Call Site only */
 /*
-  <project-store> emulates production use case such as `Project.controller` so
+  <project-store> emulates production use case such as `Project.router` so
   that we can integration test those edge of libaries.
 */
 
 // Debug mode, import local files
-// import { FileTree, Project } from "../lib/main.js"
-// import * as Model from "../lib/pkgs/model/index.js"
-// import * as Json from "../lib/pkgs/json/index.js"
-// import * as Html from "../lib/pkgs/html/index.js"
+import { Project } from "../lib/main.js"
+import { FileTree } from "../lib/elements/file_tree.js"
+import * as Model from "../lib/pkgs/model/index.js"
+import * as Json from "../lib/pkgs/json/index.js"
+import * as Html from "../lib/pkgs/html/index.js"
+
+const { Store,
+  Controller,
+  Core,
+  Diff,
+  Remote } = Project
 
 // Preview mode, import bundled packages
-import { FileTree, Project } from "fset"
-import * as Model from "fset/pkgs/model.js"
-import * as Json from "fset/pkgs/json.js"
-import * as Html from "fset/pkgs/html.js"
+// import { FileTree, Project } from "fset"
+// import * as Model from "fset/pkgs/model.js"
+// import * as Json from "fset/pkgs/json.js"
+// import * as Html from "fset/pkgs/html.js"
 
-import * as Diff from "../lib/sch/diff.js"
 import { buffer } from "../lib/utils.js"
 
 const structSheet = Object.assign({},
@@ -42,11 +48,11 @@ export const start = ({ project, diff = true, async = true }) =>
       this.removeEventListener("sch-update", this.handleSchUpdate)
     }
     handleTreeCommand(e) {
-      Project.controller(this.projectStore, e.detail.target, e.detail.command)
+      Controller.router(this.projectStore, e.detail.target, e.detail.command)
     }
     handleRemotePush(e) {
       if (!diff) return
-      if (!Project.isDiffableCmd(e.detail.command.name)) {
+      if (!Controller.isDiffableCmd(e.detail.command.name)) {
         // setTimeout(() => this.pushToRemote(e), 0)
         return
       }
@@ -54,13 +60,13 @@ export const start = ({ project, diff = true, async = true }) =>
     }
     pushToRemote(e) {
       this.diffRender(e)
-      Project.taggedDiff(this.projectStore, (diff) => {
+      Remote.taggedDiff(this.projectStore, (diff) => {
         // simulute websocket push latency
         setTimeout(() => {
           Diff.mergeToBase(this.projectBaseStore, diff)
           // console.time("structureClone")
           // this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
-          // Diff.buildBaseIndices(this.projectBaseStore)
+          // Store.buildBaseIndices(this.projectBaseStore)
           this.diffRender(e)
         }, 0)
       })
@@ -83,16 +89,16 @@ export const start = ({ project, diff = true, async = true }) =>
         Project.SchMeta.update({ store: fileStore, detail })
     }
     remoteConnected() {
-      this.projectStore = Project.projectToStore(project, { structSheet })
+      this.projectStore = Store.fromProject(project, { structSheet })
       this.projectStore.fields = project.fields
       project.fields = []
       this.projectStore.fields = this.projectStore.fields.map(file => file)
-      Project.buildFolderTree(this.projectStore)
+      Store.buildFolderTree(this.projectStore)
 
       FileTree({ target: "[id='project']", select: `[${project.currentFileId}]` }, this.projectStore)
-      Project.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
+      Controller.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
-      Diff.buildBaseIndices(this.projectBaseStore)
+      Store.Indice.buildBaseIndices(this.projectBaseStore)
     }
   })

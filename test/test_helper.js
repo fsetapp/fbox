@@ -12,10 +12,10 @@ const structSheet = {
 }
 
 export const initStore = (project) =>
-  Project.projectToStore(project, { structSheet })
+  Project.Store.fromProject(project, { structSheet })
 
 export const initFileStore = (projectStore) =>
-  Project.walkFile(projectStore, (file, m) => file)
+  Project.Walk.walkFile(projectStore, (file, m) => file)
 
 export const Cmd = {
   markAsMain: (tree) => keydown(tree, { key: "m" }),
