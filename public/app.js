@@ -5,24 +5,20 @@
   that we can integration test those edge of libaries.
 */
 
-import { FileTree, Project } from "../lib/main.js"
+// Debug mode, import local files
+// import { FileTree, Project } from "../lib/main.js"
+// import * as Model from "../lib/pkgs/model/index.js"
+
+// Preview mode, import bundled packages
+import { FileTree, Project } from "fset"
+import * as Model from "fset/pkgs/model.js"
+
 import * as Diff from "../lib/sch/diff.js"
 import { buffer } from "../lib/utils.js"
 
-import * as Core from "../lib/pkgs/core.js"
-import * as Proj from "../lib/pkgs/proj.js"
-import * as Html from "../lib/pkgs/html.js"
-import * as Model from "../lib/pkgs/model.js"
-import * as Json from "../lib/pkgs/json.js"
-import { s } from "../lib/pkgs/registry.js"
-
-const structSheet = {
-  [s(Core).t]: Core.structSheet,
-  [s(Proj).t]: Proj.structSheet,
-  [s(Html).t]: Html.structSheet,
-  [s(Model).t]: Model.structSheet,
-  [s(Json).t]: Json.structSheet
-}
+const structSheet = Object.assign({},
+  Model.structSheet,
+)
 
 export const start = ({ project, diff = true, async = true }) =>
   customElements.define("project-store", class extends HTMLElement {
@@ -56,6 +52,7 @@ export const start = ({ project, diff = true, async = true }) =>
         // simulute websocket push latency
         setTimeout(() => {
           Diff.mergeToBase(this.projectBaseStore, diff)
+          // console.time("structureClone")
           // this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
           // Diff.buildBaseIndices(this.projectBaseStore)
           this.diffRender(e)

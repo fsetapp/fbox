@@ -1,5 +1,5 @@
 {
-  "name": "fbox",
+  "name": "fset-monorepo",
   "version": "1.0.0",
   "description": "Standalone offline fset",
   "scripts": {
@@ -29,6 +29,7 @@
     "@web/dev-server-esbuild": "^0.2.12",
     "@web/test-runner": "^0.12.20",
     "esbuild": "^0.14.38",
+    "fset": "file:lib/pkgs/fset",
     "model": "file:lib/pkgs/model",
     "postcss": "^8.3.0",
     "postcss-cli": "^8.3.1",

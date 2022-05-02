@@ -10,9 +10,11 @@
   <link rel="stylesheet" type="text/css" href="./index.css">
   <script type="module">
     import { FmodelTree } from "model"
+    import * as Model from "fset/pkgs/model.js"
     const $ = document.querySelector
 
-    FmodelTree({ target: ".model" })
+    console.log(Model)
+    FmodelTree({ target: ".as", name: "s-model" })
   </script>
 </head>
 

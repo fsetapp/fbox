@@ -1,13 +1,26 @@
 #!/bin/bash
-
+rm -rf ./lib/pkgs/*/dist
 npm run build
 
-gzip -c ./build/dist/fset.min.js > ./build/dist/fset.min.js.gz
-gzip -c ./build/dist/fset.min.css > ./build/dist/fset.min.css.gz
+# Core+extension
+# Lets do moving the whoe npm package instead
+# cp ./lib/pkgs/fset/dist/main.js ~/dev/product/fset/assets/js/vendor/fbox.js
+# cp ./lib/pkgs/fset/dist/main.js.map ~/dev/product/fset/assets/js/vendor/fbox.js.map
+cp -r ./lib/pkgs/fset ~/dev/product/fset/assets/js/pkgs/
+# We are trying to link css in shadow dom instead, seems easier to distribute
+# cp ./lib/pkgs/fset/dist/fset.min.css ~/dev/product/fset/assets/css/vendor/fbox.css
+# cp ./lib/pkgs/fset/dist/fset.min.css.map ~/dev/product/fset/assets/css/vendor/fbox.css.map
 
-cp ./build/dist/fset.min.js ~/dev/product/fset/assets/js/vendor/fbox.min.js
-cp ./build/dist/fset.min.js.map ~/dev/product/fset/assets/js/vendor/fbox.min.js.map
-cp ./build/dist/fset.min.css ~/dev/product/fset/assets/css/vendor/fbox.min.css
-cp ./build/dist/fset.min.css.map ~/dev/product/fset/assets/css/vendor/fbox.min.css.map
+gzip -c ./lib/pkgs/fset/dist/main.js > ./lib/pkgs/fset/dist/fset.es.js.gz
+gzip -c ./lib/pkgs/fset/dist/main.css > ./lib/pkgs/fset/dist/fset.css.gz
 
-du -sh ./build/dist/*
+# Standalone
+gzip -c ./lib/pkgs/model/dist/model.es.js > ./lib/pkgs/model/dist/model.es.js.gz
+gzip -c ./lib/pkgs/json/dist/json.es.js > ./lib/pkgs/json/dist/json.es.js.gz
+
+# Report
+echo "minified"
+du -sh ./lib/pkgs/**/dist/*.{js,css}
+echo
+echo "gzip"
+du -sh ./lib/pkgs/**/dist/*.gz
