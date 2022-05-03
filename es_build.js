@@ -3,10 +3,10 @@ let esbuild = require("esbuild")
 const commonOpts = {
   platform: "neutral",
   bundle: true,
-  minify: true,
+  minify: !!process.env.PUBLISH,
   treeShaking: true,
   metafile: true,
-  sourcemap: false,
+  sourcemap: !process.env.PUBLISH,
   target: ["es2020"],
 }
 
