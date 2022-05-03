@@ -2,10 +2,7 @@
 rm -rf ./lib/pkgs/*/dist
 npm run build
 
-# Core+extension
-# Lets do moving the whoe npm package instead
-# cp ./lib/pkgs/fset/dist/main.js ~/dev/product/fset/assets/js/vendor/fbox.js
-# cp ./lib/pkgs/fset/dist/main.js.map ~/dev/product/fset/assets/js/vendor/fbox.js.map
+mkdir -p ~/dev/product/fset/assets/js/internal
 rm -rf ~/dev/product/fset/assets/js/internal/
 cp -r ./lib/pkgs/fset ~/dev/product/fset/assets/js/internal/
 # We are trying to link css in shadow dom instead, seems easier to distribute
