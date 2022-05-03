@@ -12,11 +12,7 @@ import * as Model from "../lib/pkgs/model/index.js"
 import * as Json from "../lib/pkgs/json/index.js"
 import * as Html from "../lib/pkgs/html/index.js"
 
-const { Store,
-  Controller,
-  Core,
-  Diff,
-  Remote } = Project
+const { Store, Controller, Diff, Remote } = Project
 
 // Preview mode, import bundled packages
 // import { FileTree, Project } from "fset"

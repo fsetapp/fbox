@@ -6,7 +6,7 @@ const commonOpts = {
   minify: true,
   treeShaking: true,
   metafile: true,
-  sourcemap: true,
+  sourcemap: false,
   target: ["es2020"],
 }
 
@@ -34,6 +34,7 @@ buildOne("html")
 result = esbuild.build({
   ...commonOpts,
   entryPoints: ["lib/main.js", "lib/main.css",
+    "lib/pkgs/file/index.js",
     "lib/pkgs/model/index.js",
     "lib/pkgs/json/index.js",
     "lib/pkgs/html/index.js"
