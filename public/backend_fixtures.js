@@ -85,6 +85,22 @@ folder_b2.fields = []
 let files = [
   {
     ...putAnchor(modelFile),
+    key: "file_2",
+    fields: file_2_models,
+    lpath: [folder_b, folder_b1]
+  },
+  {
+    ...putAnchor(modelFile),
+    key: "file_3",
+    fields: file_3_models,
+    lpath: []
+  },
+  {
+    ...b2_keep,
+    lpath: [folder_b, folder_b2]
+  },
+  {
+    ...putAnchor(modelFile),
     key: "file_1",
     fields: file_1_models,
     lpath: [folder_a]
@@ -106,22 +122,6 @@ let files = [
     })),
     key: "file_4",
     lpath: [folder_a]
-  },
-  {
-    ...putAnchor(modelFile),
-    key: "file_2",
-    fields: file_2_models,
-    lpath: [folder_b, folder_b1]
-  },
-  {
-    ...putAnchor(modelFile),
-    key: "file_3",
-    fields: file_3_models,
-    lpath: []
-  },
-  {
-    ...b2_keep,
-    lpath: [folder_b, folder_b2]
   }
 ]
 
