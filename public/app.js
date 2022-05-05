@@ -20,7 +20,7 @@ const { Store, Controller, Diff, Remote } = Project
 // import * as Json from "fset/pkgs/json.js"
 // import * as Html from "fset/pkgs/html.js"
 
-import { buffer } from "../lib/utils.js"
+import { buffer, writable } from "../lib/utils.js"
 
 const structSheet = Object.assign({},
   Model.structSheet,
@@ -59,11 +59,14 @@ export const start = ({ project, diff = true, async = true }) =>
       Remote.taggedDiff(this.projectStore, (diff) => {
         // simulute websocket push latency
         setTimeout(() => {
+          for (let k of Object.keys(diff)) {
+            diff[k].files = Object.values(diff[k].files)
+            diff[k].fmodels = Object.values(diff[k].fmodels)
+          }
           Diff.mergeToBase(this.projectBaseStore, diff)
-          // console.time("structureClone")
-          // this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
-          // Store.buildBaseIndices(this.projectBaseStore)
-          this.diffRender(e)
+          this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
+          Store.Indice.buildBaseIndices(this.projectBaseStore)
+          // this.diffRender(e)
         }, 0)
       })
     }
@@ -71,7 +74,7 @@ export const start = ({ project, diff = true, async = true }) =>
       return Diff.diff(this.projectStore, this.projectBaseStore)
     }
     diffRender(e) {
-      // writable(this.projectStore, "_diffToRemote", this.runDiff())
+      writable(this.projectStore, "_diffToRemote", this.runDiff())
 
       let fileStore = e.detail.target.closest("[data-tag='file']")?.sch
       if (fileStore && fileStore.render)

@@ -6,8 +6,8 @@ mkdir -p ~/dev/product/fset/assets/js/internal
 rm -rf ~/dev/product/fset/assets/js/internal/
 cp -r ./lib/pkgs/fset ~/dev/product/fset/assets/js/internal/
 # We are trying to link css in shadow dom instead, seems easier to distribute
-# cp ./lib/pkgs/fset/dist/fset.min.css ~/dev/product/fset/assets/css/vendor/fbox.css
-# cp ./lib/pkgs/fset/dist/fset.min.css.map ~/dev/product/fset/assets/css/vendor/fbox.css.map
+cp ./lib/pkgs/fset/dist/main.css ~/dev/product/fset/assets/css/vendor/fbox.css
+cp ./lib/pkgs/fset/dist/main.css.map ~/dev/product/fset/assets/css/vendor/fbox.css.map
 
 gzip -c ./lib/pkgs/fset/dist/main.js > ./lib/pkgs/fset/dist/fset.es.js.gz
 gzip -c ./lib/pkgs/fset/dist/main.css > ./lib/pkgs/fset/dist/fset.css.gz
