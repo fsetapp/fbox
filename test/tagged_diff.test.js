@@ -18,7 +18,11 @@ const assertDiff = (diff) => {
   const assertProp = (things, { has = [], hasNot = [] }) => {
     for (let key of Object.keys(things)) {
       for (let prop1 of has) assert.isDefined(things[key][prop1], prop1)
-      for (let prop0 of hasNot) assert.isUndefined(things[key][prop0], prop0)
+      for (let prop0 of hasNot) {
+        let val = things[key][prop0]
+        if (Array.isArray(val)) assert.isEmpty(val, prop0)
+        else assert.isUndefined(val, prop0)
+      }
     }
   }
 
@@ -199,36 +203,124 @@ describe("#taggedDiff", () => {
     })
   })
 
-  // it.only("NEW nested folder", () => {
-  //   Sch.put(project, "", [
-  //     { k: "folder_1", sch: P.folder, index: 0 },
-  //   ])
+  it("NEW nested folder", () => {
+    Sch.put(project, "", [
+      { k: "folder_1", sch: P.folder, index: 0 },
+    ])
 
-  //   let current = initFileStore(project)
-  //   let base = asBase(current)
+    let current = initFileStore(project)
+    let base = asBase(current)
 
-  //   Sch.put(current, "[folder_1]", [
-  //     { k: "[folder_11]", sch: P.folder, index: 0 },
-  //   ])
+    let folder_11 = P.folder()
+    let folder_11_keep = folder_11.fields[0]
+    Sch.put(current, "[folder_1]", [
+      { k: "folder_11", sch: () => folder_11, index: 0 },
+    ])
 
-  //   runDiff(current, base)
-  //   taggedDiff(current, (diff) => {
-  //     const { changed, added, removed, reorder } = diff
-  //     assert.deepEqual(added.files, {})
-  //     assert.deepEqual(added.fmodels, {})
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, { [folder_11_keep.$a]: folder_11_keep })
+      assert.deepEqual(added.fmodels, {})
 
-  //     assert.deepEqual(removed.files, {})
-  //     assert.deepEqual(removed.fmodels, {})
+      assert.deepEqual(removed.files, {})
+      assert.deepEqual(removed.fmodels, {})
 
-  //     assert.deepEqual(changed.files, {})
-  //     assert.deepEqual(changed.fmodels, {})
+      assert.deepEqual(changed.files, {})
+      assert.deepEqual(changed.fmodels, {})
 
-  //     assert.deepEqual(reorder.files, {})
-  //     assert.deepEqual(reorder.fmodels, {})
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
 
-  //     assertDiff({ changed, added, removed, reorder })
-  //   })
-  // })
+      assertDiff({ changed, added, removed, reorder })
+    })
+  })
+
+  it("NEW_KEY folder", () => {
+    let folder1 = P.folder()
+    let folder11 = P.folder()
+    let modelFile = P.modelFile()
+
+    Sch.put(project, "", [
+      { k: "folder_1", sch: () => folder1, index: 0 },
+    ])
+    Sch.put(project, "[folder_1]", [
+      { k: "folder_11", sch: () => folder11, index: 0 },
+      { k: "model_1", sch: () => modelFile, index: 0 }
+    ])
+
+    let current = initFileStore(project)
+    let base = asBase(current)
+
+    let moved = Sch.move(current, { dstPath: "", startIndex: 0 }, { "": [{ id: "folder_1", index: 0, newK: "abc" }] })
+
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, {})
+      assert.deepEqual(added.fmodels, {})
+
+      assert.deepEqual(removed.files, {})
+      assert.deepEqual(removed.fmodels, {})
+
+      let folder1_keep = folder1.fields.find(a => a.t == P.KEEP_EXT)
+      let folder11_keep = folder11.fields.find(a => a.t == P.KEEP_EXT)
+
+      assert.deepEqual(changed.files[folder1_keep.$a].lpath.map(l => l.key), ["abc"])
+      assert.deepEqual(changed.files[folder11_keep.$a].lpath.map(l => l.key), ["abc", "folder_11"])
+      assert.deepEqual(changed.files[modelFile.$a].lpath.map(l => l.key), ["abc", "model_1"])
+      assert.deepEqual(changed.fmodels, {})
+
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
+
+      assertDiff({ changed, added, removed, reorder })
+    })
+  })
+
+  it("REMOVED folder", () => {
+    let folder1 = P.folder()
+    let folder11 = P.folder()
+    let modelFile = P.modelFile()
+
+    Sch.put(project, "", [
+      { k: "folder_1", sch: () => folder1, index: 0 },
+    ])
+    Sch.put(project, "[folder_1]", [
+      { k: "folder_11", sch: () => folder11, index: 0 },
+    ])
+    Sch.put(project, "[folder_1][folder_11]", [
+      { k: "model_1", sch: () => modelFile, index: 0 },
+    ])
+
+
+    let current = initFileStore(project)
+    let base = asBase(current)
+
+    let popped = Sch.pop(current, "[folder_1]", [0])
+
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, {})
+      assert.deepEqual(added.fmodels, {})
+
+      let folder11_keep = folder11.fields.find(a => a.t == P.KEEP_EXT)
+
+      assert.equal(Object.keys(removed.files).length, 2)
+      assert.isOk(removed.files[folder11_keep.$a])
+      assert.isOk(removed.files[modelFile.$a])
+      assert.deepEqual(removed.fmodels, {})
+
+      assert.deepEqual(changed.files, {})
+      assert.deepEqual(changed.fmodels, {})
+
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
+
+      assertDiff({ changed, added, removed, reorder })
+    })
+  })
 })
 describe("#taggedDiff from actions#addSch ", () => {
   // Database blows this up already

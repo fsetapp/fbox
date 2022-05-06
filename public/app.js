@@ -63,6 +63,7 @@ export const start = ({ project, diff = true, async = true }) =>
             diff[k].files = Object.values(diff[k].files)
             diff[k].fmodels = Object.values(diff[k].fmodels)
           }
+          console.log(diff)
           Diff.mergeToBase(this.projectBaseStore, diff)
           this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
           Store.Indice.buildBaseIndices(this.projectBaseStore)
