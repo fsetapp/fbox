@@ -11,14 +11,38 @@ import * as P from "../lib/pkgs/proj.js"
 import * as Sch from "../lib/sch.js"
 import { writable } from "../lib/utils.js";
 
+const asBase = (store) => Store.Indice.buildBaseIndices(JSON.parse(JSON.stringify(store)))
+const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
+const assertDiff = (diff) => {
+  const { changed, added, removed, reorder } = diff
+  const assertProp = (things, { has = [], hasNot = [] }) => {
+    for (let key of Object.keys(things)) {
+      for (let prop1 of has) assert.isDefined(things[key][prop1], prop1)
+      for (let prop0 of hasNot) assert.isUndefined(things[key][prop0], prop0)
+    }
+  }
+
+  assertProp(changed.files, { has: ["lpath"] })
+  assertProp(changed.fmodels, { has: ["fields"], hasNot: ["lpath"] })
+
+  assertProp(added.files, { has: ["lpath"], hasNot: ["fields"] })
+  assertProp(added.fmodels, { hasNot: ["lpath"] })
+
+  assertProp(removed.files, { hasNot: ["fields", "lpath"] })
+  assertProp(removed.fmodels, { hasNot: ["fields", "lpath"] })
+
+  assertProp(reorder.files, { has: ["lpath"], hasNot: ["fields"] })
+  assertProp(reorder.fmodels, { has: ["$a", "t", "key", "index"], hasNot: ["fields", "lpath", "sch"] })
+}
+
 describe("#taggedDiff", () => {
-  const asBase = (store) => Store.Indice.buildBaseIndices(JSON.parse(JSON.stringify(store)))
-  const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
+  var project
 
-  it("moves subfmodel to be fmodel", () => {
-    let project = putAnchor(P.project)
+  beforeEach(() => {
+    project = putAnchor(P.project)
     project = initStore(project)
-
+  })
+  it("moves subfmodel to be fmodel", () => {
     Sch.put(project, "", [
       { k: "file_1", sch: P.modelFile, index: 0 },
     ])
@@ -55,21 +79,12 @@ describe("#taggedDiff", () => {
       assert.equal(reorder.fmodels["[file_1][A1]"].index, 0)
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 1)
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 2)
-      for (let parent of Object.keys(reorder.fmodels)) {
-        assert.equal(reorder.fmodels[parent].pa, file1.$a)
-        assert.isOk(reorder.fmodels[parent].$a)
-        assert.isOk(reorder.fmodels[parent].t)
-        assert.isOk(reorder.fmodels[parent].key)
-        assert.isNumber(reorder.fmodels[parent].index)
-        assert.isNotOk(reorder.fmodels[parent].sch)
-      }
+
+      assertDiff({ changed, added, removed, reorder })
     })
   })
 
   it("moves fmodel to be subfmodel", () => {
-    let project = putAnchor(P.project)
-    project = initStore(project)
-
     Sch.put(project, "", [
       { k: "file_1", sch: P.modelFile, index: 0 },
     ])
@@ -96,27 +111,18 @@ describe("#taggedDiff", () => {
       assert.equal(Object.keys(removed.fmodels).length, 1)
 
       assert.deepEqual(changed.files, {})
-      // assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
       assert.equal(Object.keys(changed.fmodels).length, 1)
 
       assert.deepEqual(reorder.files, {})
       assert.equal(reorder.fmodels["[file_1][fmodel_A]"].index, 0)
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 1)
-      for (let parent of Object.keys(reorder.fmodels)) {
-        assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
-        assert.isOk(reorder.fmodels[parent].$a)
-        assert.isOk(reorder.fmodels[parent].t)
-        assert.isOk(reorder.fmodels[parent].key)
-        assert.isNumber(reorder.fmodels[parent].index)
-        assert.isNotOk(reorder.fmodels[parent].sch)
-      }
+
+      assertDiff({ changed, added, removed, reorder })
     })
   })
 
   it("moves fmodel to be fmodel", () => {
-    let project = putAnchor(P.project)
-    project = initStore(project)
-
     Sch.put(project, "", [
       { k: "file_1", sch: P.modelFile, index: 0 },
       { k: "file_2", sch: P.modelFile, index: 1 },
@@ -149,21 +155,12 @@ describe("#taggedDiff", () => {
       assert.deepEqual(reorder.files, {})
       assert.equal(reorder.fmodels["[file_1][fmodel_B]"].index, 0)
       assert.equal(Object.keys(reorder.fmodels).length, 1)
-      for (let parent of Object.keys(reorder.fmodels)) {
-        assert.equal(reorder.fmodels[parent].pa, Sch.get(current, "[file_1]").$a)
-        assert.isOk(reorder.fmodels[parent].$a)
-        assert.isOk(reorder.fmodels[parent].t)
-        assert.isOk(reorder.fmodels[parent].key)
-        assert.isNumber(reorder.fmodels[parent].index)
-        assert.isNotOk(reorder.fmodels[parent].sch)
-      }
+
+      assertDiff({ changed, added, removed, reorder })
     })
   })
 
   it("removes fmodel one by one", () => {
-    let project = putAnchor(P.project)
-    project = initStore(project)
-
     Sch.put(project, "", [
       { k: "file_1", sch: P.modelFile, index: 0 },
       { k: "file_2", sch: P.modelFile, index: 1 },
@@ -197,9 +194,41 @@ describe("#taggedDiff", () => {
 
       assert.deepEqual(reorder.files, {})
       assert.deepEqual(reorder.fmodels, {})
-    })
 
+      assertDiff({ changed, added, removed, reorder })
+    })
   })
+
+  // it.only("NEW nested folder", () => {
+  //   Sch.put(project, "", [
+  //     { k: "folder_1", sch: P.folder, index: 0 },
+  //   ])
+
+  //   let current = initFileStore(project)
+  //   let base = asBase(current)
+
+  //   Sch.put(current, "[folder_1]", [
+  //     { k: "[folder_11]", sch: P.folder, index: 0 },
+  //   ])
+
+  //   runDiff(current, base)
+  //   taggedDiff(current, (diff) => {
+  //     const { changed, added, removed, reorder } = diff
+  //     assert.deepEqual(added.files, {})
+  //     assert.deepEqual(added.fmodels, {})
+
+  //     assert.deepEqual(removed.files, {})
+  //     assert.deepEqual(removed.fmodels, {})
+
+  //     assert.deepEqual(changed.files, {})
+  //     assert.deepEqual(changed.fmodels, {})
+
+  //     assert.deepEqual(reorder.files, {})
+  //     assert.deepEqual(reorder.fmodels, {})
+
+  //     assertDiff({ changed, added, removed, reorder })
+  //   })
+  // })
 })
 describe("#taggedDiff from actions#addSch ", () => {
   // Database blows this up already
