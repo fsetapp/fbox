@@ -7,7 +7,7 @@
 
 // Debug mode, import local files
 import { Project } from "../lib/main.js"
-import { FileTree } from "../lib/elements/file_tree.js"
+import { FileTree, changeFile } from "../lib/pkgs/file/index.js"
 import * as Model from "../lib/pkgs/model/index.js"
 import * as Json from "../lib/pkgs/json/index.js"
 import * as Html from "../lib/pkgs/html/index.js"
@@ -22,11 +22,7 @@ const { Store, Controller, Diff, Remote } = Project
 
 import { buffer, writable } from "../lib/utils.js"
 
-const structSheet = Object.assign({},
-  Model.structSheet,
-  Json.structSheet,
-  Html.structSheet
-)
+const imports = [Model, Json, Html]
 
 export const start = ({ project, diff = true, async = true }) =>
   customElements.define("project-store", class extends HTMLElement {
@@ -44,7 +40,7 @@ export const start = ({ project, diff = true, async = true }) =>
       this.removeEventListener("sch-update", this.handleSchUpdate)
     }
     handleTreeCommand(e) {
-      Controller.router(this.projectStore, e.detail.target, e.detail.command)
+      Controller.router(this.projectStore, e.detail)
     }
     handleRemotePush(e) {
       if (!diff) return
@@ -89,14 +85,14 @@ export const start = ({ project, diff = true, async = true }) =>
         Project.SchMeta.update({ store: fileStore, detail })
     }
     remoteConnected() {
-      this.projectStore = Store.fromProject(project, { structSheet })
+      this.projectStore = Store.fromProject(project, { imports })
       this.projectStore.fields = project.fields
       project.fields = []
       this.projectStore.fields = this.projectStore.fields.map(file => file)
       Store.buildFolderTree(this.projectStore)
 
-      FileTree({ target: "[id='project']", select: `[${project.currentFileId}]` }, this.projectStore)
-      Controller.changeFile({ projectStore: this.projectStore, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
+      FileTree({ target: "[id='project']", fileBody: "file-body", select: `[${project.currentFileId}]` }, this.projectStore)
+      changeFile({ projectStore: this.projectStore, tree: { _passthrough: { fileBody: "file-body" } }, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
       Store.Indice.buildBaseIndices(this.projectBaseStore)

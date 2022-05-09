@@ -1,5 +1,5 @@
 import { TOPLV_TAG, putAnchor } from "../lib/pkgs/core.js"
-import { modelFile, htmlFile, dataFile, jsonFile, folder, project as project_ } from "../lib/pkgs/proj.js"
+import { modelFile, htmlFile, jsonFile, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
 import { randInt, reduce } from "../lib/utils.js"
@@ -103,12 +103,6 @@ let files = [
     ...putAnchor(modelFile),
     key: "file_1",
     fields: file_1_models,
-    lpath: [folder_a]
-  },
-  {
-    ...putAnchor(dataFile),
-    key: "file_2",
-    fields: [],
     lpath: [folder_a]
   },
   {
