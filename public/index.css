@@ -1,11 +1,13 @@
-@import "../lib/main.css";
+@import url("../node_modules/fset/dist/main.css");
 
 html {
   /* font-sans */
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
-body { margin: 0; }
+body {
+  margin: 0;
+}
 
 *,
 :after,
@@ -13,11 +15,25 @@ body { margin: 0; }
   box-sizing: border-box;
 }
 
-.block { display: block;}
-.flex { display: flex;}
-.flex-1 { flex: 1; }
-.overflow-auto { overflow: auto; }
-.hidden { display: none;}
+.block {
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.hidden {
+  display: none;
+}
 
 kbd {
   display: inline-block;
@@ -30,7 +46,9 @@ kbd {
   line-height: 1;
   box-shadow: 2px 2px 0 darkred;
 }
-ul, ol {
+
+ul,
+ol {
   padding: 0;
   margin: 0;
   list-style: none;
@@ -39,20 +57,24 @@ ul, ol {
 dd {
   margin: 0;
 }
+
 .help {
   padding: 0 .5rem;
   background-color: #19202f;
   color: rgba(209, 213, 219, 1);
 }
+
 .help dl {
   display: flex;
   align-items: baseline;
   border-top: 1px dotted rgba(107, 114, 128, .75);
 }
+
 .help h2 {
   text-decoration: underline;
   margin-bottom: 0;
 }
+
 .help dd,
 .help dt {
   margin: .5rem .5rem .5rem 0;
@@ -71,11 +93,11 @@ dd {
 
 :root {
   --gray-300: rgba(209, 213, 219, 1);
-  --gray-400: rgba(156,163,175,1);
+  --gray-400: rgba(156, 163, 175, 1);
   --gray-500: rgba(107, 114, 128, 1);
   --gray-600: rgba(75, 85, 99, 1);
   --gray-700: rgba(55, 65, 81, 1);
-  --gray-800: rgba(31,41,55,1);
+  --gray-800: rgba(31, 41, 55, 1);
   --gray-900: rgba(17, 24, 39, 1);
   --gray-meta: #19202f;
   --gray-meta-75: rgba(25, 32, 47, .75);
@@ -117,7 +139,8 @@ dd {
   --tree-color: var(--gray-300);
 
   --item-root-bg-color: var(--matte-black);
-  --item-selected-bg-color: var(--gray-meta-75);;
+  --item-selected-bg-color: var(--gray-meta-75);
+
   --item-selected-border-color: var(--blue-500);
   --item-selected-header-bg-color: var(--gray-700);
 
@@ -139,7 +162,8 @@ dd {
   --tree-color: var(--gray-300);
 
   --item-root-bg-color: var(--matte-black);
-  --item-selected-bg-color: var(--gray-meta-75);;
+  --item-selected-bg-color: var(--gray-meta-75);
+
   --item-selected-border-color: rgba(59, 130, 246, .5);
   --item-selected-header-bg-color: var(--gray-700);
 
@@ -194,14 +218,17 @@ dd {
   min-height: 100%;
   word-break: break-all;
 }
+
 .fbox .box-label:focus-within {
   color: var(--blue-500);
   border-color: var(--blue-500);
 }
+
 .fbox .box-label.readonly,
 .fbox .box-label.readonly input[readonly] {
   color: var(--gray-500);
 }
+
 .fbox .l,
 .fbox .err {
   margin: 0;
@@ -209,14 +236,17 @@ dd {
   font-size: .75rem;
   line-height: 1rem;
 }
+
 .fbox .err {
   color: red;
 }
+
 .fbox input:not(:focus):not(:placeholder-shown):invalid,
 .fbox textarea:not(:focus):not(:placeholder-shown).invalid {
   border-bottom: 1px solid red;
   box-shadow: none;
 }
+
 .fbox textarea:focus,
 .fbox input:focus,
 .fbox select:focus {
@@ -224,6 +254,7 @@ dd {
   border-color: transparent;
   box-shadow: transparent;
 }
+
 .fbox textarea,
 .fbox input,
 .fbox select {
@@ -235,16 +266,20 @@ dd {
   min-width: 0;
   border: 0;
 }
+
 .fbox textarea {
   resize: none;
 }
+
 .fbox input {
   border: 1px solid transparent;
 }
-.fbox input[type='checkbox']{
+
+.fbox input[type='checkbox'] {
   margin: .5rem;
   width: auto;
 }
+
 .fbox select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right .5rem center;
@@ -258,16 +293,18 @@ dd {
   -webkit-appearance: none;
   border: none;
 }
-.fbox select > option {
+
+.fbox select>option {
   color: black;
 }
 
-sch-meta > .meta-def {
+sch-meta>.meta-def {
   padding: 1rem 0;
   word-break: break-all;
   --meta-def-color: var(--indigo-400);
 }
-sch-meta > .meta-def + p {
+
+sch-meta>.meta-def+p {
   color: var(--pink-400);
   margin: .5rem 0;
 }
