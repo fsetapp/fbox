@@ -28,12 +28,14 @@ const buildOne = pkg => {
   report(result)
 }
 
-buildOne("model")
-buildOne("json")
-buildOne("html")
+// buildOne("model")
+// buildOne("json")
+// buildOne("html")
 result = esbuild.build({
   ...commonOpts,
-  entryPoints: ["lib/main.js", "lib/main.css",
+  entryPoints: [
+    "lib/main.css", "lib/css/html.css", "lib/css/json.css",
+    "lib/main.js",
     "lib/pkgs/file/index.js",
     "lib/pkgs/model/index.js",
     "lib/pkgs/json/index.js",

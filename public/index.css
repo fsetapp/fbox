@@ -1,4 +1,6 @@
 @import url("../node_modules/fset/dist/main.css");
+@import url("../node_modules/fset/dist/css/html.css");
+@import url("../node_modules/fset/dist/css/json.css");
 
 html {
   /* font-sans */
