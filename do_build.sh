@@ -20,6 +20,7 @@ gzip -c ./lib/pkgs/html/dist/html.es.js > ./lib/pkgs/html/dist/html.es.js.gz
 # Report
 echo "minified"
 du -sh ./lib/pkgs/**/dist/*.{js,css}
+du -sh ./lib/pkgs/**/dist/**/*.{js,css}
 echo
 echo "gzip"
 du -sh ./lib/pkgs/**/dist/*.gz
