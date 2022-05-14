@@ -27,7 +27,7 @@
 }
 
 [data-ext="html"] [role="group"] {
-  border-left: 1px dotted var(--gray-800);
+  /* border-left: 1px dashed var(--gray-800); */
   min-height: 1px;
 }
 
@@ -56,12 +56,12 @@
 }
 
 [data-ext="html"] [role="treeitem"] .t:before {
-  content: "<";
+  content: "[";
   color: var(--item-selected-color, var(--gray-800));
 }
 
 [data-ext="html"] [role="treeitem"] .t:after {
-  content: ">";
+  content: "]";
   color: var(--item-selected-color, var(--gray-800));
 }
 
