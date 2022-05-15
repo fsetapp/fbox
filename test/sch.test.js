@@ -1,5 +1,5 @@
 import { assert } from "@esm-bundle/chai";
-import { get, update, put, pop, move, changeType } from "../lib/sch.js"
+import { get, update, put, pop, move, changeT } from "../lib/sch.js"
 import * as M from "../lib/pkgs/model.js"
 // Does it necessary needs registry? Seems like a coupling.
 import { s } from "../lib/pkgs/registry.js"
@@ -128,30 +128,30 @@ describe("Sch operations", () => {
     })
   })
 
-  describe("#changeType", () => {
+  describe("#changeT", () => {
     var store
 
     beforeEach(() => {
       store = M.record()
     })
 
-    it("#changeType to root store is ignored, root is always a record", () => {
+    it("#changeT to root store is ignored, root is always a record", () => {
       assert.equal(store.t, M.RECORD)
-      changeType(store, "", M.list)
+      changeT(store, "", M.list)
       assert.equal(store.t, M.RECORD)
     })
 
-    it("#changeType to a bunch of type", () => {
+    it("#changeT to a bunch of type", () => {
       put(store, "", [{ k: `a`, sch: M.string, index: 0 }])
       assert.equal(store.fields.find(a => a.key == "a").t, M.STRING)
 
-      changeType(store, "[a]", M.list)
+      changeT(store, "[a]", M.list)
       assert.equal(store.fields.find(a => a.key == "a").t, M.LIST)
 
-      changeType(store, "[a]", M.int16)
+      changeT(store, "[a]", M.int16)
       assert.equal(store.fields.find(a => a.key == "a").t, M.INT16)
 
-      changeType(store, "[a]", () => M.value("\"json\""))
+      changeT(store, "[a]", () => M.value("\"json\""))
       assert.equal(store.fields.find(a => a.key == "a").t, M.VALUE)
     })
   })
