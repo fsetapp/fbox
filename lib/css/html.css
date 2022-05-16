@@ -65,6 +65,11 @@
   color: var(--item-selected-color, var(--gray-800));
 }
 
+[data-ext="html"] .txt textarea {
+  margin: 0;
+  padding: 0;
+}
+
 [data-ext="html"] [role="treeitem"] [data-diff]:before {
   display: block;
   box-shadow: 2px 0 0 0 var(--d-color);

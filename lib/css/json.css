@@ -54,7 +54,8 @@
   margin: 1px 0;
 }
 
-[data-ext="json"] [data-group="keyed"]>[role="treeitem"].leaf {
+[data-ext="json"] [data-group="keyed"]>[role="treeitem"].leaf,
+[data-ext="json"] [data-group="keyed"]>[role="treeitem"]>.h {
   display: grid;
   grid-template-columns: fit-content(40%) 2ch 1fr;
 }
@@ -65,6 +66,8 @@
 }
 
 [data-ext="json"] .s {
+  margin: 0;
+  text-align: center;
   font-family: var(--font-mono);
   color: var(--indigo-400);
 }
@@ -86,7 +89,7 @@
 
 /* [data-ext="json"] .t.str:after { content: "\""; color: var(--blue-500); } */
 [data-ext="json"] .t.num {
-  --val-color: var(--indigo-400);
+  --val-color: var(--orange-500);
 }
 
 [data-ext="json"] .t.bool {

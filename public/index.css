@@ -108,6 +108,7 @@ dd {
   --yellow-500: rgba(245, 158, 11, 1);
   --pink-400: rgba(244, 114, 182, 1);
   --indigo-400: rgba(129, 140, 248, 1);
+  --orange-500: #F97316;
   color-scheme: dark;
 
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
