@@ -31,12 +31,12 @@ export const start = ({ project, diff = true, async = true }) =>
 
       this.buffer = async ? buffer : f => f
       this.addEventListener("tree-command", this.buffer(this.handleTreeCommand.bind(this)))
-      this.addEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 0))
+      this.addEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 1000))
       this.addEventListener("sch-update", this.handleSchUpdate)
     }
     disconnectedCallback() {
       this.removeEventListener("tree-command", this.buffer(this.handleTreeCommand.bind(this)))
-      this.removeEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 0))
+      this.removeEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 1000))
       this.removeEventListener("sch-update", this.handleSchUpdate)
     }
     handleTreeCommand(e) {
