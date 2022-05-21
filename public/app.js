@@ -11,6 +11,7 @@ import { FileTree, changeFile } from "../lib/pkgs/file/index.js"
 import * as Model from "../lib/pkgs/model/index.js"
 import * as Json from "../lib/pkgs/json/index.js"
 import * as Html from "../lib/pkgs/html/index.js"
+import * as Sheet from "../lib/pkgs/sheet/index.js"
 
 const { Store, Controller, Diff, Remote } = Project
 
@@ -22,7 +23,7 @@ const { Store, Controller, Diff, Remote } = Project
 
 import { buffer, writable } from "../lib/utils.js"
 
-const imports = [Model, Json, Html]
+const imports = [Model, Json, Html, Sheet]
 
 export const start = ({ project, diff = true, async = true }) =>
   customElements.define("project-store", class extends HTMLElement {
