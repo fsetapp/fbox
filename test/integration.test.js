@@ -1,5 +1,5 @@
 import { assert } from "@esm-bundle/chai";
-import { Cmd, all, one, oneById, cleanup } from "./test_helper.js"
+import { Cmd, all, one, oneById } from "./test_helper.js"
 import { start } from "../public/app.js"
 import { project } from "../lib/pkgs/proj.js"
 
@@ -25,7 +25,7 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
 
   it("renders blank project", () => {
     assert.isOk(projectTree)
-    assert.equal(fmodelTree.outerHTML, `<ul role="tree"></ul>`)
+    assert.equal(fmodelTree.outerHTML, `<ol role="tree"></ol>`)
   })
 
   it("adds files", () => {
