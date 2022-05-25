@@ -260,7 +260,7 @@ dfn {
 
 [role="tree"] textarea:focus,
 [role="tree"] textarea:focus-visible {
-  box-shadow: 0 0 0 1px var(--blue-500);
+  box-shadow: 0px 2px 0 0px var(--blue-500)
 }
 
 [role="tree"] textarea.no-resize {
