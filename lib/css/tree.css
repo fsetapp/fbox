@@ -153,10 +153,19 @@ dfn {
   align-items: flex-start;
 }
 
-.node .h {
+:where(.node, .inline-node) .h {
   display: flex;
   align-items: flex-start;
   outline: none;
+}
+
+.inline-node {
+  display: flex;
+  align-items: baseline;
+}
+
+.inline-node :is(.k, .t) {
+  max-width: 100%;
 }
 
 .k {
