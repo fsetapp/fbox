@@ -168,6 +168,10 @@ dfn {
   max-width: 100%;
 }
 
+.inline-node .leaf>.t {
+  margin: 0 .5rem;
+}
+
 .k {
   display: flex;
   color: inherit;
