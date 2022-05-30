@@ -12,7 +12,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = M.record()
-      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.value("\"json string\"")]
+      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.string({ v: "\"json string\"" })]
     });
 
     it("#put a child", () => {
@@ -82,7 +82,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = initStore()
-      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.value("\"json string\"")]
+      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.string({ v: "\"json string\"" })]
       allSchs.reverse().forEach((sch, i) =>
         put(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
       )
@@ -151,8 +151,8 @@ describe("Sch operations", () => {
       changeT(store, "[a]", M.int16)
       assert.equal(store.fields.find(a => a.key == "a").t, M.INT16)
 
-      changeT(store, "[a]", () => M.value("\"json\""))
-      assert.equal(store.fields.find(a => a.key == "a").t, M.VALUE)
+      changeT(store, "[a]", () => M.structSheet.toVal("\"json\""))
+      assert.equal(store.fields.find(a => a.key == "a").t, M.STRING)
     })
   })
 

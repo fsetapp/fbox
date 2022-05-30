@@ -13,14 +13,14 @@ it("#putAnchor to fmodel box", () => {
     assert.isOk(store.fields[model].$a)
 })
 
-it("#value invalid json", () => {
-  assert.isNotOk(M.value("invalid"))
+it("#toVal invalid json", () => {
+  assert.isNotOk(M.structSheet.toVal("invalid"))
 })
 
-it("#value valid json", () => {
-  assert.equal(M.value("\"valid\"").t, VALUE)
+it("#toVal valid json", () => {
+  assert.equal(M.structSheet.toVal(M.string({ v: "\"valid\"" })).t, M.STRING)
 })
 
-it("#value valid json but is denied", () => {
-  assert.isNotOk(M.value("[1,2,3]"))
+it("#toVal valid json but is denied", () => {
+  assert.isNotOk(M.structSheet.toVal(M.array({ v: "[1,2,3]" })))
 })
