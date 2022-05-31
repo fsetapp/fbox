@@ -1,0 +1,35 @@
+[data-ext="sheet"] .type:focus {
+  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+}
+
+[data-ext="sheet"] .data:focus-visible {
+  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+}
+
+[data-ext="sheet"] .data {
+  flex-wrap: wrap;
+  margin: .5rem 0 .75rem auto;
+}
+
+[data-ext="sheet"] .data[aria-selected] {
+  background: transparent;
+}
+
+[data-ext="sheet"] .data input {
+  height: 1.5rem;
+  width: 100%;
+  margin-top: .25rem;
+
+  background-color: transparent;
+  border: 0;
+}
+
+[data-ext="sheet"] .data input:focus {
+  background-color: var(--gray-meta-75);
+  border: 1px solid var(--gray-800);
+}
+
+[data-ext="sheet"] fieldset {
+  padding: 0;
+  border: 0;
+}

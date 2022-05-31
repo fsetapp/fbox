@@ -72,7 +72,7 @@ dfn {
   display: none;
 }
 
-[role="treeitem"][aria-selected="true"]:focus {
+[role="treeitem"][aria-selected="true"]:focus-visible {
   box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
 }
 
