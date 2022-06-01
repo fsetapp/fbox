@@ -6,6 +6,20 @@
   box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
 }
 
+[data-ext="sheet"] .inline-node>.ctor-name {
+  margin: 0;
+  padding: 0 .5rem;
+}
+
+[data-ext="sheet"] .inline-node>.ctor-name>.t {
+  margin: 0;
+}
+
+[data-ext="sheet"] .inline-node>.ctor-body {
+  margin: 0;
+  width: 100%;
+}
+
 [data-ext="sheet"] .data {
   flex-wrap: wrap;
   margin: .5rem 0 .75rem auto;

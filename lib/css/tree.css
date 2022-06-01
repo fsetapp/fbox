@@ -161,7 +161,6 @@ dfn {
 
 .inline-node {
   display: flex;
-  align-items: baseline;
 }
 
 .inline-node :is(.k, .t) {
