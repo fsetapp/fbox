@@ -64,7 +64,7 @@ export const start = ({ project, diff = true, async = true }) =>
           Diff.mergeToBase(this.projectBaseStore, diff)
           this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
           Store.Indice.buildBaseIndices(this.projectBaseStore)
-          // this.diffRender(e)
+          this.diffRender(e)
         }, 0)
       })
     }
