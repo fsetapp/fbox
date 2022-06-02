@@ -45,10 +45,10 @@ export const start = ({ project, diff = true, async = true }) =>
     }
     handleRemotePush(e) {
       if (!diff) return
-      if (!Controller.isDiffableCmd(e.detail.command.name)) {
-        // setTimeout(() => this.pushToRemote(e), 0)
+      let diffableActs = Object.values(this.projectStore.diffableActs).flat()
+      if (!diffableActs.includes(e.detail.command.name))
         return
-      }
+
       this.pushToRemote(e)
     }
     pushToRemote(e) {

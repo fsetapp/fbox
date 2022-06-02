@@ -75,6 +75,9 @@ describe("Sch operations", () => {
     // TODO:
     // it("#put child.index does not exceed total length", () => {
     // })
+
+    // it("#put bulk until halt", () => {
+    // })
   })
 
   describe("#pop", () => {
@@ -263,5 +266,9 @@ describe("Sch operations", () => {
       update(store, "[abc]", (a, m) => ({ ...a, whatever: "whatever" }))
       assert.equal(get(store, "[abc]").whatever, "whatever")
     })
+
+    // it("#bulkUpdate until halt", () => {
+
+    // })
   })
 })
