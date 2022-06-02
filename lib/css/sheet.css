@@ -36,6 +36,9 @@
 
   background-color: transparent;
   border: 0;
+  color: var(--yellow-500);
+  border-bottom: 1px solid var(--gray-700);
+  margin-right: 1rem;
 }
 
 [data-ext="sheet"] .data input:focus {

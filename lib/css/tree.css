@@ -56,8 +56,7 @@ dfn {
 
 .node[role="treeitem"][aria-selected="false"]>.h:hover,
 .leaf[role="treeitem"][aria-selected="false"]:hover {
-  /* bg-gray-800 */
-  background: radial-gradient(rgba(31, 41, 55, 1), rgba(31, 41, 55, .5));
+  background: var(--gray-900);
 }
 
 :not(.root-item)[role="treeitem"][aria-selected="true"] {

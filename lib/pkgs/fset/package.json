@@ -1,6 +1,6 @@
 {
   "name": "@fsetapp/fset",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Structure editor",
   "exports": {
     ".": {
@@ -18,8 +18,14 @@
     "./pkgs/html.js": {
       "default": "./dist/pkgs/html/index.js"
     },
+    "./pkgs/sheet.js": {
+      "default": "./dist/pkgs/sheet/index.js"
+    },
     "./fset.css": {
       "default": "./dist/pkgs/main.css"
+    },
+    "./pkgs/sheet.css": {
+      "default": "./dist/pkgs/sheet/index.css"
     },
     "./pkgs/model.css": {
       "default": "./dist/pkgs/model/index.css"
