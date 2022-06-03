@@ -4,6 +4,8 @@ import { ref } from "../lib/pkgs/core.js"
 import * as M from "../lib/pkgs/model.js"
 import * as Sch from "../lib/sch.js"
 
+const { toVal } = M.structSheet
+
 it("#putAnchor to fmodel box", () => {
   var store = M.record()
   let tAny = M.any()
@@ -14,13 +16,13 @@ it("#putAnchor to fmodel box", () => {
 })
 
 it("#toVal invalid json", () => {
-  assert.isNotOk(M.structSheet.toVal("invalid"))
+  assert.isNotOk(toVal(M.integer(), "string"))
 })
 
 it("#toVal valid json", () => {
-  assert.equal(M.structSheet.toVal(M.string({ v: "\"valid\"" })).t, M.STRING)
+  assert.equal(toVal(M.integer(), 123).t, M.INTEGER)
 })
 
 it("#toVal valid json but is denied", () => {
-  assert.isNotOk(M.structSheet.toVal(M.array({ v: "[1,2,3]" })))
+  assert.isNotOk(toVal(M.list({ v: "[1,2,3]" })))
 })
