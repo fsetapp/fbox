@@ -1,5 +1,4 @@
 import { assert } from "@esm-bundle/chai";
-import { VALUE } from "../lib/pkgs/model.js"
 import { ref } from "../lib/pkgs/core.js"
 import * as M from "../lib/pkgs/model.js"
 import * as Sch from "../lib/sch.js"
