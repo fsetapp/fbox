@@ -189,9 +189,6 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
   })
 })
 
-// It looks like `describe`(s) run parallel so we only use `it` here because
-// we test the whole DOM, it seems to use the same `document` object.
-//
 describe("fmodelTree and projectTree: dependent rendering actions", () => {
   const projectTree_ = () => document.querySelector("[id='project'] [role='tree']")
   const fmodelTree_ = () => document.querySelector("file-body [role='tree']")

@@ -54,7 +54,7 @@ const assertFile = files => {
   }
 }
 const assertLpath = (lpath) =>
-  forEach(lpath, l => assert.isUndefined(l.fields, "fields inside lapth"))
+  forEach(lpath, l => assert.isUndefined(l.fields, "fields inside lpath"))
 
 describe("#taggedDiff", () => {
   var project
