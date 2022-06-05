@@ -28,7 +28,7 @@ const assertDiff = (diff) => {
 
   assertProp(changed.files, { has: ["lpath"] })
   assertFile(changed.files)
-  assertProp(changed.fmodels, { has: ["fields"], hasNot: ["lpath"] })
+  assertProp(changed.fmodels, { hasNot: ["lpath"] })
 
   assertProp(added.files, { has: ["lpath"], hasNot: ["fields"] })
   assertFile(added.files)
@@ -212,6 +212,46 @@ describe("#taggedDiff", () => {
 
       assert.deepEqual(changed.files, {})
       assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
+
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
+
+      assertDiff({ changed, added, removed, reorder })
+    })
+  })
+
+  it("changes t", () => {
+    Sch.put(project, "", [
+      { k: "file_1", sch: P.modelFile, index: 0 },
+    ])
+    Sch.put(project, "[file_1]", [
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
+      { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
+    ])
+    Sch.put(project, "[file_1][fmodel_A]", [
+      { k: "A1", sch: M.string, index: 0 },
+    ])
+
+    let current = initFileStore(project)
+    let base = asBase(current)
+
+    Sch.changeT(current, "[file_1][fmodel_A][A1]", () => Sch.clone(M.bool()))
+    Sch.changeT(current, "[file_1][fmodel_B]", () => Sch.clone(M.union()))
+    let file1 = Sch.get(current, "[file_1]")
+
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, {})
+      assert.deepEqual(added.fmodels, {})
+
+      assert.deepEqual(removed.files, {})
+      assert.deepEqual(removed.fmodels, {})
+
+      assert.deepEqual(changed.files, {})
+
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_B]"], { ...Sch.get(current, "[file_1][fmodel_B]"), pa: file1.$a })
 
       assert.deepEqual(reorder.files, {})
       assert.deepEqual(reorder.fmodels, {})
