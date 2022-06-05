@@ -3,7 +3,46 @@
 }
 
 [data-ext="sheet"] .data:focus-visible {
-  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+  box-shadow: 0px 0px 0px 1px var(--item-selected-border-color);
+}
+
+[data-ext="sheet"] [role="treeitem"] {
+  margin: 0;
+  padding: 0;
+}
+
+[data-ext="sheet"] .root-item>[role="group"]>[role="treeitem"] {
+  box-shadow: var(--gray-700) 0px 1.5px 0px 0px inset;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+}
+
+[data-ext="sheet"] .data {
+  flex-wrap: wrap;
+}
+
+[data-ext="sheet"] .data input {
+  width: 100%;
+  background-color: transparent;
+  border: 0;
+  color: var(--yellow-500);
+}
+
+[data-ext="sheet"] .data input {
+  border-bottom: 1px solid;
+  border-color: var(--gray-800);
+}
+
+[data-ext="sheet"] .data input:focus {
+  border-bottom: 1px solid;
+}
+
+[data-ext="sheet"] fieldset {
+  border: 0;
+}
+
+[data-ext="sheet"] .inline-node>.h {
+  margin-left: .5rem;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name {
@@ -16,37 +55,62 @@
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
-  margin: 0;
+  margin: 2rem 0;
   width: 100%;
 }
 
-[data-ext="sheet"] .data {
-  flex-wrap: wrap;
-  margin: .5rem 0 .75rem auto;
+[data-ext="sheet"] .ctor-body .data {
+  flex: 1 0 auto;
 }
 
-[data-ext="sheet"] .data[aria-selected] {
-  background: transparent;
-}
-
-[data-ext="sheet"] .data input {
-  height: 1.5rem;
+[data-ext="sheet"] .ctor-body .leaf>.h {
   width: 100%;
-  margin-top: .25rem;
+}
 
-  background-color: transparent;
-  border: 0;
-  color: var(--yellow-500);
-  border-bottom: 1px solid var(--gray-700);
+[data-ext="sheet"] .ctor-body .node>.h {
+  padding: .5rem;
+}
+
+[data-ext="sheet"] .ctor-body .node {
+  background-color: var(--gray-meta-75);
+  border: 1px solid var(--gray-800);
+  width: 100%;
+  border-radius: 3px;
+}
+
+[data-ext="sheet"] .ctor-body .node>.h>.k {
   margin-right: 1rem;
 }
 
-[data-ext="sheet"] .data input:focus {
-  background-color: var(--gray-meta-75);
-  border: 1px solid var(--gray-800);
+[data-ext="sheet"] .ctor-body .l {
+  text-transform: capitalize;
+  padding: .5rem;
 }
 
-[data-ext="sheet"] fieldset {
-  padding: 0;
+[data-ext="sheet"] .ctor-body>fieldset.fbox {
+  gap: 1rem;
+  margin: 0;
+}
+
+[data-ext="sheet"] .ctor-body .box-label {
   border: 0;
+}
+
+[data-ext="sheet"] .data>fieldset {
+  padding: 0;
+  margin: 0;
+}
+
+[data-ext="sheet"] .node.data>fieldset {
+  gap: 2px;
+  background-color: var(--matte-black);
+  padding: 2px;
+}
+
+[data-ext="sheet"] .ctor-body>fieldset {
+  padding: .5rem;
+}
+
+[data-ext="sheet"] p.err {
+  min-height: 1.25rem;
 }

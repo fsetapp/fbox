@@ -35,7 +35,7 @@ dfn {
   padding: .5rem 0;
 }
 
-.root-item>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {
+.root-item>[role='group']>[role="treeitem"] {
   /* gray-800 */
   box-shadow: inset 0px 1.5px 0px 0px rgba(31, 41, 55, 1);
   background-color: var(--item-root-bg-color);
