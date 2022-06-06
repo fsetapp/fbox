@@ -39,6 +39,11 @@
 
 [data-ext="sheet"] fieldset {
   border: 0;
+  margin: 0;
+  padding: 2px;
+  border-radius: 3px;
+  gap: 2px;
+  background-color: var(--matte-black);
 }
 
 [data-ext="sheet"] .inline-node>.h {
@@ -63,10 +68,6 @@
   flex: 1 0 auto;
 }
 
-[data-ext="sheet"] .ctor-body .leaf>.h {
-  width: 100%;
-}
-
 [data-ext="sheet"] .ctor-body .node>.h {
   padding: .5rem;
 }
@@ -75,16 +76,7 @@
   background-color: var(--gray-meta-75);
   border: 1px solid var(--gray-800);
   width: 100%;
-  border-radius: 4px;
-}
-
-[data-ext="sheet"] .ctor-body .node>.h>.k {
-  margin-right: 1rem;
-}
-
-[data-ext="sheet"] .ctor-body .l {
-  text-transform: capitalize;
-  padding: .5rem;
+  border-radius: 3px;
 }
 
 [data-ext="sheet"] .ctor-body>fieldset.fbox {
@@ -96,20 +88,17 @@
   border: 0;
 }
 
-[data-ext="sheet"] .data>fieldset {
-  padding: 0;
-  margin: 0;
-}
-
-[data-ext="sheet"] .node.data>fieldset {
-  gap: 2px;
-  background-color: var(--matte-black);
-  padding: 2px;
-  border-radius: 4px;
-}
-
 [data-ext="sheet"] .ctor-body>fieldset {
   padding: .5rem;
+}
+
+[data-ext="sheet"] .ctor-body .l {
+  text-transform: capitalize;
+  padding: .5rem;
+}
+
+[data-ext="sheet"] .ctor-body .node>.h>.k {
+  margin-right: 1rem;
 }
 
 [data-ext="sheet"] p.err {

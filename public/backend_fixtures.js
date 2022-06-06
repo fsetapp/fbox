@@ -1,4 +1,5 @@
-import { TOPLV_TAG, putAnchor } from "../lib/pkgs/core.js"
+import * as Sch from "../lib/sch.js"
+import { TOPLV_TAG, putAnchor, ref } from "../lib/pkgs/core.js"
 import { modelFile, htmlFile, jsonFile, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
@@ -7,6 +8,8 @@ import { randInt, reduce } from "../lib/utils.js"
 import json from "./sample.json"
 
 export { project }
+
+const { structSheet: { toVal } } = M
 
 const fmodelsFixture = (n, startId) => {
   let fixture = []
@@ -23,6 +26,73 @@ const fmodelsFixture = (n, startId) => {
 
     return fmodel
   })
+}
+
+const allTypesFixture = () => {
+  let record = putAnchor(() => M.record({
+    key: "Record", fields: [
+      putAnchor(() => M.string({ key: "field_a" })),
+      putAnchor(() => M.int32({ key: "field_b" }))
+    ]
+  }))
+  let all = [
+    M.record({
+      key: "record", fields: [
+        putAnchor(() => M.string({ key: "field_a" })),
+        putAnchor(() => M.int32({ key: "field_b" }))
+      ]
+    }),
+    M.erecord({
+      key: "e_record", schs: [
+        ref(record.$a),
+        M.record({ fields: [M.bool({ key: "field_c" })] })
+      ]
+    }),
+    M.list({ key: "list", sch: ref(record.$a) }),
+    M.tuple({
+      key: "tuple", schs: [
+        toVal(M.string(), "\"ok\""),
+        ref(record.$a),
+      ]
+    }),
+    M.dict({
+      key: "dict", schs: [
+        putAnchor(M.string),
+        ref(record.$a)
+      ]
+    }),
+    M.taggedUnion({
+      key: "tagged_union", schs: [
+        M.record({
+          fields: [
+            M.uint8({ key: "field_x" })]
+        }),
+        M.record({
+          fields: [
+            M.string({ key: "field_z" })
+          ]
+        })
+      ]
+    }),
+    M.union({ key: "union" }),
+    M.union({
+      key: "enum", schs: [
+        toVal(M.string(), "\"item1\""),
+        toVal(M.integer(), 1),
+        toVal(M.bool(), true)
+      ]
+    }),
+    M.string({ key: "string" }),
+    M.bool({ key: "bool" }),
+    M.nil({ key: "nil" }),
+    M.int16({ key: "int16" }),
+    M.float32({ key: "float32" }),
+    ref(record.$a, { key: "ref" }),
+  ].map(a => { a.tag = TOPLV_TAG; return a })
+
+  let fixtures = [...all, M.record({ key: "Nested", fields: all })].map(a => Sch.clone(a))
+  fixtures.unshift(record)
+  return fixtures
 }
 
 const jsonFixture = (json_) => {
@@ -57,7 +127,7 @@ const jsonFixture = (json_) => {
   return putAnchor(() => sch)
 }
 
-let file_1_models = fmodelsFixture(10, 1)
+let file_1_models = allTypesFixture()
 let file_2_models = fmodelsFixture(1000, 11)
 let file_3_models = fmodelsFixture(10, 21)
 let file_4_json_toplv = jsonFixture(json)
