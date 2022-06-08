@@ -88,9 +88,10 @@ const allTypesFixture = () => {
     M.int16({ key: "int16" }),
     M.float32({ key: "float32" }),
     ref(record.$a, { key: "ref" }),
-  ].map(a => { a.tag = TOPLV_TAG; return a })
+  ]
 
-  let fixtures = [...all, M.record({ key: "Nested", fields: all })].map(a => Sch.clone(a))
+  let tops = all.map(a => { a = Sch.copy(a); a.tag = TOPLV_TAG; return a })
+  let fixtures = [...tops, M.record({ key: "Nested", fields: all })].map(a => Sch.clone(a))
   fixtures.unshift(record)
   return fixtures
 }
