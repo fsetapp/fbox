@@ -31,7 +31,7 @@ dfn {
 }
 
 .root-item>[role='group']>[role="treeitem"] {
-  margin: 0 1px;
+  margin: 1px;
   padding: .5rem 0;
 }
 

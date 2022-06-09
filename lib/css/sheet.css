@@ -9,9 +9,10 @@
 [data-ext="sheet"] [role="treeitem"] {
   margin: 0;
   padding: 0;
+  scroll-margin: 5rem;
 }
 
-[data-ext="sheet"] .root-item>[role="group"]>[role="treeitem"] {
+[data-ext="sheet"] [data-tag="top_lv"] {
   box-shadow: var(--gray-700) 0px 1.5px 0px 0px inset;
   margin-bottom: 1rem;
   padding: 1rem 0;
