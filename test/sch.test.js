@@ -12,7 +12,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = M.record()
-      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.string({ v: "json string" })]
+      allSchs = [M.record, M.list, M.tuple, M.union, M.string, M.bool, M.int16, () => M.string({ v: "json string" })]
     });
 
     it("#put a child", () => {
@@ -30,28 +30,28 @@ describe("Sch operations", () => {
 
     it("#put a child to List is ignored", () => {
       put(store, "", [{ k: `list_a`, sch: M.list, index: 0 }])
-      put(store, "[list_a]", [{ k: `aa`, sch: M.string, index: 0 }])
+      put(store, "[list_a]", [{ k: `aa`, sch: M.bool, index: 0 }])
 
-      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.ANY)
+      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.STRING)
     })
 
     it("#put a child to Tuple", () => {
       put(store, "", [{ k: `tuple_a`, sch: M.tuple, index: 0 }])
-      put(store, "[tuple_a]", [{ k: `aa`, sch: M.string, index: 0 }])
+      put(store, "[tuple_a]", [{ k: `aa`, sch: M.integer, index: 0 }])
 
-      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.STRING, M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.INTEGER, M.STRING])
     })
 
     it("#put a child to Union", () => {
       put(store, "", [{ k: `union_a`, sch: M.union, index: 0 }])
-      put(store, "[union_a]", [{ k: `aa`, sch: M.string, index: 0 }])
+      put(store, "[union_a]", [{ k: `aa`, sch: M.bool, index: 0 }])
 
-      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.STRING, M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.BOOL, M.STRING])
     })
 
     it("#put a dup key", () => {
       put(store, "", [{ k: `key`, sch: M.int16, index: 0 }])
-      put(store, "", [{ k: `key`, sch: M.nil, index: 0 }])
+      put(store, "", [{ k: `key`, sch: M.int8, index: 0 }])
 
       store.fields[0].key == "key -"
       store.fields[1].key == "key"
@@ -85,7 +85,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = initStore()
-      allSchs = [M.record, M.list, M.tuple, M.union, M.any, M.string, M.bool, M.int16, M.nil, () => M.string({ v: "json string" })]
+      allSchs = [M.record, M.list, M.tuple, M.union, M.string, M.bool, M.int16, () => M.string({ v: "json string" })]
       allSchs.reverse().forEach((sch, i) =>
         put(store, "", [{ k: `model_${allSchs.length - i}`, sch: sch, index: 0 }])
       )
@@ -103,26 +103,26 @@ describe("Sch operations", () => {
 
     it("#pop a child out of List, still have a least 1 child", () => {
       put(store, "", [{ k: `list_a`, sch: M.list, index: 0 }])
-      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.ANY)
+      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.STRING)
 
       pop(store, "[list_a]", [0])
-      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.ANY)
+      assert.equal(store.fields.find(a => a.key == "list_a").sch.t, M.STRING)
     })
 
     it("#pop a child out of Tuple, still have a least 1 child", () => {
       put(store, "", [{ k: `tuple_a`, sch: M.tuple, index: 0 }])
-      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.STRING])
 
       pop(store, "[tuple_a]", [0])
-      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "tuple_a").schs.map(a => a.t), [M.STRING])
     })
 
     it("#pop a child out of Union, still have a least 1 child", () => {
       put(store, "", [{ k: `union_a`, sch: M.union, index: 0 }])
-      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.STRING])
 
       pop(store, "[union_a]", [0])
-      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.ANY])
+      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.STRING])
     })
 
     it("#pop a child out of non-container type", () => {
@@ -178,9 +178,9 @@ describe("Sch operations", () => {
 
     it("#get tuple path", () => {
       put(store, "", [{ k: "tuple", sch: M.tuple, index: 0 }])
-      put(store, "[tuple]", [{ k: "b", sch: M.string, index: 0 }])
-      assert.equal(get(store, "[tuple][][0]").t, M.STRING)
-      assert.equal(get(store, "[tuple][][1]").t, M.ANY)
+      put(store, "[tuple]", [{ k: "b", sch: M.bool, index: 0 }])
+      assert.equal(get(store, "[tuple][][0]").t, M.BOOLEAN)
+      assert.equal(get(store, "[tuple][][1]").t, M.STRING)
       assert.equal(get(store, "[tuple][][2]"), undefined)
       assert.equal(get(store, "[tuple][]"), undefined)
     })
@@ -188,7 +188,7 @@ describe("Sch operations", () => {
     it("#get list path", () => {
       put(store, "", [{ k: "list", sch: M.list, index: 0 }])
 
-      assert.equal(get(store, "[list][][0]").t, M.ANY)
+      assert.equal(get(store, "[list][][0]").t, M.STRING)
       assert.equal(get(store, "[list][][1]"), undefined)
     })
   })
@@ -205,7 +205,7 @@ describe("Sch operations", () => {
         { k: "d_union", sch: M.union, index: 3 }
       ])
       put(store, "[b_tuple]", [
-        { k: null, sch: M.nil, index: 1 },
+        { k: null, sch: M.int8, index: 1 },
         { k: null, sch: M.int16, index: 2 }
       ])
       put(store, "[d_union]", [
@@ -226,15 +226,15 @@ describe("Sch operations", () => {
 
     it("#move 1 indexed-src to 1 indexed-dst, one items", () => {
       move(store, { dstPath: "[b_tuple]", startIndex: 0 }, { "[d_union]": [{ id: "2", index: 2 }] })
-      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.RECORD, M.ANY, M.NULL, M.INT16])
-      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.ANY, M.INT16])
+      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.RECORD, M.STRING, M.NULL, M.INT16])
+      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.STRING, M.INT16])
     })
 
     it("#move 2 indexed-src to 1 keyed-dst", () => {
       move(store, { dstPath: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[b_tuple]": [{ id: "2", index: 2 }] })
       assert.deepEqual(store.fields.map(a => a.key), ["a_list", "2", "2 -", "b_tuple", "c_string", "d_union"])
-      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.ANY, M.INT16])
-      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.ANY, M.NULL])
+      assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.STRING, M.INT16])
+      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.STRING, M.INT8])
     })
 
     it("#move outer into subtree itself", () => {
@@ -259,7 +259,7 @@ describe("Sch operations", () => {
 
     beforeEach(() => {
       store = M.record()
-      put(store, "", [{ k: "abc", sch: M.any, index: 0 }])
+      put(store, "", [{ k: "abc", sch: M.bool, index: 0 }])
     })
 
     it("#update sch with arbitrary data", () => {

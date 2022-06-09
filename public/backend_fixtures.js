@@ -84,7 +84,6 @@ const allTypesFixture = () => {
     }),
     M.string({ key: "string" }),
     M.bool({ key: "bool" }),
-    M.nil({ key: "nil" }),
     M.int16({ key: "int16" }),
     M.float32({ key: "float32" }),
     ref(record.$a, { key: "ref" }),

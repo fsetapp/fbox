@@ -7,8 +7,8 @@ const { toVal } = M.structSheet
 
 it("#putAnchor to fmodel box", () => {
   var store = M.record()
-  let tAny = M.any()
-  Sch.put(store, "", [{ k: "abc", sch: () => tAny, index: 0 }, { k: "abc", sch: () => ref(tAny.$a), index: 1 }])
+  let tString = M.string()
+  Sch.put(store, "", [{ k: "abc", sch: () => tString, index: 0 }, { k: "abc", sch: () => ref(tString.$a), index: 1 }])
 
   for (let model of Object.keys(store.fields))
     assert.isOk(store.fields[model].$a)
@@ -23,5 +23,5 @@ it("#toVal valid json", () => {
 })
 
 it("#toVal valid json but is denied", () => {
-  assert.isNotOk(toVal(M.list({ v: "[1,2,3]" })))
+  assert.isNotOk(toVal(M.list(), "[1,2,3]"))
 })
