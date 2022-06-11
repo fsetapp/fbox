@@ -30,46 +30,48 @@ const fmodelsFixture = (n, startId) => {
 
 const allTypesFixture = () => {
   let record = putAnchor(() => M.record({
-    key: "Record", fields: [
-      putAnchor(() => M.string({ key: "field_a" })),
-      putAnchor(() => M.int32({ key: "field_b" }))
+    key: "User", fields: [
+      putAnchor(() => M.string({ key: "email" })),
+      putAnchor(() => M.int32({ key: "age" }))
     ]
   }))
   let all = [
     M.record({
-      key: "record", fields: [
-        putAnchor(() => M.string({ key: "field_a" })),
-        putAnchor(() => M.int32({ key: "field_b" }))
+      key: "Developer", fields: [
+        putAnchor(() => M.string({ key: "username" })),
+        putAnchor(() => M.int32({ key: "experience" })),
+        putAnchor(() => ref(record.$a, { key: "info" }))
       ]
     }),
     M.erecord({
-      key: "e_record", schs: [
+      key: "Editor", schs: [
         ref(record.$a),
-        M.record({ fields: [M.bool({ key: "field_c" })] })
+        M.record({ fields: [M.bool({ key: "active" })] })
       ]
     }),
-    M.list({ key: "list", sch: ref(record.$a) }),
+    M.list({ key: "User List", sch: ref(record.$a) }),
+    M.list({ key: "User List Inline", sch: record }),
     M.tuple({
-      key: "tuple", schs: [
+      key: "Result", schs: [
         toVal(M.string(), "\"ok\""),
         ref(record.$a),
       ]
     }),
     M.dict({
-      key: "dict", schs: [
+      key: "Role Users", schs: [
         putAnchor(M.string),
         ref(record.$a)
       ]
     }),
     M.taggedUnion({
-      key: "tagged_union", schs: [
+      key: "Role", schs: [
         M.record({
           fields: [
-            M.uint8({ key: "field_x" })]
+            M.uint8({ key: "developer" })]
         }),
         M.record({
           fields: [
-            M.string({ key: "field_z" })
+            M.string({ key: "editor" })
           ]
         })
       ]
@@ -83,14 +85,14 @@ const allTypesFixture = () => {
       ]
     }),
     M.string({ key: "string" }),
-    M.bool({ key: "bool" }),
-    M.int16({ key: "int16" }),
-    M.float32({ key: "float32" }),
+    M.bool({ key: "online" }),
+    M.int16({ key: "Number of item" }),
+    M.float32({ key: "Percent" }),
     ref(record.$a, { key: "ref" }),
   ]
 
   let tops = all.map(a => { a = Sch.copy(a); a.tag = TOPLV_TAG; return a })
-  let fixtures = [...tops, M.record({ key: "Nested", fields: all })].map(a => Sch.clone(a))
+  let fixtures = [...tops, M.record({ key: "Settings", fields: all })].map(a => Sch.clone(a))
   fixtures.unshift(record)
   return fixtures
 }

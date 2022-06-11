@@ -1,4 +1,6 @@
 @import url("../lib/main.css");
+@import url("../lib/css/file.css");
+@import url("../lib/css/model.css");
 @import url("../lib/css/html.css");
 @import url("../lib/css/json.css");
 @import url("../lib/css/sheet.css");
@@ -240,7 +242,7 @@ dd {
   display: block;
   background-color: var(--gray-meta);
   color: var(--gray-400);
-  border: 1px solid var(--gray-800);
+  box-shadow: inset 0px 0px 0px 1px var(--gray-800);
   flex-grow: 1;
   min-height: 100%;
   word-break: break-all;

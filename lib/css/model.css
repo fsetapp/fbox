@@ -1,0 +1,12 @@
+[data-ext="fmodel"] .k {
+  max-width: 42.5%;
+}
+
+[data-ext="fmodel"] .t {
+  max-width: 42.5%;
+  flex-grow: 1;
+}
+
+[data-ext="fmodel"] [data-group="indexed"] .t {
+  max-width: 60%;
+}

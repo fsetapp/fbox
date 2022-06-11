@@ -31,11 +31,6 @@ dfn {
 }
 
 .root-item>[role='group']>[role="treeitem"] {
-  margin: 1px;
-  padding: .5rem 0;
-}
-
-.root-item>[role='group']>[role="treeitem"] {
   /* gray-800 */
   box-shadow: inset 0px 1.5px 0px 0px rgba(31, 41, 55, 1);
   background-color: var(--item-root-bg-color);
@@ -45,9 +40,14 @@ dfn {
   box-shadow: inset 0px 0px 0px 1px transparent;
   outline: none;
   margin: 1px 0;
-  padding: 1px 0;
+  padding: 1px;
   position: relative;
   counter-increment: line;
+}
+
+[role="treeitem"][data-tag="top_lv"] {
+  margin: 1px;
+  padding: .5rem 0;
 }
 
 .root-item {
@@ -175,7 +175,6 @@ dfn {
   color: inherit;
   word-break: break-word;
   color: var(--key-color);
-  max-width: 42.5%;
   box-sizing: content-box;
 }
 
@@ -221,12 +220,6 @@ dfn {
   color: var(--type-color);
   word-break: break-word;
   margin-right: .5rem;
-  max-width: 42.5%;
-  flex-grow: 1;
-}
-
-[data-group="indexed"] .t {
-  max-width: 60%;
 }
 
 .m {
