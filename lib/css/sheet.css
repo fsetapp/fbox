@@ -1,3 +1,12 @@
+[data-ext="sheet"] [role="tree"] {
+  display: flex;
+  min-width: unset;
+}
+
+[data-ext="sheet"] .root-item {
+  min-width: var(--tree-min-width);
+}
+
 [data-ext="sheet"] .type:focus {
   box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
 }

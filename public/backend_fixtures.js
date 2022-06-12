@@ -38,9 +38,15 @@ const allTypesFixture = () => {
   let all = [
     M.record({
       key: "Developer", fields: [
-        putAnchor(() => M.string({ key: "username" })),
-        putAnchor(() => M.int32({ key: "experience" })),
-        putAnchor(() => ref(record.$a, { key: "info" }))
+        M.string({ key: "username" }),
+        M.int32({ key: "experience" }),
+        ref(record.$a, { key: "info" }),
+        M.record({
+          key: "metadata", fields: [
+            M.string({ key: "avatar_url" }),
+            M.int32({ key: "internal_id" }),
+          ]
+        })
       ]
     }),
     M.erecord({
