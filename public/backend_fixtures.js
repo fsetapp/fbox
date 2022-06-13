@@ -35,6 +35,8 @@ const allTypesFixture = () => {
       putAnchor(() => M.int32({ key: "age" }))
     ]
   }))
+  record.fields.unshift(ref(record.$a, { key: "recur" }))
+
   let all = [
     M.record({
       key: "Developer", fields: [
