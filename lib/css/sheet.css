@@ -1,10 +1,18 @@
+[data-ext="sheet"] {
+  width: 100%;
+}
+
 [data-ext="sheet"] [role="tree"] {
   display: flex;
   min-width: unset;
+  width: 100%;
 }
 
 [data-ext="sheet"] [role="tree"]>[role="treeitem"] {
   min-width: var(--tree-min-width);
+  scroll-snap-align: start;
+  scroll-margin: 0;
+  width: 100%;
 }
 
 [data-ext="sheet"] .type:focus {

@@ -15,7 +15,8 @@
   <project-store>
     <div class="flex" style="height: 100vh; background-color: var(--gray-900); color: var(--gray-300);">
       <div id="project" class="flex flex-1" style="flex-direction: column; overflow:hidden;"></div>
-      <section class="flex" style="flex: 2.5; overflow:scroll">
+      <section class="flex"
+        style="flex: 2.5; overflow-x:auto; scroll-snap-type: x mandatory; scroll-snap-stop: always;">
         <file-body class="flex"></file-body>
       </section>
       <sch-meta id="fsch" class="block overflow-auto" tabindex="-1" style="flex: 1.5">
