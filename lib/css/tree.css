@@ -30,7 +30,7 @@ dfn {
   margin-bottom: .5rem;
 }
 
-.root-item>[role='group']>[role="treeitem"] {
+[data-tag="top_lv"] {
   /* gray-800 */
   box-shadow: inset 0px 1.5px 0px 0px rgba(31, 41, 55, 1);
   background-color: var(--item-root-bg-color);
@@ -63,11 +63,11 @@ dfn {
   background-color: var(--item-selected-bg-color);
 }
 
-:not(.root-item)[role="treeitem"][aria-expanded="true"]>[role='group'] {
+:not(.root-item)[role="treeitem"][aria-expanded="true"]>[data-group] {
   outline: none;
 }
 
-:not(.root-item)[role="treeitem"][aria-expanded="false"]>[role='group'] {
+:not(.root-item)[role="treeitem"][aria-expanded="false"]>[data-group] {
   display: none;
 }
 

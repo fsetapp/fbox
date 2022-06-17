@@ -1,3 +1,5 @@
 #project .root-item>[role='group']>[role="treeitem"] {
   padding: .5rem 0;
+  box-shadow: inset 0px 1.5px 0px 0px rgb(31 41 55);
+  background-color: var(--item-root-bg-color);
 }
