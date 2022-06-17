@@ -34,7 +34,12 @@ const buildOne = pkg => {
 result = esbuild.build({
   ...commonOpts,
   entryPoints: [
-    "lib/main.css", "lib/css/sheet.css", "lib/css/html.css", "lib/css/json.css",
+    "lib/main.css",
+    "lib/css/file.css",
+    "lib/css/sheet.css",
+    "lib/css/html.css",
+    "lib/css/json.css",
+
     "lib/main.js",
     "lib/pkgs/file/index.js",
     "lib/pkgs/model/index.js",
