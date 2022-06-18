@@ -24,7 +24,6 @@
 }
 
 [data-ext="sheet"] [role="treeitem"] {
-  margin: 0;
   scroll-margin: 5rem;
   min-height: 1.5rem;
 }
@@ -76,10 +75,14 @@
 [data-ext="sheet"] .data input {
   background-color: transparent;
   color: var(--yellow-500);
-  border: 1px solid var(--gray-800);
-  border-radius: 4px;
-  margin: 0 1rem;
-  padding: 0.25rem .5rem;
+  border-radius: .25rem;
+  margin: 2px 1rem;
+  padding: 0rem .5rem;
+  border: 0;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-color: var(--gray-600);
+  align-self: stretch;
 }
 
 [data-ext="sheet"] .data input[type="checkbox"] {
@@ -114,6 +117,7 @@
 [data-ext="sheet"] .inline-node>.ctor-body {
   width: 100%;
   margin-top: 1rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--gray-800);
 }
 

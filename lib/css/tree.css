@@ -40,7 +40,6 @@ dfn {
   box-shadow: inset 0px 0px 0px 1px transparent;
   outline: none;
   margin: 1px 0;
-  padding: 1px;
   position: relative;
   counter-increment: line;
 }
