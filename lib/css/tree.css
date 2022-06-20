@@ -2,6 +2,10 @@ dfn {
   font-style: normal;
 }
 
+button {
+  outline: none;
+}
+
 [role="tree"] {
   min-width: var(--tree-min-width);
   background-color: var(--tree-bg-color);

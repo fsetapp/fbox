@@ -36,15 +36,10 @@
 
 [data-ext="sheet"] .data input {
   background-color: transparent;
-  color: var(--yellow-500);
+  color: greenyellow;
   border-radius: .25rem;
-  margin: 2px 1rem;
-  padding: 0rem .5rem;
-  border: 0;
-  border-left: 1px solid;
-  border-right: 1px solid;
-  border-color: var(--gray-600);
-  /* align-self: stretch; */
+  padding: calc(.25rem - 1px) .5rem;
+  border: 1px solid var(--gray-800);
 }
 
 /* START Inline Preview */
@@ -60,6 +55,8 @@
 
 [data-ext="sheet"] [aria-expanded="false"] fieldset {
   display: flex;
+  padding-left: 0;
+  margin: 0;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .node fieldset {
@@ -73,14 +70,11 @@
 
 [data-ext="sheet"] [aria-expanded="false"] button {
   display: none;
+  white-space: nowrap;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .inline-node {
   flex-wrap: nowrap;
-}
-
-[data-ext="sheet"] [aria-expanded="false"] button {
-  white-space: nowrap;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .k {
@@ -88,12 +82,8 @@
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .data .k {
-  padding-left: .25rem !important;
-  color: var(--gray-500);
-}
-
-[data-ext="sheet"] [aria-expanded="false"] .h {
-  align-self: baseline;
+  color: var(--gray-400);
+  border: 1px solid var(--gray-800);
 }
 
 [data-ext="sheet"] [aria-expanded="false"] data input {
@@ -154,19 +144,25 @@
   border: 0;
   margin: 1px;
   padding: 0;
+  padding-left: 3ch;
   gap: 2px;
   border-radius: 3px;
-  background-color: var(--matte-black);
 }
 
 [data-ext="sheet"] .inline-node {
   flex-wrap: wrap;
+  align-items: center;
   width: 100%;
+}
+
+[data-ext="sheet"] .inline-node[data-tag="top_lv"]>.h {
+  margin-left: calc(3ch + .25rem);
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name {
   margin: 0;
-  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
@@ -182,14 +178,9 @@
   margin: 0;
 }
 
-[data-ext="sheet"] .ctor-body .data {
-  flex: 1 1 auto;
-}
-
 [data-ext="sheet"] .ctor-body .node {
   width: 100%;
   border-radius: 3px;
-  align-items: center;
 }
 
 [data-ext="sheet"] .ctor-body .leaf {
@@ -197,8 +188,13 @@
 }
 
 [data-ext="sheet"] .ctor-body :where(.node, .inline-node)>.h>.k {
-  margin-right: 1rem;
   align-self: center;
+}
+
+[data-ext="sheet"] :where(.k, .t) {
+  border: 1px solid darkslategrey;
+  padding: 0 .5rem;
+  border-radius: 3px;
 }
 
 [data-ext="sheet"] .ctor-body .node>.h {
