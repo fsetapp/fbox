@@ -39,8 +39,10 @@
   background-color: transparent;
   color: greenyellow;
   border-radius: .25rem;
-  padding: calc(.25rem - 1px) .5rem;
+  padding: calc(.25rem - 2px) .5rem;
   border: 1px solid var(--gray-800);
+  font-size: 100%;
+  line-height: normal;
 }
 
 /* START Inline Preview */
@@ -63,9 +65,8 @@
   gap: 1px;
 }
 
-[data-ext="sheet"] [aria-expanded="false"][data-tag="top_lv"]>fieldset {
-  margin: 2px 0 0 calc(3ch + 1px);
-  flex-direction: column;
+[data-ext="sheet"] [aria-expanded="false"].ctor-body>fieldset {
+  padding: 0 0 0 calc(3ch + 1px);
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .node fieldset,
@@ -102,16 +103,15 @@
 
 /* END Inline Preview */
 
-[data-ext="sheet"] .data [data-cmd="next-page"] {
+[data-ext="sheet"] .data button {
   background-color: transparent;
   border: 0;
-  padding: 0 .75rem 0 0;
-  border-radius: .5rem;
+  padding: 0 .25rem;
+  border-radius: 3px;
   cursor: pointer;
-  line-height: normal;
 }
 
-[data-ext="sheet"] .data [data-cmd="next-page"]:after {
+[data-ext="sheet"] .data button:after {
   content: "↪︎";
   vertical-align: middle;
   margin-left: 1rem;
@@ -165,8 +165,18 @@
   display: flex;
 }
 
-[data-ext="sheet"] [data-tag="top_lv"].ctor-body {
+[data-ext="sheet"] .ctor-name>.t>button {
+  display: flex;
+  align-items: center;
+}
+
+[data-ext="sheet"] .ctor-body {
   width: 100%;
+}
+
+[data-ext="sheet"] .ctor-body>fieldset {
+  flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
@@ -176,7 +186,7 @@
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name>.t {
-  display: block;
+  display: flex;
 }
 
 [data-ext="sheet"] .ctor-body .leaf {

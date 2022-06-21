@@ -201,6 +201,7 @@ dd {
   --key-pattern-font: var(--font-mono);
   --type-color: var(--gray-500);
   --ref-color: lightgreen;
+  --input-color: lightgreen;
 
   --diff-new-color: rgba(144, 238, 144, .5);
   --diff-removed-color: rgba(255, 0, 0, .5);
