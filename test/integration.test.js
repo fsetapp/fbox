@@ -14,7 +14,7 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
     /* integration test expects all 3 elements to be present */
     document.body.innerHTML = `
       <project-store>
-        <section id="project"></section>
+        <nav-tree id="project"></nav-tree>
         <file-body data-ext='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
       </project-store>
@@ -197,7 +197,7 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     /* integration test expects all 3 elements to be present */
     document.body.innerHTML = `
       <project-store>
-        <section id="project"></section>
+        <nav-tree id="project"></nav-tree>
         <file-body data-ext='fmodel'></file-body>
         <sch-meta id="fsch"></sch-meta>
       </project-store>
