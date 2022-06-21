@@ -17,21 +17,22 @@
   min-width: var(--tree-min-width);
   scroll-snap-align: start;
   scroll-margin: 0;
-  width: 100%;
 }
 
 [data-ext="sheet"] [data-tag="top_lv"] {
   border-top: 3px solid var(--gray-800);
-  margin: .5rem 0;
+  margin: .5rem 1px;
   padding: 1rem 0;
 }
 
 [data-ext="sheet"] .type:focus {
-  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+  box-shadow: 0px 0px 0px 1px var(--item-selected-border-color);
+  border-radius: 3px;
 }
 
 [data-ext="sheet"] .data:focus-visible {
-  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+  box-shadow: 0px 0px 0px 1px var(--item-selected-border-color);
+  border-radius: 3px;
 }
 
 [data-ext="sheet"] .data input {
@@ -45,6 +46,7 @@
 /* START Inline Preview */
 [data-ext="sheet"] [aria-expanded="false"] {
   display: flex;
+  align-items: flex-start;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] [role="treeitem"] {
@@ -55,11 +57,19 @@
 
 [data-ext="sheet"] [aria-expanded="false"] fieldset {
   display: flex;
+  flex-wrap: wrap;
   padding-left: 0;
   margin: 0;
+  gap: 1px;
 }
 
-[data-ext="sheet"] [aria-expanded="false"] .node fieldset {
+[data-ext="sheet"] [aria-expanded="false"][data-tag="top_lv"]>fieldset {
+  margin: 2px 0 0 calc(3ch + 1px);
+  flex-direction: column;
+}
+
+[data-ext="sheet"] [aria-expanded="false"] .node fieldset,
+[data-ext="sheet"] [aria-expanded="false"] .inline-node>.ctor-name>.t {
   display: none;
 }
 
@@ -92,10 +102,6 @@
 
 /* END Inline Preview */
 
-[data-ext="sheet"] .data:where(.string, .ref) {
-  width: 100%;
-}
-
 [data-ext="sheet"] .data [data-cmd="next-page"] {
   background-color: transparent;
   border: 0;
@@ -103,10 +109,6 @@
   border-radius: .5rem;
   cursor: pointer;
   line-height: normal;
-}
-
-[data-ext="sheet"] .data [data-cmd="next-page"]:hover {
-  background-color: var(--gray-900);
 }
 
 [data-ext="sheet"] .data [data-cmd="next-page"]:after {
@@ -147,41 +149,34 @@
   padding: 0;
   padding-left: 3ch;
   gap: 2px;
-  border-radius: 3px;
 }
 
 [data-ext="sheet"] .inline-node {
   flex-wrap: wrap;
-  align-items: center;
-  width: 100%;
+  /* align-items: center; */
 }
 
-[data-ext="sheet"] .inline-node[data-tag="top_lv"]>.h {
+[data-ext="sheet"] [data-tag="top_lv"]>.h {
   margin-left: calc(3ch + .25rem);
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name {
   margin: 0;
   display: flex;
-  align-items: center;
+}
+
+[data-ext="sheet"] [data-tag="top_lv"].ctor-body {
+  width: 100%;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
-  width: 100%;
   margin: 1rem .25rem;
   padding-top: 1rem;
   border-top: 1px solid var(--gray-800);
-  overflow: hidden;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name>.t {
   display: block;
-  margin: 0;
-}
-
-[data-ext="sheet"] .ctor-body .node {
-  width: 100%;
-  border-radius: 3px;
 }
 
 [data-ext="sheet"] .ctor-body .leaf {
@@ -192,10 +187,16 @@
   align-self: center;
 }
 
+[data-ext="sheet"] [aria-selected="true"]>.h>.k,
+[data-ext="sheet"] [aria-selected="true"]> :where(.k, .t) {
+  background-color: darkslategrey;
+}
+
 [data-ext="sheet"] :where(.k, .t) {
   /* darkslategrey; */
   border: 1px solid rgb(47 79 79 / 75%);
   padding: 0 .5rem;
+  margin: 1px;
   border-radius: 3px;
 }
 

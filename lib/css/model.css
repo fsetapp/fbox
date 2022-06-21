@@ -1,3 +1,7 @@
+[data-ext="fmodel"] [aria-selected="true"] {
+  background-color: var(--item-selected-bg-color);
+}
+
 [data-ext="fmodel"] .k {
   max-width: 42.5%;
 }
