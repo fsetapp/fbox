@@ -10,3 +10,23 @@
 [data-ext="fmodel"] [data-group="indexed"] .t {
   max-width: 60%;
 }
+
+[data-tag="fmodel"][data-err="ref"] {
+  --err-msg: "being referenced"
+}
+
+[data-tag="fmodel"][data-err]>.h:after {
+  content: var(--err-msg);
+  position: absolute;
+  right: .75rem;
+  font-size: .75rem;
+  color: var(--err-msg-color, red);
+}
+
+[data-tag="fmodel"][data-sig]:after {
+  content: attr(data-sig);
+  position: absolute;
+  right: .75rem;
+  font-size: .75rem;
+  color: var(--err-msg-color, red);
+}

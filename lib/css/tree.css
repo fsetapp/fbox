@@ -13,8 +13,17 @@ button {
   color: var(--tree-color);
 }
 
+[aria-selected="true"] {
+  background-color: var(--item-selected-bg-color);
+}
+
+[aria-expanded="true"]>[data-group] {
+  outline: none;
+}
+
 .root-item {
   padding: 0 1px;
+  margin: 0;
   height: inherit;
   display: flex;
   flex-direction: column;
@@ -48,67 +57,35 @@ button {
   counter-increment: line;
 }
 
-[role="treeitem"][data-tag="top_lv"] {
+[data-tag="top_lv"] {
   margin: 1px;
   padding: .5rem 0;
 }
 
-.root-item {
-  margin: 0;
-}
-
-.node[role="treeitem"][aria-selected="false"]>.h:hover,
-.leaf[role="treeitem"][aria-selected="false"]:hover {
+.node[aria-selected="false"]>.h:hover,
+.leaf[aria-selected="false"]:hover {
   background: var(--gray-900);
-}
-
-:not(.root-item)[role="treeitem"][aria-selected="true"] {
-  background-color: var(--item-selected-bg-color);
-}
-
-:not(.root-item)[role="treeitem"][aria-expanded="true"]>[data-group] {
-  outline: none;
 }
 
 [aria-expanded="false"]>[data-group] {
   display: none;
 }
 
-[role="treeitem"][aria-selected="true"]:focus-visible {
+[aria-selected="true"]:focus-visible {
   box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
 }
 
-[role="treeitem"][aria-selected="true"].item-cutting,
-[role="treeitem"].item-cutting {
+[aria-selected="true"].item-cutting,
+.item-cutting {
   box-shadow: inset 0px 0px 0px 1px darkred !important;
 }
 
-[role="treeitem"][aria-selected="true"].item-copying,
-[role="treeitem"].item-copying {
+[aria-selected="true"].item-copying,
+.item-copying {
   box-shadow: inset 0px 0px 0px 1px darkorange !important;
 }
 
-[role="treeitem"][data-tag="fmodel"][data-err="ref"] {
-  --err-msg: "being referenced"
-}
-
-[role="treeitem"][data-tag="fmodel"][data-err]>.h:after {
-  content: var(--err-msg);
-  position: absolute;
-  right: .75rem;
-  font-size: .75rem;
-  color: var(--err-msg-color, red);
-}
-
-[role="treeitem"][data-tag="fmodel"][data-sig]:after {
-  content: attr(data-sig);
-  position: absolute;
-  right: .75rem;
-  font-size: .75rem;
-  color: var(--err-msg-color, red);
-}
-
-[role="treeitem"] [data-diff]:before {
+[data-diff]:before {
   position: absolute;
   color: var(--gray-700);
   display: block;
@@ -118,35 +95,35 @@ button {
   font-size: .75rem;
 }
 
-.setnu [role="treeitem"].node>.h:before,
-.setnu [role="treeitem"].leaf:before {
+.setnu .node>.h:before,
+.setnu .leaf:before {
   min-width: 2rem;
   content: counter(line);
   text-align: center;
   font-family: monospace;
 }
 
-[role="treeitem"] [data-diff] {
+[data-diff] {
   --d-color: transparent;
 }
 
-[role="treeitem"] [data-diff*="N"] {
+[data-diff*="N"] {
   --d-color: var(--diff-new-color);
 }
 
-[role="treeitem"] [data-diff*="R"] {
+[data-diff*="R"] {
   --d-color: var(--diff-removed-color);
 }
 
-[role="treeitem"] [data-diff*="M"] {
+[data-diff*="M"] {
   --d-color: var(--diff-moved-color);
 }
 
-[role="treeitem"] [data-diff*="O"] {
+[data-diff*="O"] {
   --d-color: var(--diff-reorder-color);
 }
 
-[role="treeitem"] [data-diff*="C"] {
+[data-diff*="C"] {
   --d-color: var(--diff-changed-color);
 }
 
@@ -201,8 +178,8 @@ button {
   letter-spacing: -.5px;
 }
 
-[role="group"][data-group="indexed"]>[role="treeitem"]>.k,
-[role="group"][data-group="indexed"]>[role="treeitem"]>.h>.k {
+[role="group"][data-group="indexed"]>.k,
+[role="group"][data-group="indexed"]>.h>.k {
   /* gray-500*/
   color: rgba(107, 114, 128, 1);
 }

@@ -102,6 +102,7 @@
   padding: 0 .75rem 0 0;
   border-radius: .5rem;
   cursor: pointer;
+  line-height: normal;
 }
 
 [data-ext="sheet"] .data [data-cmd="next-page"]:hover {
@@ -115,7 +116,7 @@
 }
 
 [data-ext="sheet"] .data:where(.list, .dict) [data-cmd="new-item"] {
-  margin: 0.5rem 0 0.5rem 3px;
+  margin: 0.5rem 0 0.5rem;
   background-color: transparent;
   border: 0;
   padding: 0.25rem 0.75rem;
@@ -192,7 +193,8 @@
 }
 
 [data-ext="sheet"] :where(.k, .t) {
-  border: 1px solid darkslategrey;
+  /* darkslategrey; */
+  border: 1px solid rgb(47 79 79 / 75%);
   padding: 0 .5rem;
   border-radius: 3px;
 }
