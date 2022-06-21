@@ -75,7 +75,6 @@
 }
 
 [data-ext="sheet"] [aria-expanded="false"] input {
-  pointer-events: none;
   border: 0;
 }
 
@@ -193,12 +192,16 @@
   align-items: center;
 }
 
+[data-ext="sheet"] .ctor-body .leaf>label {
+  display: flex;
+}
+
 [data-ext="sheet"] .ctor-body :where(.node, .inline-node)>.h>.k {
   align-self: center;
 }
 
-[data-ext="sheet"] [aria-selected="true"]>.h>.k,
-[data-ext="sheet"] [aria-selected="true"]> :where(.k, .t) {
+[data-ext="sheet"] [aria-selected="true"]>*>.k,
+[data-ext="sheet"] [aria-selected="true"]>.t {
   background-color: darkslategrey;
 }
 
