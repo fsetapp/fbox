@@ -43,6 +43,7 @@
   border: 1px solid var(--gray-800);
   font-size: 100%;
   line-height: normal;
+  margin: 1px;
 }
 
 /* START Inline Preview */
@@ -66,7 +67,7 @@
 }
 
 [data-ext="sheet"] [aria-expanded="false"].ctor-body>fieldset {
-  padding: 0 0 0 calc(3ch + 1px);
+  padding: 1px 0 1px 3ch;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .node fieldset,
@@ -112,7 +113,6 @@
 
 [data-ext="sheet"] .data button:after {
   content: "↪︎";
-  vertical-align: middle;
   margin-left: 1rem;
 }
 
@@ -144,15 +144,13 @@
 
 [data-ext="sheet"] fieldset {
   border: 0;
-  margin: 1px;
-  padding: 0;
-  padding-left: 3ch;
+  margin: 0;
+  padding: 0 0 0 3ch;
   gap: 2px;
 }
 
 [data-ext="sheet"] .inline-node {
   flex-wrap: wrap;
-  /* align-items: center; */
 }
 
 [data-ext="sheet"] [data-tag="top_lv"]>.h {
@@ -176,11 +174,12 @@
 [data-ext="sheet"] .ctor-body>fieldset {
   flex-direction: column;
   flex-wrap: nowrap;
+  padding: 0 0 0 3ch;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
   margin: 1rem .25rem;
-  padding-top: 1rem;
+  padding: 1rem 0;
   border-top: 1px solid var(--gray-800);
 }
 
@@ -194,10 +193,6 @@
 
 [data-ext="sheet"] .ctor-body .leaf>label {
   display: flex;
-}
-
-[data-ext="sheet"] .ctor-body :where(.node, .inline-node)>.h>.k {
-  align-self: center;
 }
 
 [data-ext="sheet"] [aria-selected="true"]>*>.k,

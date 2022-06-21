@@ -143,8 +143,8 @@ button {
   display: flex;
 }
 
-.inline-node :is(.k, .t) {
-  max-width: 100%;
+.inline-node> :where(:nth-child(1), :nth-child(2)) {
+  max-width: 40%;
 }
 
 .inline-node .leaf>.t {
