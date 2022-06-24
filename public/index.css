@@ -187,6 +187,7 @@ dd {
 }
 
 [data-ext="sheet"] [role="tree"] {
+  accent-color: lightgreen;
   --tree-min-width: 100%;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);
