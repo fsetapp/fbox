@@ -92,7 +92,7 @@ const allTypesFixture = () => {
         toVal(M.bool(), true)
       ]
     }),
-    M.string({ key: "string" }),
+    M.string({ key: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut mollis lorem ac turpis blandit volutpat. Praesent luctus dapibus pulvinar. Integer nec urna pretium, eleifend urna sed, euismod turpis. Quisque posuere interdum metus vitae rhoncus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec in ipsum ut augue vehicula pulvinar sit amet sit amet arcu. Morbi semper risus at neque malesuada laoreet" }),
     M.bool({ key: "online" }),
     M.int16({ key: "Number of item" }),
     M.float32({ key: "Percent" }),
