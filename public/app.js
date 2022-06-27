@@ -80,10 +80,7 @@ export const start = ({ project, diff = true, async = true }) =>
       this.projectStore.render()
     }
     handleSchUpdate(e) {
-      let { detail } = e
-      let fileStore = e.detail.target.closest("[data-tag='file']").sch
-      if (fileStore)
-        Project.SchMeta.update({ store: fileStore, detail })
+      Model.SchMeta.update({ store: e.detail.file, detail: e.detail })
     }
     remoteConnected() {
       this.projectStore = Store.fromProject(project, { imports })

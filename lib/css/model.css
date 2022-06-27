@@ -34,3 +34,7 @@
   font-size: .75rem;
   color: var(--err-msg-color, red);
 }
+
+[data-tag="fmodel"] textarea {
+  margin: 0 0 0 -.5rem;
+}

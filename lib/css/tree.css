@@ -228,7 +228,6 @@ button {
 }
 
 [role="tree"] textarea {
-  margin: 0 0 0 -.5rem;
   padding: 0 .5rem;
   border: 0;
   background-color: var(--input-bg-color);
