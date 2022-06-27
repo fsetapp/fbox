@@ -1,5 +1,6 @@
 #project .root-item>[role='group']>[role="treeitem"] {
   padding: .5rem 0;
+  margin: 1px;
 }
 
 #project .root-item>[role='group']>[role="treeitem"]:not([aria-selected="true"]) {

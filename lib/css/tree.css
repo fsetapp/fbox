@@ -24,7 +24,7 @@ button {
 
 .root-item {
   padding: 0 1px;
-  margin: 0;
+  outline-offset: -1px;
   height: inherit;
   display: flex;
   flex-direction: column;
@@ -44,15 +44,8 @@ button {
   margin-bottom: .5rem;
 }
 
-[data-tag="top_lv"] {
-  /* gray-800 */
-  box-shadow: inset 0px 1.5px 0px 0px rgba(31, 41, 55, 1);
-  background-color: var(--item-root-bg-color);
-}
-
 [role="treeitem"] {
-  box-shadow: inset 0px 0px 0px 1px transparent;
-  outline: none;
+  outline: 1px solid transparent;
   margin: 1px 0;
   position: relative;
   counter-increment: line;
@@ -60,7 +53,10 @@ button {
 
 [data-tag="top_lv"] {
   margin: 1px;
-  padding: .5rem 0;
+  padding: .5rem 1px;
+  /* gray-800 */
+  box-shadow: inset 0px 1.5px 0px 0px rgba(31, 41, 55, 1);
+  background-color: var(--item-root-bg-color);
 }
 
 .node[aria-selected="false"]>.h:hover,
@@ -73,17 +69,17 @@ button {
 }
 
 [aria-selected="true"]:focus-visible {
-  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+  outline: 1px solid var(--item-selected-border-color);
 }
 
 [aria-selected="true"].item-cutting,
 .item-cutting {
-  box-shadow: inset 0px 0px 0px 1px darkred !important;
+  outline: 1px solid darkred !important;
 }
 
 [aria-selected="true"].item-copying,
 .item-copying {
-  box-shadow: inset 0px 0px 0px 1px darkorange !important;
+  outline: 1px solid darkorange !important;
 }
 
 [data-diff]:before {

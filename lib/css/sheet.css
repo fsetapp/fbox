@@ -21,17 +21,16 @@
 
 [data-ext="sheet"] [data-tag="top_lv"] {
   border-top: 3px solid var(--gray-800);
-  margin: .5rem 1px;
   padding: 1rem 0;
 }
 
 [data-ext="sheet"] .type:focus {
-  box-shadow: 0px 0px 0px 1px var(--item-selected-border-color);
+  outline: 1px solid var(--item-selected-border-color);
   border-radius: 3px;
 }
 
 [data-ext="sheet"] .data:focus-visible {
-  box-shadow: 0px 0px 0px 1px var(--item-selected-border-color);
+  outline: 1px solid var(--item-selected-border-color);
   border-radius: 3px;
 }
 
