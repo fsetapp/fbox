@@ -247,14 +247,3 @@ button {
   display: block;
   resize: none;
 }
-
-.defs-docs+ul t-md {
-  color: var(--docs-description);
-  font-family: var(--docs-description-font);
-  font-weight: 300;
-  white-space: pre-line;
-  padding-bottom: .5rem;
-  margin: 0;
-  word-break: break-word;
-  letter-spacing: .5px;
-}
