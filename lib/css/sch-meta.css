@@ -95,6 +95,7 @@
 
 sch-meta dt {
   display: flex;
+  padding: .25rem 0;
 }
 
 sch-meta>.meta-def {
@@ -128,4 +129,16 @@ sch-meta>.meta-def+p {
 .defs-docs+dl>[data-active="true"] {
   background-color: midnightblue;
   scroll-margin-block-start: 5rem;
+}
+
+.defs-docs+dl dt>.term-path {
+  display: flex;
+  margin: 0;
+  gap: 2px;
+}
+
+.defs-docs+dl dt>.term-path>span {
+  background-color: var(--gray-700);
+  border-radius: 3px;
+  padding: .125rem .5rem;
 }
