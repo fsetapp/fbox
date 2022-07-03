@@ -1,4 +1,5 @@
-[data-ext="fmodel"] [aria-selected="true"] {
+[data-ext="fmodel"] [aria-selected="true"],
+[role="treeitem"]:target {
   background-color: var(--item-selected-bg-color);
 }
 

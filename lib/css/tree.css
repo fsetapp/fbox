@@ -49,6 +49,7 @@ button {
   margin: 1px 0;
   position: relative;
   counter-increment: line;
+  scroll-margin: 5rem;
 }
 
 [data-tag="top_lv"] {

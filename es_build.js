@@ -35,6 +35,8 @@ result = esbuild.build({
   ...commonOpts,
   entryPoints: [
     "lib/main.css",
+    "lib/css/model.css",
+    "lib/css/sch-meta.css",
     "lib/css/file.css",
     "lib/css/sheet.css",
     "lib/css/html.css",
