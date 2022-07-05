@@ -36,6 +36,7 @@
   padding: .25rem .5rem;
   font-size: .75rem;
   line-height: 1rem;
+  flex-shrink: 0;
 }
 
 .fbox .err {
@@ -70,6 +71,7 @@
 
 .fbox textarea {
   resize: none;
+  font-family: inherit;
 }
 
 .fbox input {
@@ -174,6 +176,7 @@ sch-meta>.meta-def+p {
   display: flex;
   flex-direction: column;
   gap: .5rem;
+  width: 100%;
 }
 
 .defs-docs+dl summary:before {
