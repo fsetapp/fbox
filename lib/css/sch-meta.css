@@ -150,8 +150,6 @@ sch-meta>.meta-def+p {
 .defs-docs+dl dt>.term-path>span {
   background-color: var(--gray-meta);
   padding: 0.125rem 0.5rem;
-  color: var(--pink-400);
-  border-left: 1px solid;
 }
 
 .defs-docs+dl>[data-active="true"] {
@@ -159,9 +157,11 @@ sch-meta>.meta-def+p {
 }
 
 .defs-docs+dl>[data-active="true"] .term-path>span {
-  background-color: var(--pink-400);
-  color: black;
-  opacity: .75;
+  color: var(--pink-400);
+}
+
+.defs-docs+dl>[data-active="true"]+hr {
+  border-color: var(--pink-400);
 }
 
 .defs-docs+dl fieldset {

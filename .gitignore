@@ -4,3 +4,4 @@ coverage
 standalone/html
 standalone/json
 dist
+*.bak
