@@ -80,7 +80,6 @@ export const start = ({ project, diff = true, async = true }) =>
       this.projectStore.render()
     }
     handleSchUpdate(e) {
-      Model.SchMeta.update({ store: e.detail.file, detail: e.detail })
     }
     remoteConnected() {
       this.projectStore = Store.fromProject(project, { imports })
