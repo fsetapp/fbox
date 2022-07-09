@@ -217,8 +217,7 @@
 }
 
 [data-ext="sheet"] :where(.k, .t) {
-  /* darkslategrey; */
-  border: 1px solid rgb(47 79 79 / 75%);
+  border: 1px solid var(--gray-800);
   padding: 0 .5rem;
   margin: 1px;
   border-radius: 3px;

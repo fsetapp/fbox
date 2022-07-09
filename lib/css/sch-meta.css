@@ -121,7 +121,7 @@ sch-meta>.meta-def+p {
   margin: .5rem 0;
 }
 
-.defs-docs+dl t-md {
+.defs-docs t-md {
   color: var(--docs-description);
   font-family: var(--docs-description-font);
   font-weight: 300;
@@ -132,17 +132,16 @@ sch-meta>.meta-def+p {
   letter-spacing: .5px;
 }
 
-.defs-docs+dl {
+.defs-docs {
   display: flex;
   flex-direction: column;
-  gap: 1rem
 }
 
-.defs-docs+dl>div {
-  padding-bottom: 1rem;
+.defs-docs>div {
+  /* padding-bottom: 1rem; */
 }
 
-.defs-docs+dl .docs-head>.term-path {
+.defs-docs .docs-head>.term-path {
   display: flex;
   margin: 0;
   gap: 2px;
@@ -150,16 +149,20 @@ sch-meta>.meta-def+p {
   color: var(--gray-300);
 }
 
-.defs-docs+dl .docs-head>.t {
+.defs-docs .docs-head>.term-path:focus-visible {
+  outline-color: var(--gray-800);
+}
+
+.defs-docs .docs-head>.t {
   flex: 1;
 }
 
-.defs-docs+dl [data-active="true"] .docs-head>button[data-cmd="edit"],
-.defs-docs+dl .docs-head:hover>button[data-cmd="edit"] {
+/* .defs-docs [data-active="true"] .docs-head>button[data-cmd="edit"], */
+.defs-docs .docs-head:hover>button[data-cmd="edit"] {
   display: block;
 }
 
-.defs-docs+dl .docs-head>button[data-cmd="edit"] {
+.defs-docs .docs-head>button[data-cmd="edit"] {
   color: var(--gray-300);
   background-color: var(--gray-700);
   border: 0;
@@ -167,25 +170,29 @@ sch-meta>.meta-def+p {
   display: none;
 }
 
-.defs-docs+dl .docs-head>.term-path>span {
+.defs-docs .docs-head>.term-path>span {
   background-color: var(--matte-black);
   color: var(--pink-400);
   padding: 0.125rem 0.5rem;
 }
 
-.defs-docs+dl>[data-active="true"] {
+.defs-docs .docs-body {
+  padding: 0 .25rem;
+}
+
+.defs-docs>[data-active="true"] {
   scroll-margin-block-start: 5rem;
 }
 
-.defs-docs+dl>[data-active="true"] .term-path>span {
+.defs-docs>[data-active="true"] .term-path>span {
   color: var(--pink-400);
 }
 
-.defs-docs+dl>[data-active="true"]+hr {
+.defs-docs>[data-active="true"]+hr {
   border-color: var(--pink-400);
 }
 
-.defs-docs+dl fieldset {
+.defs-docs fieldset {
   display: flex;
   flex-wrap: wrap;
   margin: 0;
@@ -193,14 +200,14 @@ sch-meta>.meta-def+p {
   border: 0;
 }
 
-.defs-docs+dl section {
+.defs-docs section {
   display: flex;
   flex-direction: column;
   gap: .5rem;
   width: 100%;
 }
 
-.defs-docs+dl summary {
+.defs-docs summary {
   display: flex;
   padding: .25rem 1px;
   margin: .5rem 0 .25rem;
