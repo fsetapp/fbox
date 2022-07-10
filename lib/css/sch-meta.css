@@ -26,6 +26,10 @@
   color: var(--gray-500);
 }
 
+.fbox>p {
+  margin: .75rem .125rem .25rem;
+}
+
 /* .fbox .box-label.title {
   display: flex;
   align-items: baseline;
@@ -158,16 +162,22 @@ sch-meta>.meta-def+p {
 }
 
 /* .defs-docs [data-active="true"] .docs-head>button[data-cmd="edit"], */
-.defs-docs .docs-head:hover>button[data-cmd="edit"] {
+.defs-docs .docs-head:hover>:where([data-cmd="edit"], [type="submit"]) {
   display: block;
 }
 
-.defs-docs .docs-head>button[data-cmd="edit"] {
+.defs-docs .docs-head> :where([data-cmd="edit"], [type="submit"]) {
+  display: none;
   color: var(--gray-300);
-  background-color: var(--gray-700);
+  background-color: var(--gray-800);
   border: 0;
   border-radius: 3px;
-  display: none;
+  padding: .25rem .5rem;
+  line-height: 1;
+}
+
+.defs-docs .docs-head>[type="submit"] {
+  display: block;
 }
 
 .defs-docs .docs-head>.term-path>span {
@@ -178,6 +188,10 @@ sch-meta>.meta-def+p {
 
 .defs-docs .docs-body {
   padding: 0 .25rem;
+}
+
+.defs-docs .docs-body dd {
+  margin-bottom: .75rem;
 }
 
 .defs-docs>[data-active="true"] {
@@ -195,6 +209,7 @@ sch-meta>.meta-def+p {
 .defs-docs fieldset {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   border: 0;
@@ -205,11 +220,4 @@ sch-meta>.meta-def+p {
   flex-direction: column;
   gap: .5rem;
   width: 100%;
-}
-
-.defs-docs summary {
-  display: flex;
-  padding: .25rem 1px;
-  margin: .5rem 0 .25rem;
-  color: var(--gray-400);
 }
