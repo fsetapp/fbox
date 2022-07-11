@@ -196,20 +196,23 @@
   grid-template-columns: fit-content(40%) fit-content(60%);
 }
 
-[data-ext="sheet"] .ctor-body .leaf>label:after {
+[data-ext="sheet"] .ctor-body .leaf>[data-text]:after {
   content: attr(data-text);
   visibility: hidden;
+  width: fit-content;
 }
 
-[data-ext="sheet"] .ctor-body .leaf>label:after,
+[data-ext="sheet"] .ctor-body .leaf>[data-text]:after,
 [data-ext="sheet"] .data input[type="text"] {
   grid-area: 1/3;
   padding: calc(.25rem - 2px) .5rem;
   white-space: pre;
   overflow: hidden;
-  width: fit-content;
 }
 
+[data-ext="sheet"] .data [data-text=""]>input[type="text"] {
+  width: fit-content;
+}
 
 [data-ext="sheet"] [aria-selected="true"]>*>.k,
 [data-ext="sheet"] [aria-selected="true"]>.t {
