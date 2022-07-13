@@ -182,7 +182,7 @@ sch-meta>.meta-def+p {
 
 .defs-docs .docs-head>.term-path>span {
   background-color: var(--matte-black);
-  color: var(--pink-400);
+  color: var(--gray-400);
   padding: 0.125rem 0.5rem;
 }
 
