@@ -46,7 +46,7 @@
   margin: 1px;
 }
 
-[data-ext="sheet"] [data-cmd] {
+[data-ext="sheet"] button[data-cmd] {
   color: lightcoral;
   background-color: var(--gray-800);
   border: 0;
@@ -156,12 +156,6 @@
 
 [data-ext="sheet"] [data-tag="top_lv"]>.h {
   margin-left: calc(3ch + .25rem);
-}
-
-[data-ext="sheet"] [data-tag="top_lv"]>.h>.def {
-  color: var(--indigo-400);
-  margin-right: 1rem;
-  text-transform: uppercase;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name {
