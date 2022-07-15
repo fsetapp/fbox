@@ -75,9 +75,7 @@ button {
   display: none;
 }
 
-[aria-selected="true"]:focus-visible,
-[aria-selected="true"][data-tag="top_lv"]:focus,
-[aria-selected="true"].root-item:focus {
+[aria-selected="true"]:focus {
   outline: 1px solid var(--item-selected-border-color);
 }
 

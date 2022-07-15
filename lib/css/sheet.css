@@ -46,6 +46,10 @@
   margin: 1px;
 }
 
+[data-ext="sheet"] .data input:invalid {
+  border-color: red !important;
+}
+
 [data-ext="sheet"] button[data-cmd] {
   color: lightcoral;
   background-color: var(--gray-800);
@@ -230,6 +234,10 @@
   width: fit-content;
 }
 
+[data-ext="sheet"] [aria-selected="true"]:not(.root-item, [data-tag="top_lv"], .ctor-name):focus {
+  outline: 0
+}
+
 [data-ext="sheet"] [aria-selected="true"]>*>.k,
 [data-ext="sheet"] [aria-selected="true"]>.t {
   background-color: darkslategrey;
@@ -248,6 +256,10 @@
 
 [data-ext="sheet"] .k.editable {
   background-color: transparent;
+}
+
+[data-ext="sheet"] .k[data-cmd='toggle'] {
+  cursor: pointer;
 }
 
 [data-ext="sheet"] .ctor-body .node>.h {
