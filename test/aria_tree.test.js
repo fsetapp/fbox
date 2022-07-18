@@ -27,7 +27,7 @@ describe("aria [role='tree']", () => {
       </ul>
     `
     tree = document.querySelector("[role='tree']")
-    createWalker(tree)
+    tree._walker = createWalker(tree)
     tree._walker.nextNode()
   })
 
@@ -125,7 +125,7 @@ describe("aria [role='tree']", () => {
       </li>
     </ul>`
     tree = document.querySelector("[role='tree']")
-    createWalker(tree)
+    tree._walker = createWalker(tree)
 
     document.querySelector("[id='non-item']").setAttribute("aria-selected", true)
     let selectedPerParent = selectedGroupedByParent(tree)
