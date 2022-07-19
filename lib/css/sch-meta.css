@@ -147,6 +147,7 @@ sch-meta>.meta-def+p {
 
 .defs-docs .docs-head>.term-path {
   display: flex;
+  flex-wrap: wrap;
   margin: 0;
   gap: 2px;
   text-decoration: none;
