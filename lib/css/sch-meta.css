@@ -111,7 +111,6 @@
 sch-meta .docs-head {
   display: flex;
   align-items: baseline;
-  padding: .25rem 0;
 }
 
 sch-meta>.meta-def {
@@ -139,10 +138,12 @@ sch-meta>.meta-def+p {
 .defs-docs {
   display: flex;
   flex-direction: column;
+  padding: .5rem .25rem;
 }
 
-.defs-docs>div {
-  /* padding-bottom: 1rem; */
+.defs-docs>* {
+  padding: .5rem .25rem;
+  border-bottom: 1px dashed var(--gray-800);
 }
 
 .defs-docs .docs-head>.term-path {
@@ -160,15 +161,16 @@ sch-meta>.meta-def+p {
 
 .defs-docs .docs-head>.t {
   flex: 1;
+  color: var(--gray-300);
 }
 
 /* .defs-docs [data-active="true"] .docs-head>button[data-cmd="edit"], */
 .defs-docs .docs-head:hover>:where([data-cmd="edit"], [type="submit"]) {
-  display: block;
+  visibility: visible;
 }
 
 .defs-docs .docs-head> :where([data-cmd="edit"], [type="submit"]) {
-  display: none;
+  visibility: hidden;
   color: var(--gray-300);
   background-color: var(--gray-800);
   border: 0;
@@ -178,7 +180,15 @@ sch-meta>.meta-def+p {
 }
 
 .defs-docs .docs-head>[type="submit"] {
-  display: block;
+  visibility: visible;
+}
+
+.defs-docs .docs-head.root>.term-path>span {
+  font-size: 1.5rem;
+  /* line-height: normal; */
+  background-color: transparent;
+  color: var(--indigo-400);
+  padding: 0 0.125rem;
 }
 
 .defs-docs .docs-head>.term-path>span {
@@ -189,6 +199,7 @@ sch-meta>.meta-def+p {
 
 .defs-docs .docs-body {
   padding: 0 .25rem;
+  margin: 1rem 0;
 }
 
 .defs-docs .docs-body dd {
@@ -197,14 +208,8 @@ sch-meta>.meta-def+p {
 
 .defs-docs>[data-active="true"] {
   scroll-margin-block-start: 5rem;
-}
-
-.defs-docs>[data-active="true"] .term-path>span {
-  color: var(--pink-400);
-}
-
-.defs-docs>[data-active="true"]+hr {
-  border-color: var(--pink-400);
+  border-radius: 2px;
+  /* outline: 1px solid var(--gray-800); */
 }
 
 .defs-docs fieldset {
