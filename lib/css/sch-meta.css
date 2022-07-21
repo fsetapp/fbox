@@ -165,22 +165,27 @@ sch-meta>.meta-def+p {
 }
 
 /* .defs-docs [data-active="true"] .docs-head>button[data-cmd="edit"], */
-.defs-docs .docs-head:hover>:where([data-cmd="edit"], [type="submit"]) {
+.defs-docs .docs-head>[data-cmd="edit"] {
+  visibility: hidden;
+}
+
+
+.defs-docs .docs-head:hover>[data-cmd="edit"] {
   visibility: visible;
 }
 
-.defs-docs .docs-head> :where([data-cmd="edit"], [type="submit"]) {
-  visibility: hidden;
+.defs-docs .docs-head> :where([data-cmd="edit"], [type="submit"], [data-cmd="cancel"]) {
   color: var(--gray-300);
   background-color: var(--gray-800);
   border: 0;
   border-radius: 3px;
   padding: .25rem .5rem;
   line-height: 1;
+  cursor: pointer;
 }
 
-.defs-docs .docs-head>[type="submit"] {
-  visibility: visible;
+.defs-docs .docs-head>[data-cmd="cancel"] {
+  background-color: transparent;
 }
 
 .defs-docs .docs-head.root>.term-path>span {
