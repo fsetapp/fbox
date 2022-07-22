@@ -207,6 +207,10 @@ sch-meta>.meta-def+p {
   margin: 1rem 0;
 }
 
+.defs-docs .docs-body :where(dd, dt) {
+  word-break: break-word;
+}
+
 .defs-docs .docs-body dd {
   margin-bottom: .75rem;
 }
