@@ -92,6 +92,7 @@ export const start = ({ project, diff = true, async = true }) =>
       changeFile({ projectStore: this.projectStore, tree: { _passthrough: { fileBody: "file-body" } }, filename: project.currentFileId, fmodelname: location.hash.replace("#", "") })
 
       this.projectBaseStore = JSON.parse(JSON.stringify(this.projectStore))
-      Store.Indice.buildBaseIndices(this.projectBaseStore)
+      Store.Indice.buildBaseIndices(this.projectStore)
+      this.projectBaseStore._indices = this.projectStore._indices
     }
   })

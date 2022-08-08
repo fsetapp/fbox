@@ -82,8 +82,18 @@
   padding: 1px 0 1px 3ch;
 }
 
-[data-ext="sheet"] [aria-expanded="false"] .node fieldset,
 [data-ext="sheet"] [aria-expanded="false"] .inline-node>.ctor-name>.t {
+  background-color: transparent;
+  color: mediumslateblue;
+}
+
+[data-ext="sheet"] [aria-expanded="false"] .node .h:after {
+  content: "...";
+  padding: 0 .5rem;
+  color: var(--gray-500);
+}
+
+[data-ext="sheet"] [aria-expanded="false"] .node fieldset {
   display: none;
 }
 
@@ -105,8 +115,8 @@
 }
 
 [data-ext="sheet"] [aria-expanded="false"] .data .k {
-  color: var(--gray-400);
-  border: 1px solid var(--gray-800);
+  border: 1px solid transparent;
+  font-weight: lighter;
 }
 
 [data-ext="sheet"] [aria-expanded="false"] data input {
@@ -159,7 +169,7 @@
 }
 
 [data-ext="sheet"] [data-tag="top_lv"]>.h {
-  margin-left: calc(3ch + .25rem);
+  margin-left: calc(2ch + .25rem);
 }
 
 [data-ext="sheet"] .inline-node>.ctor-name {
@@ -180,7 +190,7 @@
 [data-ext="sheet"] .ctor-body>fieldset {
   flex-direction: column;
   flex-wrap: nowrap;
-  padding: 0 0 0 3ch;
+  padding: 0 0 0 2ch;
 }
 
 [data-ext="sheet"] .inline-node>.ctor-body {
@@ -193,9 +203,7 @@
   align-items: center;
   border: 0;
   background-color: darkslateblue;
-  margin-left: .25rem;
   color: var(--gray-300);
-  border-radius: 9999px;
   font-size: .75rem;
 }
 

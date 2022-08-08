@@ -29,13 +29,15 @@ const fmodelsFixture = (n, startId) => {
 }
 
 const allTypesFixture = () => {
-  let record = putAnchor(() => M.record({
+  let record = M.record({
     key: "User", fields: [
-      putAnchor(() => M.string({ key: "email" })),
-      putAnchor(() => M.int32({ key: "age" }))
+      M.string({ key: "email" }),
+      M.int32({ key: "age" })
     ]
-  }))
-  record.fields.unshift(ref(record.$a, { key: "recur" }))
+  })
+  record = Sch.clone(record)
+  let recur = putAnchor(() => ref(record.$a, { key: "recur" }))
+  record.fields.unshift(recur)
 
   let all = [
     M.record({
