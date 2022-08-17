@@ -134,7 +134,7 @@
 }
 
 [data-ext="sheet"] .data:where(.list, .dict) [data-cmd="new-item"] {
-  margin: 0.5rem;
+  margin: .5rem 1.75rem;
   background-color: transparent;
   border: 0;
   border: 1px solid var(--indigo-400);
