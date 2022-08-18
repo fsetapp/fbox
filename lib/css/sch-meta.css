@@ -138,12 +138,7 @@ sch-meta>.meta-def+p {
 .defs-docs {
   display: flex;
   flex-direction: column;
-  padding: .5rem .25rem;
-}
-
-.defs-docs>* {
-  padding: .5rem .25rem;
-  border-bottom: 1px dashed var(--gray-800);
+  padding: .5rem;
 }
 
 .defs-docs .docs-head>.term-path {
@@ -164,11 +159,9 @@ sch-meta>.meta-def+p {
   color: var(--gray-300);
 }
 
-/* .defs-docs [data-active="true"] .docs-head>button[data-cmd="edit"], */
 .defs-docs .docs-head>[data-cmd="edit"] {
   visibility: hidden;
 }
-
 
 .defs-docs .docs-head:hover>[data-cmd="edit"] {
   visibility: visible;
@@ -202,9 +195,15 @@ sch-meta>.meta-def+p {
   padding: 0.125rem 0.5rem;
 }
 
+.defs-docs [data-active="true"] .docs-head>.term-path>span {
+  color: salmon;
+}
+
 .defs-docs .docs-body {
   padding: 0 .25rem;
   margin: 1rem 0;
+  min-height: 1px;
+  border-bottom: 1px dashed var(--gray-800);
 }
 
 .defs-docs .docs-body :where(dd, dt) {
@@ -218,16 +217,22 @@ sch-meta>.meta-def+p {
 .defs-docs>[data-active="true"] {
   scroll-margin-block-start: 5rem;
   border-radius: 2px;
-  /* outline: 1px solid var(--gray-800); */
+}
+
+.defs-docs [aria-expanded="false"] {
+  display: none;
 }
 
 .defs-docs fieldset {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  margin: 0;
-  padding: 0;
+
   border: 0;
+  padding: 0 0.25rem 1rem;
+  margin: 0 0 1rem;
+  min-height: 1px;
+  border-bottom: 1px dashed var(--gray-800);
 }
 
 .defs-docs section {
