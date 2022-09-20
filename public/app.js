@@ -31,17 +31,25 @@ export const start = ({ project, diff = true, async = true }) =>
       this.remoteConnected()
 
       this.buffer = async ? buffer : f => f
-      this.addEventListener("tree-command", this.buffer(this.handleTreeCommand.bind(this)))
-      this.addEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 1000))
-      this.addEventListener("sch-update", this.handleSchUpdate)
+      this.addEventListener("tree-command", this)
+      this.addEventListener("sch-update", this)
     }
     disconnectedCallback() {
-      this.removeEventListener("tree-command", this.buffer(this.handleTreeCommand.bind(this)))
-      this.removeEventListener("tree-command", this.buffer(this.handleRemotePush.bind(this), 1000))
-      this.removeEventListener("sch-update", this.handleSchUpdate)
+      this.removeEventListener("tree-command", this)
+      this.removeEventListener("sch-update", this)
+    }
+    handleEvent(e) {
+      switch (e.type) {
+        case "tree-command":
+          this.buffer(() => this.handleTreeCommand(e))()
+          this.buffer(() => this.handleRemotePush(e), 1000)()
+          break
+        case "sch-update":
+          this.handleSchUpdate(e)
+      }
     }
     handleTreeCommand(e) {
-      Controller.router(this.projectStore, e.detail)
+      Controller.router(this.projectStore, e)
     }
     handleRemotePush(e) {
       if (!diff) return
@@ -84,8 +92,6 @@ export const start = ({ project, diff = true, async = true }) =>
     remoteConnected() {
       this.projectStore = Store.fromProject(project, { imports })
       this.projectStore.fields = project.fields
-      project.fields = []
-      this.projectStore.fields = this.projectStore.fields.map(file => file)
       Store.buildFolderTree(this.projectStore)
 
       FileTree({ target: "[id='project']", fileBody: "file-body", select: `[${project.currentFileId}]` }, this.projectStore)
