@@ -119,7 +119,7 @@ dd {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-[data-ext="fmodel"] [role="tree"] {
+[data-ext="model"] [role="tree"] {
   --tree-min-width: 374px;
   --tree-bg-color: var(--gray-900);
   --tree-color: var(--gray-300);

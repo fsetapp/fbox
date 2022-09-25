@@ -1,15 +1,22 @@
 import * as Sch from "../lib/sch.js"
 import { TOPLV_TAG, putAnchor, ref } from "../lib/pkgs/core.js"
-import { modelFile, htmlFile, jsonFile, folder, project as project_ } from "../lib/pkgs/proj.js"
+import { file, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
 import { randInt, reduce } from "../lib/utils.js"
-
 import json from "./sample.json"
+
+import * as model_ from "../lib/pkgs/model.js"
+import * as json_ from "../lib/pkgs/json.js"
+import * as html_ from "../lib/pkgs/html.js"
 
 export { project }
 
 const { structSheet: { toVal } } = M
+
+const modelFile = () => file({ t: model_.MODULE })
+const htmlFile = () => file({ t: json_.MODULE })
+const jsonFile = () => file({ t: html_.MODULE })
 
 const fmodelsFixture = (n, startId) => {
   let fixture = []
