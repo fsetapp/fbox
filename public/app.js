@@ -24,7 +24,7 @@ const { Store, Controller, Diff, Remote } = Project
 import { buffer, writable } from "../lib/utils.js"
 
 // const imports = [Model, Json, Html, Sheet]
-const imports = [Model, Sheet]
+const imports = [Model, Sheet, Html]
 
 export const start = ({ project, diff = true, async = true }) =>
   customElements.define("project-store", class extends HTMLElement {
