@@ -16,7 +16,7 @@ const { structSheet: { toVal } } = M
 
 const modelFile = () => file({ t: model_.MODULE })
 const htmlFile = () => file({ t: html_.MODULE })
-const jsonFile = () => file({ t: json_.MODULE })
+const jsonFile = opts => file({ t: json_.MODULE }, opts)
 
 const fmodelsFixture = (n, startId) => {
   let fixture = []
