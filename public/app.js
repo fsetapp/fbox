@@ -11,7 +11,7 @@ import * as Json from "../lib/pkgs/json/index.js"
 import * as Html from "../lib/pkgs/html/index.js"
 import * as Sheet from "../lib/pkgs/sheet/index.js"
 import { define } from "../lib/elements/define.js"
-import { remoteConnected, handleTreeCommand } from "../lib/actions/app.js"
+import { remoteConnected, handleTreeCommand as handleTreeCommand_ } from "../lib/actions/app.js"
 
 // Preview mode, import bundled packages
 // import { FileTree, Project } from "fset"
@@ -23,16 +23,27 @@ import { buffer } from "../lib/utils.js"
 
 const imports = [Model, Json, Html, Sheet]
 
-export const start = ({ project, diff = true, async = true }) => {
-  const buffer_ = async ? buffer : f => f
-  const flags = { diff, async }
+export const start = (flags = { diff: true, async: true }) => {
+  const buffer_ = flags.async ? buffer : f => f
+  const handleTreeCommand = e => buffer_(handleTreeCommand_, 10)(e)
+
   const domEvents = [
-    ["tree-command", buffer_(handleTreeCommand, 10)],
+    ["local-context", remoteConnected],
+    ["tree-command", handleTreeCommand],
     ["sch-update", () => { console.log("sch-update") }],
   ]
   const opts = {
-    connected: remoteConnected
+    // preFn: contextReq
   }
 
-  define("project-store", { project, imports, flags }, domEvents, opts)
+  const intialContext = { imports, flags }
+  define("project-store", intialContext, domEvents, opts)
+}
+
+export const pullState = project => {
+  // pulling state from fixture. This is state push approach. State is either from
+  // local storage or network storage like db on server.
+  document
+    .querySelector("project-store")
+    .dispatchEvent(new CustomEvent("local-context", { detail: { project } }))
 }

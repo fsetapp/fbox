@@ -1,8 +1,12 @@
-import { start } from "./app.js"
+import { start, pullState } from "./app.js"
 import { project } from "./backend_fixtures.js"
 
-start({ project })
-// testing resilient
-start({ project })
+start()
+
+// testing resilience (re-defining and re-attaching store)
+start()
 let store = document.querySelector("project-store")
 store.parentNode.prepend(store)
+//
+
+pullState(project)

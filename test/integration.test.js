@@ -1,9 +1,10 @@
 import { assert } from "@esm-bundle/chai";
 import { Cmd, all, one, oneById } from "./test_helper.js"
-import { start } from "../public/app.js"
+import { start, pullState } from "../public/app.js"
 import { project } from "../lib/pkgs/proj.js"
 
 var projectTree, fmodelTree
+start({ diff: false, async: false })
 
 describe("projectTree actions by mouse or keyboard and rendering", () => {
   const projectTree_ = () => document.querySelector("[id='project'] [role='tree']")
@@ -18,7 +19,7 @@ describe("projectTree actions by mouse or keyboard and rendering", () => {
         <sch-meta id="fsch"></sch-meta>
       </project-store>
     `
-    start({ project: project(), diff: false, async: false })
+    pullState(project())
     projectTree = projectTree_()
     fmodelTree = fmodelTree_()
   })
@@ -202,7 +203,7 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
         <sch-meta id="fsch"></sch-meta>
       </project-store>
     `
-    start({ project: project(), diff: false, async: false })
+    pullState(project())
     projectTree = projectTree_()
     fmodelTree = fmodelTree_()
   })
