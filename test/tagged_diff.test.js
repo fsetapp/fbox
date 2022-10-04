@@ -58,6 +58,7 @@ const assertLpath = (lpath) =>
 
 describe("#taggedDiff", () => {
   var project
+  const modelFile = () => P.file({ t: M.MODULE })
 
   beforeEach(() => {
     project = putAnchor(P.project)
@@ -65,7 +66,7 @@ describe("#taggedDiff", () => {
   })
   it("moves subfmodel to be fmodel", () => {
     Sch.put(project, "", [
-      { k: "file_1", sch: P.modelFile, index: 0 },
+      { k: "file_1", sch: modelFile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -107,7 +108,7 @@ describe("#taggedDiff", () => {
 
   it("moves fmodel to be subfmodel", () => {
     Sch.put(project, "", [
-      { k: "file_1", sch: P.modelFile, index: 0 },
+      { k: "file_1", sch: modelFile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "A1", sch: M.string, index: 0 },
@@ -145,8 +146,8 @@ describe("#taggedDiff", () => {
 
   it("moves fmodel to be fmodel", () => {
     Sch.put(project, "", [
-      { k: "file_1", sch: P.modelFile, index: 0 },
-      { k: "file_2", sch: P.modelFile, index: 1 },
+      { k: "file_1", sch: modelFile, index: 0 },
+      { k: "file_2", sch: modelFile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -183,8 +184,8 @@ describe("#taggedDiff", () => {
 
   it("removes fmodel one by one", () => {
     Sch.put(project, "", [
-      { k: "file_1", sch: P.modelFile, index: 0 },
-      { k: "file_2", sch: P.modelFile, index: 1 },
+      { k: "file_1", sch: modelFile, index: 0 },
+      { k: "file_2", sch: modelFile, index: 1 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -222,7 +223,7 @@ describe("#taggedDiff", () => {
 
   it("changes t", () => {
     Sch.put(project, "", [
-      { k: "file_1", sch: P.modelFile, index: 0 },
+      { k: "file_1", sch: modelFile, index: 0 },
     ])
     Sch.put(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
@@ -325,14 +326,14 @@ describe("#taggedDiff", () => {
   it("NEW_KEY folder", () => {
     let folder1 = P.folder()
     let folder11 = P.folder()
-    let modelFile = P.modelFile()
+    let modelFile_ = modelFile()
 
     Sch.put(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
     ])
     Sch.put(project, "[folder_1]", [
       { k: "folder_11", sch: () => folder11, index: 0 },
-      { k: "model_1", sch: () => modelFile, index: 0 }
+      { k: "model_1", sch: () => modelFile_, index: 0 }
     ])
 
     let current = initFileStore(project)
@@ -354,8 +355,8 @@ describe("#taggedDiff", () => {
 
       assert.deepEqual(changed.files[folder1_keep.$a].lpath.map(l => l.key), ["abc"])
       assert.deepEqual(changed.files[folder11_keep.$a].lpath.map(l => l.key), ["abc", "folder_11"])
-      assert.deepEqual(changed.files[modelFile.$a].key, "model_1")
-      assert.deepEqual(changed.files[modelFile.$a].lpath.map(l => l.key), ["abc"])
+      assert.deepEqual(changed.files[modelFile_.$a].key, "model_1")
+      assert.deepEqual(changed.files[modelFile_.$a].lpath.map(l => l.key), ["abc"])
       assert.deepEqual(changed.fmodels, {})
 
       assert.deepEqual(reorder.files, {})
@@ -368,7 +369,7 @@ describe("#taggedDiff", () => {
   it("REMOVED folder", () => {
     let folder1 = P.folder()
     let folder11 = P.folder()
-    let modelFile = P.modelFile()
+    let modelFile_ = modelFile()
 
     Sch.put(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
@@ -377,7 +378,7 @@ describe("#taggedDiff", () => {
       { k: "folder_11", sch: () => folder11, index: 0 },
     ])
     Sch.put(project, "[folder_1][folder_11]", [
-      { k: "model_1", sch: () => modelFile, index: 0 },
+      { k: "model_1", sch: () => modelFile_, index: 0 },
     ])
 
 
@@ -396,7 +397,7 @@ describe("#taggedDiff", () => {
 
       assert.equal(Object.keys(removed.files).length, 2)
       assert.isOk(removed.files[folder11_keep.$a])
-      assert.isOk(removed.files[modelFile.$a])
+      assert.isOk(removed.files[modelFile_.$a])
       assert.deepEqual(removed.fmodels, {})
 
       assert.deepEqual(changed.files, {})
@@ -411,7 +412,7 @@ describe("#taggedDiff", () => {
 
   it("NEW file", () => {
     let folder1 = P.folder()
-    let modelFile = P.modelFile()
+    let modelFile_ = modelFile()
 
     Sch.put(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
@@ -421,7 +422,7 @@ describe("#taggedDiff", () => {
     let base = asBase(current)
 
     Sch.put(current, "[folder_1]", [
-      { k: "model_1", sch: () => modelFile, index: 0 },
+      { k: "model_1", sch: () => modelFile_, index: 0 },
     ])
 
     runDiff(current, base)

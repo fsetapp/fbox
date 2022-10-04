@@ -3,20 +3,17 @@ import { TOPLV_TAG, putAnchor, ref } from "../lib/pkgs/core.js"
 import { file, folder, project as project_ } from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
+import * as H from "../lib/pkgs/html.js"
 import { randInt, reduce } from "../lib/utils.js"
 import json from "./sample.json"
-
-import * as model_ from "../lib/pkgs/model.js"
-import * as json_ from "../lib/pkgs/json.js"
-import * as html_ from "../lib/pkgs/html.js"
 
 export { project }
 
 const { structSheet: { toVal } } = M
 
-const modelFile = () => file({ t: model_.MODULE })
-const htmlFile = () => file({ t: html_.MODULE })
-const jsonFile = opts => file({ t: json_.MODULE }, opts)
+const modelFile = () => file({ t: M.MODULE })
+const htmlFile = () => file({ t: H.MODULE })
+const jsonFile = opts => file({ t: J.MODULE }, opts)
 
 const fmodelsFixture = (n, startId) => {
   let fixture = []

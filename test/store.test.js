@@ -7,9 +7,10 @@ import * as P from "../lib/pkgs/proj.js"
 import * as M from "../lib/pkgs/model.js"
 
 describe("store", () => {
-  var store
+  var store, modelFile
   beforeEach(() => {
     store = initStore(P.project)
+    modelFile = opts => P.file({ t: M.MODULE }, opts)
   })
   it("#buildFolderTree from empty folder", () => {
     const folder_a = { ...putAnchor(P.folder), key: "a" }
@@ -42,9 +43,9 @@ describe("store", () => {
 
   it("#buildFolderTree with file that contains toplv", () => {
     const folder_a = putAnchor(() => P.folder({ key: "a" }))
-    const modelFile1 = putAnchor(() => P.modelFile({ key: "model_file_1" }))
-    const modelFile2 = putAnchor(() => P.modelFile({ key: "model_file_2" }))
-    const modelFile3 = putAnchor(() => P.modelFile({ key: "model_file_3" }))
+    const modelFile1 = putAnchor(() => modelFile({ key: "model_file_1" }))
+    const modelFile2 = putAnchor(() => modelFile({ key: "model_file_2" }))
+    const modelFile3 = putAnchor(() => modelFile({ key: "model_file_3" }))
     const fmodel_a = putAnchor(M.record)
     const folder_a_keep = folder_a.fields.splice(0, 1)[0]
     // fields inside lpath should not happen, this is a fixture for writing defensive code
