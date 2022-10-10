@@ -215,6 +215,7 @@
 [data-ext="sheet"] .ctor-body .leaf>label {
   display: flex;
   align-items: center;
+  height: 100%;
 }
 
 [data-ext="sheet"] .ctor-body .leaf.string>label {
