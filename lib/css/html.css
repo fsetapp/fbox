@@ -1,106 +1,122 @@
-/* general */
+@import "./tree.css" layer(theme);
+@layer theme,
+general,
+toplv;
 
-[data-ext="html"] [role="treeitem"] {
-  padding: .125rem 0 .125rem 1.5rem;
-  margin: 1px 0;
+@layer general {
+  [data-ext="html"] [role="treeitem"] {
+    padding: .125rem 0 .125rem 1.5rem;
+  }
+
+  [data-ext="html"] .tag {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  [data-ext="html"] :is(.attr, .children) {
+    padding: 0;
+  }
+
+  [data-ext="html"] .children {
+    /* display: flex; */
+    /* flex-wrap: wrap; */
+    flex-basis: 100%;
+  }
+
+  [data-ext="html"] [role="group"] {
+    min-height: 1px;
+  }
+
+  [data-ext="html"] .t {
+    color: darkorange;
+    font-family: var(--font-mono);
+  }
+
+  [data-ext="html"] .t.text {
+    color: var(--gray-600);
+  }
+
+  [data-ext="html"] .t textarea {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  [data-ext="html"] [role="treeitem"] .t:before {
+    content: "[";
+    color: var(--item-selected-color, var(--gray-800));
+  }
+
+  [data-ext="html"] [role="treeitem"] .t:after {
+    content: "]";
+    color: var(--item-selected-color, var(--gray-800));
+  }
+
+  [data-ext="html"] .v textarea {
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-ext="html"] .v,
+  [data-ext="html"] .v textarea {
+    display: inline;
+    vertical-align: bottom;
+    width: 100%;
+  }
+
+  [data-ext="html"] [role="treeitem"] [data-diff]:before {
+    display: block;
+    box-shadow: 2px 0 0 0 var(--d-color);
+    background-color: transparent;
+    padding: 0 .5em;
+    font-size: .75rem;
+    color: var(--d-color);
+  }
+
+  @layer state {
+    [data-ext="html"] [role="treeitem"][aria-selected="true"] {
+      background-color: transparent;
+    }
+
+    [data-ext="html"] [role="treeitem"][aria-selected="true"]:focus {
+      outline-color: transparent;
+    }
+
+    [data-ext="html"] .node[role="treeitem"][aria-selected="false"]>.h:hover,
+    [data-ext="html"] .leaf[role="treeitem"][aria-selected="false"]:hover {
+      background: unset;
+    }
+
+    [data-ext="html"] [role="treeitem"][aria-selected="true"]>.t,
+    [data-ext="html"] [role="treeitem"][aria-selected="false"]>.t:hover {
+      --item-selected-color: var(--item-selected-border-color);
+    }
+
+    [data-ext="html"] [role="treeitem"][aria-selected="true"]:focus>.t {
+      /* background-color: var(--gray-800); */
+    }
+  }
 }
 
-[data-ext="html"] .phrasing[role="treeitem"] {
-  display: inline;
-  box-shadow: unset;
-  background-color: unset;
-  padding: 0;
-}
+@layer toplv {
+  [data-ext="html"] [data-tag="top_lv"] {
+    /* box-shadow: inset 0px 1.5px 0px 0px rgb(31 41 55); */
+    /* background-color: var(--item-root-bg-color); */
+    padding: .75rem;
+    margin: 1px;
+  }
 
-[data-ext="html"] [role="treeitem"][aria-selected="true"] {
-  background-color: unset
-}
+  [data-ext="html"] .root-item {
+    padding: 0
+  }
 
-[data-ext="html"] [role="treeitem"][aria-selected="true"]:focus {
-  box-shadow: unset;
-}
+  @layer state {
+    [data-ext="html"] [data-tag="top_lv"][aria-selected="true"] {
+      background-color: var(--item-root-bg-color);
+    }
 
-[data-ext="html"] .node[role="treeitem"][aria-selected="false"]>.h:hover,
-[data-ext="html"] .leaf[role="treeitem"][aria-selected="false"]:hover {
-  background: unset;
-}
-
-/* top-level */
-[data-ext="html"] [data-tag="top-lv"][role="treeitem"] {
-  box-shadow: inset 0px 1.5px 0px 0px rgb(31 41 55);
-  background-color: var(--item-root-bg-color);
-  padding: .75rem;
-}
-
-/* root */
-[data-ext="html"] .root-item[role="treeitem"] {
-  padding-left: 0;
-}
-
-[data-ext="html"] .root-item[role="treeitem"][aria-selected="true"]:focus {
-  box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
-}
-
-[data-ext="html"] [role="group"] {
-  /* border-left: 1px dashed var(--gray-800); */
-  min-height: 1px;
-}
-
-[data-ext="html"] .t {
-  display: inline-flex;
-  max-width: unset;
-  flex-grow: unset;
-  margin-right: unset;
-  color: darkorange;
-  font-family: var(--font-mono);
-}
-
-[data-ext="html"] .t.text {
-  color: var(--gray-600);
-}
-
-[data-ext="html"] .t textarea {
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-
-[data-ext="html"] [role="treeitem"][aria-selected="true"]>.t,
-[data-ext="html"] [role="treeitem"][aria-selected="false"]>.t:hover {
-  --item-selected-color: var(--item-selected-border-color);
-}
-
-[data-ext="html"] [role="treeitem"][aria-selected="true"]:focus>.t {
-  background-color: var(--gray-800);
-}
-
-[data-ext="html"] [role="treeitem"] .t:before {
-  content: "[";
-  color: var(--item-selected-color, var(--gray-800));
-}
-
-[data-ext="html"] [role="treeitem"] .t:after {
-  content: "]";
-  color: var(--item-selected-color, var(--gray-800));
-}
-
-[data-ext="html"] .v textarea {
-  margin: 0;
-  padding: 0;
-}
-
-[data-ext="html"] .v,
-[data-ext="html"] .v textarea {
-  display: inline;
-  vertical-align: bottom;
-  width: 100%;
-}
-
-[data-ext="html"] [role="treeitem"] [data-diff]:before {
-  display: block;
-  box-shadow: 2px 0 0 0 var(--d-color);
-  background-color: transparent;
-  padding: 0 .5em;
-  font-size: .75rem;
-  color: var(--d-color);
+    [data-ext="html"] .root-item[aria-selected="true"]:focus {
+      box-shadow: inset 0px 0px 0px 1px var(--item-selected-border-color);
+    }
+  }
 }

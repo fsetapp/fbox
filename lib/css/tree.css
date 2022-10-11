@@ -204,8 +204,7 @@ button {
   display: flex;
   color: var(--type-color);
   word-break: break-word;
-  margin-right: .5rem;
-  white-space: pre;
+  white-space: pre-line;
 }
 
 .m {
