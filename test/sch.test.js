@@ -1,5 +1,5 @@
 import { assert } from "@esm-bundle/chai";
-import { get, update, put, pop, move, changeT } from "../lib/sch.js"
+import { get, update, put, pop, move, changeT, onlyMostOuters } from "../lib/sch.js"
 import * as M from "../lib/pkgs/model.js"
 // Does it necessary needs registry? Seems like a coupling.
 import { s } from "../lib/pkgs/registry.js"
@@ -46,7 +46,7 @@ describe("Sch operations", () => {
       put(store, "", [{ k: `union_a`, sch: M.union, index: 0 }])
       put(store, "[union_a]", [{ k: `aa`, sch: M.bool, index: 0 }])
 
-      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.BOOL, M.STRING])
+      assert.deepEqual(store.fields.find(a => a.key == "union_a").schs.map(a => a.t), [M.BOOLEAN, M.STRING])
     })
 
     it("#put a dup key", () => {
@@ -144,7 +144,7 @@ describe("Sch operations", () => {
       assert.equal(store.t, M.RECORD)
     })
 
-    it.only("#changeT to a bunch of type", () => {
+    it("#changeT to a bunch of type", () => {
       put(store, "", [{ k: `a`, sch: M.string, index: 0 }])
       assert.equal(store.fields.find(a => a.key == "a").t, M.STRING)
 
@@ -212,6 +212,9 @@ describe("Sch operations", () => {
         { k: null, sch: M.int16, index: 1 },
         { k: null, sch: M.record, index: 2 }
       ])
+      put(store, "[d_union][][2]", [
+        { k: "descendant", sch: M.string, index: 0 }
+      ])
     })
 
     it("#move same list, one item", () => {
@@ -226,7 +229,7 @@ describe("Sch operations", () => {
 
     it("#move 1 indexed-src to 1 indexed-dst, one items", () => {
       move(store, { dstPath: "[b_tuple]", startIndex: 0 }, { "[d_union]": [{ id: "2", index: 2 }] })
-      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.RECORD, M.STRING, M.NULL, M.INT16])
+      assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.RECORD, M.STRING, M.INT8, M.INT16])
       assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.STRING, M.INT16])
     })
 
@@ -242,10 +245,11 @@ describe("Sch operations", () => {
       assert.isOk(store.fields.find(a => a.key == "d_union"))
     })
 
-    it("#move mutiple src(s), some of which are subtree", () => {
-      let d_union_2_0 = get(store, "[d_union][][2]")
-      move(store, { dstPath: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[d_union][][2]": [{ id: "0", index: 0 }] })
-      assert.deepEqual(store.fields.find(a => a.key == store.fields[1].key), d_union_2_0)
+    it("#move mutiple src(s), some of which are subtree (only allow most outer)", () => {
+      let d_union_2_nth = get(store, "[d_union][][2]")
+      move(store, { dstPath: "", startIndex: 1 }, { "[d_union][][2]": [{ id: "descendant", index: 0 }], "[d_union]": [{ id: "2", index: 2 }] })
+      assert.deepEqual(store.fields.find(a => a.key == store.fields[1].key), d_union_2_nth)
+      assert.equal("b_tuple", store.fields[2].key)
     })
 
     it("#move into one of selected items", () => {
@@ -270,5 +274,13 @@ describe("Sch operations", () => {
     // it("#bulkUpdate until halt", () => {
 
     // })
+  })
+
+  describe("#onlyMostOuters", () => {
+    it("filters descendants out", () => {
+      const expect = ["", "a", "ba", "c"]
+      const result = onlyMostOuters(["", "", "a", "ab", "ba", "c", "ca"])
+      assert.deepEqual(result, expect)
+    })
   })
 })
