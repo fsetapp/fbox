@@ -257,6 +257,15 @@ describe("Sch operations", () => {
       movep(store, { dstId: "[d_union]", startIndex: 1 }, { "": [{ id: "[d_union]", index: 3 }, { id: "[c_string]", index: 2 }] })
       assert.isOk(store.fields.find(a => a.key == "d_union"))
     })
+
+    // [a-index-0, b-index-1] -> [b-index-0: [a]]
+    it("#move index based item into next adjacent item whose dst (index based) path has changed", () => {
+      movep(store, { dstId: "[d_union][][2]", startIndex: 1 }, { "[d_union]": [{ id: "item", index: 1 }] })
+      const d_union = store.fields.find(a => a.key == "d_union")
+      assert.deepEqual(d_union.schs.map(a => a.t), [M.STRING, M.RECORD])
+      assert.equal(d_union.schs[1].fields.length, 2)
+      assert.equal(d_union.schs[1].fields[1].t, M.INT16)
+    })
   })
 
   describe("#update", () => {
