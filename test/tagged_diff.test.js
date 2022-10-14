@@ -11,6 +11,8 @@ import * as P from "../lib/pkgs/proj.js"
 import * as Sch from "../lib/sch.js"
 import { writable, forEach } from "../lib/utils.js";
 
+
+
 const asBase = (store) => Store.Indice.buildBaseIndices(JSON.parse(JSON.stringify(store)))
 const runDiff = (current, base) => writable(current, "_diffToRemote", diff(current, base))
 const assertDiff = (diff) => {
@@ -65,14 +67,14 @@ describe("#taggedDiff", () => {
     project = initStore(project)
   })
   it("moves subfmodel to be fmodel", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "file_1", sch: modelFile, index: 0 },
     ])
-    Sch.put(project, "[file_1]", [
+    Sch.putp(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
       { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
-    Sch.put(project, "[file_1][fmodel_A]", [
+    Sch.putp(project, "[file_1][fmodel_A]", [
       { k: "A1", sch: M.record, index: 0 },
       { k: "A2", sch: M.record, index: 1 }
     ])
@@ -80,21 +82,21 @@ describe("#taggedDiff", () => {
     let current = initFileStore(project)
     let base = asBase(current)
 
-    Sch.move(current, { dstPath: "[file_1]" }, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] })
-    let file1 = Sch.get(current, "[file_1]")
+    Sch.movep(current, { dstId: "[file_1]" }, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] })
+    let file1 = Sch.getp(current, "[file_1]")
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
       assert.deepEqual(added.files, {})
-      assert.deepEqual(added.fmodels["[file_1][A1]"], Sch.get(current, "[file_1][A1]"))
+      assert.deepEqual(added.fmodels["[file_1][A1]"], Sch.getp(current, "[file_1][A1]"))
       assert.equal(Object.keys(added.fmodels).length, 1)
 
       assert.deepEqual(removed.files, {})
       assert.deepEqual(removed.fmodels, {})
 
       assert.deepEqual(changed.files, {})
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.getp(current, "[file_1][fmodel_A]"), pa: file1.$a })
       assert.equal(Object.keys(changed.fmodels).length, 1)
 
       assert.deepEqual(reorder.files, {})
@@ -107,10 +109,10 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be subfmodel", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "file_1", sch: modelFile, index: 0 },
     ])
-    Sch.put(project, "[file_1]", [
+    Sch.putp(project, "[file_1]", [
       { k: "A1", sch: M.string, index: 0 },
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
       { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 2 },
@@ -119,7 +121,7 @@ describe("#taggedDiff", () => {
     let current = initFileStore(project)
     let base = asBase(current)
 
-    let moved = Sch.move(current, { dstPath: "[file_1][fmodel_A]" }, { "[file_1]": [{ id: "[file_1][A1]", index: 0 }] })
+    let moved = Sch.movep(current, { dstId: "[file_1][fmodel_A]" }, { "[file_1]": [{ id: "[file_1][A1]", index: 0 }] })
     moved = moved["[file_1][fmodel_A]"][0].sch
 
     runDiff(current, base)
@@ -129,11 +131,11 @@ describe("#taggedDiff", () => {
       assert.deepEqual(added.fmodels, {})
 
       assert.deepEqual(removed.files, {})
-      assert.deepEqual(removed.fmodels["[file_1][A1]"], { $a: moved.$a, pa: Sch.get(current, "[file_1]").$a })
+      assert.deepEqual(removed.fmodels["[file_1][A1]"], { $a: moved.$a, pa: Sch.getp(current, "[file_1]").$a })
       assert.equal(Object.keys(removed.fmodels).length, 1)
 
       assert.deepEqual(changed.files, {})
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], Sch.getp(current, "[file_1][fmodel_A]"))
       assert.equal(Object.keys(changed.fmodels).length, 1)
 
       assert.deepEqual(reorder.files, {})
@@ -145,11 +147,11 @@ describe("#taggedDiff", () => {
   })
 
   it("moves fmodel to be fmodel", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "file_1", sch: modelFile, index: 0 },
       { k: "file_2", sch: modelFile, index: 1 },
     ])
-    Sch.put(project, "[file_1]", [
+    Sch.putp(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
       { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
@@ -157,18 +159,18 @@ describe("#taggedDiff", () => {
     let current = initFileStore(project)
     let base = asBase(current)
 
-    let moved = Sch.move(current, { dstPath: "[file_2]" }, { "[file_1]": [{ id: "[file_1][fmodel_A]", index: 0 }] })
+    let moved = Sch.movep(current, { dstId: "[file_2]" }, { "[file_1]": [{ id: "[file_1][fmodel_A]", index: 0 }] })
     moved = moved["[file_2]"][0].sch
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
       assert.deepEqual(added.files, {})
-      assert.deepEqual(added.fmodels["[file_2][fmodel_A]"], Sch.get(current, "[file_2][fmodel_A]"))
+      assert.deepEqual(added.fmodels["[file_2][fmodel_A]"], Sch.getp(current, "[file_2][fmodel_A]"))
       assert.equal(Object.keys(added.fmodels).length, 1)
 
       assert.deepEqual(removed.files, {})
-      assert.deepEqual(removed.fmodels["[file_2][fmodel_A]"], Sch.get(current, "[file_1][fmodel_A]"))
+      assert.deepEqual(removed.fmodels["[file_2][fmodel_A]"], Sch.getp(current, "[file_1][fmodel_A]"))
       assert.equal(Object.keys(removed.fmodels).length, 1)
 
       assert.deepEqual(changed.files, {})
@@ -183,24 +185,24 @@ describe("#taggedDiff", () => {
   })
 
   it("removes fmodel one by one", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "file_1", sch: modelFile, index: 0 },
       { k: "file_2", sch: modelFile, index: 1 },
     ])
-    Sch.put(project, "[file_1]", [
+    Sch.putp(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
       { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
-    Sch.put(project, "[file_1][fmodel_A]", [
+    Sch.putp(project, "[file_1][fmodel_A]", [
       { k: "A1", sch: M.string, index: 0 },
     ])
 
     let current = initFileStore(project)
     let base = asBase(current)
 
-    let poppedPerSrc = Sch.popToRawSchs(current, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] })
-    assert.deepEqual(poppedPerSrc["[file_1][fmodel_A]"][0].sch(), Sch.get(base, "[file_1][fmodel_A][A1]"))
-    let file1 = Sch.get(current, "[file_1]")
+    let poppedPerSrc = Sch.popToRawSchs(current, { "[file_1][fmodel_A]": [{ id: "[file_1][fmodel_A][A1]", index: 0 }] }, { srcGet: (srcId, a, m) => m.path == srcId })
+    assert.deepEqual(poppedPerSrc["[file_1][fmodel_A]"][0].sch(), Sch.getp(base, "[file_1][fmodel_A][A1]"))
+    let file1 = Sch.getp(current, "[file_1]")
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
@@ -212,7 +214,7 @@ describe("#taggedDiff", () => {
       assert.deepEqual(removed.fmodels, {})
 
       assert.deepEqual(changed.files, {})
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.getp(current, "[file_1][fmodel_A]"), pa: file1.$a })
 
       assert.deepEqual(reorder.files, {})
       assert.deepEqual(reorder.fmodels, {})
@@ -222,23 +224,23 @@ describe("#taggedDiff", () => {
   })
 
   it("changes t", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "file_1", sch: modelFile, index: 0 },
     ])
-    Sch.put(project, "[file_1]", [
+    Sch.putp(project, "[file_1]", [
       { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
       { k: "fmodel_B", sch: () => M.record({ tag: TOPLV_TAG }), index: 1 },
     ])
-    Sch.put(project, "[file_1][fmodel_A]", [
+    Sch.putp(project, "[file_1][fmodel_A]", [
       { k: "A1", sch: M.string, index: 0 },
     ])
 
     let current = initFileStore(project)
     let base = asBase(current)
 
-    Sch.changeT(current, "[file_1][fmodel_A][A1]", () => Sch.clone(M.bool()))
-    Sch.changeT(current, "[file_1][fmodel_B]", () => Sch.clone(M.union()))
-    let file1 = Sch.get(current, "[file_1]")
+    Sch.changeTp(current, "[file_1][fmodel_A][A1]", () => Sch.clone(M.bool()))
+    Sch.changeTp(current, "[file_1][fmodel_B]", () => Sch.clone(M.union()))
+    let file1 = Sch.getp(current, "[file_1]")
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
@@ -251,8 +253,8 @@ describe("#taggedDiff", () => {
 
       assert.deepEqual(changed.files, {})
 
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.get(current, "[file_1][fmodel_A]"), pa: file1.$a })
-      assert.deepEqual(changed.fmodels["[file_1][fmodel_B]"], { ...Sch.get(current, "[file_1][fmodel_B]"), pa: file1.$a })
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...Sch.getp(current, "[file_1][fmodel_A]"), pa: file1.$a })
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_B]"], { ...Sch.getp(current, "[file_1][fmodel_B]"), pa: file1.$a })
 
       assert.deepEqual(reorder.files, {})
       assert.deepEqual(reorder.fmodels, {})
@@ -267,7 +269,7 @@ describe("#taggedDiff", () => {
 
     let folder_1 = P.folder()
     let folder_1_keep = folder_1.fields[0]
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "folder_1", sch: () => folder_1, index: 0 },
     ])
 
@@ -291,7 +293,7 @@ describe("#taggedDiff", () => {
   })
 
   it("NEW nested folder", () => {
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "folder_1", sch: P.folder, index: 0 },
     ])
 
@@ -300,7 +302,7 @@ describe("#taggedDiff", () => {
 
     let folder_11 = P.folder()
     let folder_11_keep = folder_11.fields[0]
-    Sch.put(current, "[folder_1]", [
+    Sch.putp(current, "[folder_1]", [
       { k: "folder_11", sch: () => folder_11, index: 0 },
     ])
 
@@ -328,10 +330,10 @@ describe("#taggedDiff", () => {
     let folder11 = P.folder()
     let modelFile_ = modelFile()
 
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
     ])
-    Sch.put(project, "[folder_1]", [
+    Sch.putp(project, "[folder_1]", [
       { k: "folder_11", sch: () => folder11, index: 0 },
       { k: "model_1", sch: () => modelFile_, index: 0 }
     ])
@@ -339,7 +341,7 @@ describe("#taggedDiff", () => {
     let current = initFileStore(project)
     let base = asBase(current)
 
-    let moved = Sch.move(current, { dstPath: "", startIndex: 0 }, { "": [{ id: "folder_1", index: 0, newK: "abc" }] })
+    let moved = Sch.movep(current, { dstId: "", startIndex: 0 }, { "": [{ id: "folder_1", index: 0, newK: "abc" }] })
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
@@ -371,13 +373,13 @@ describe("#taggedDiff", () => {
     let folder11 = P.folder()
     let modelFile_ = modelFile()
 
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
     ])
-    Sch.put(project, "[folder_1]", [
+    Sch.putp(project, "[folder_1]", [
       { k: "folder_11", sch: () => folder11, index: 0 },
     ])
-    Sch.put(project, "[folder_1][folder_11]", [
+    Sch.putp(project, "[folder_1][folder_11]", [
       { k: "model_1", sch: () => modelFile_, index: 0 },
     ])
 
@@ -385,7 +387,7 @@ describe("#taggedDiff", () => {
     let current = initFileStore(project)
     let base = asBase(current)
 
-    let popped = Sch.pop(current, "[folder_1]", [0])
+    let popped = Sch.popp(current, "[folder_1]", [0])
 
     runDiff(current, base)
     taggedDiff(current, (diff) => {
@@ -414,14 +416,14 @@ describe("#taggedDiff", () => {
     let folder1 = P.folder()
     let modelFile_ = modelFile()
 
-    Sch.put(project, "", [
+    Sch.putp(project, "", [
       { k: "folder_1", sch: () => folder1, index: 0 },
     ])
 
     let current = initFileStore(project)
     let base = asBase(current)
 
-    Sch.put(current, "[folder_1]", [
+    Sch.putp(current, "[folder_1]", [
       { k: "model_1", sch: () => modelFile_, index: 0 },
     ])
 
