@@ -11,7 +11,7 @@ import * as Json from "../lib/pkgs/json/index.js"
 import * as Html from "../lib/pkgs/html/index.js"
 import * as Sheet from "../lib/pkgs/sheet/index.js"
 import { define } from "../lib/elements/define.js"
-import { remoteConnected, handleTreeCommand as handleTreeCommand_ } from "../lib/actions/app.js"
+import { remoteConnected, handleTreeCommand as handleTreeCommand_, schUpdate } from "../lib/actions/app.js"
 
 // Preview mode, import bundled packages
 // import { FileTree, Project } from "fset"
@@ -30,7 +30,7 @@ export const start = (flags = { diff: true, async: true }) => {
   const domEvents = [
     ["local-context", remoteConnected],
     ["tree-command", handleTreeCommand],
-    ["sch-update", () => { console.log("sch-update") }],
+    ["sch-update", schUpdate],
   ]
   const opts = {
     // preFn: contextReq
