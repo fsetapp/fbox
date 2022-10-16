@@ -446,6 +446,39 @@ describe("#taggedDiff", () => {
       assertDiff({ changed, added, removed, reorder })
     })
   })
+
+  it.only("performs less than 50ms for ~1000 nodes", () => {
+    const nNodes = 1300
+    let modelFile_ = modelFile()
+
+    for (var i = 0; i < nNodes; i++)
+      modelFile_.fields.push(putAnchor(() => M.erecord({ tag: TOPLV_TAG })))
+    // modelFile_.fields = fmodelsFixture(1000, 11)
+    const ascSelected = modelFile_.fields.map((a, i) => ({ id: a.$a, index: i, key: i }))
+
+    Sch.putp(project, "", [
+      { k: "model_1", sch: () => modelFile_, index: 0 },
+    ])
+
+    let current = initFileStore(project)
+    let base = asBase(current)
+
+    // const dstId = current.$a
+    const dst = Sch.getp(current, "[model_1]")
+    const putSelectedStart = performance.now()
+    Sch.putSelected(current,
+      { dstId: dst.$a, startIndex: ascSelected[ascSelected.length - 1].index + 1 },
+      { [dst.$a]: ascSelected })
+    assert.isBelow(performance.now() - putSelectedStart, 100)
+
+    runDiff(current, base)
+
+    const taggedDiffStart = performance.now()
+    taggedDiff(current, (diff) => {
+      assert.isBelow(performance.now() - taggedDiffStart, 50)
+      assert.equal(Object.keys(diff.added.fmodels).length, nNodes)
+    })
+  })
 })
 describe("#taggedDiff from actions#addSch ", () => {
   // Database blows this up already
