@@ -59,7 +59,7 @@ button {
   margin-bottom: .5rem;
 }
 
-[data-tag="top_lv"] {
+[data-tag="top"] {
   margin: 1px;
   padding: .5rem 1px;
   /* gray-800 */
@@ -253,4 +253,28 @@ button {
 [role="tree"] textarea.no-resize {
   display: block;
   resize: none;
+}
+
+[aria-selected] [data-text] {
+  display: inline-grid;
+  align-items: center;
+  grid-template-columns: fit-content(40%) fit-content(60%);
+}
+
+[aria-selected] [data-text]:after {
+  content: attr(data-text);
+  visibility: hidden;
+  width: fit-content;
+  position: absolute;
+}
+
+[aria-selected] [data-text]:after,
+[aria-selected] :is(input[type="text"], textarea) {
+  grid-area: 1/3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+[aria-selected] [data-text=""]>:is(input[type="text"], textarea) {
+  width: fit-content;
 }

@@ -21,7 +21,7 @@
   scroll-margin: 0;
 }
 
-[data-ext="sheet"] [data-tag="top_lv"] {
+[data-ext="sheet"] [data-tag="top"] {
   padding: 1rem 0;
 }
 
@@ -168,7 +168,7 @@
   flex-wrap: wrap;
 }
 
-[data-ext="sheet"] [data-tag="top_lv"]>.h {
+[data-ext="sheet"] [data-tag="top"]>.h {
   margin-left: calc(2ch + .25rem);
 }
 
@@ -218,32 +218,12 @@
   height: 100%;
 }
 
-[data-ext="sheet"] .ctor-body .leaf.string>label {
-  display: inline-grid;
-  align-items: center;
-  flex: 1;
-  grid-template-columns: fit-content(40%) fit-content(60%);
-}
-
-[data-ext="sheet"] .ctor-body .leaf>[data-text]:after {
-  content: attr(data-text);
-  visibility: hidden;
-  width: fit-content;
-}
-
 [data-ext="sheet"] .ctor-body .leaf>[data-text]:after,
 [data-ext="sheet"] .data input[type="text"] {
-  grid-area: 1/3;
   padding: calc(.25rem - 2px) .5rem;
-  white-space: pre;
-  overflow: hidden;
 }
 
-[data-ext="sheet"] .data [data-text=""]>input[type="text"] {
-  width: fit-content;
-}
-
-[data-ext="sheet"] [aria-selected="true"]:not(.root-item, [data-tag="top_lv"], .ctor-name):focus {
+[data-ext="sheet"] [aria-selected="true"]:not(.root-item, [data-tag="top"], .ctor-name):focus {
   outline: 0
 }
 
