@@ -276,7 +276,7 @@ describe("#taggedDiff", () => {
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
-      assert.deepEqual(added.files[folder_1_keep.$a], folder_1_keep)
+      assert.isOk(Sch.is(added.files[folder_1_keep.$a], folder_1_keep))
       assert.deepEqual(added.fmodels, {})
 
       assert.deepEqual(removed.files, {})
@@ -309,7 +309,7 @@ describe("#taggedDiff", () => {
     runDiff(current, base)
     taggedDiff(current, (diff) => {
       const { changed, added, removed, reorder } = diff
-      assert.deepEqual(added.files[folder_11_keep.$a], folder_11_keep)
+      assert.isOk(Sch.is(added.files[folder_11_keep.$a], folder_11_keep))
       assert.deepEqual(added.fmodels, {})
 
       assert.deepEqual(removed.files, {})
@@ -447,13 +447,13 @@ describe("#taggedDiff", () => {
     })
   })
 
-  it.only("performs less than 50ms for ~1000 nodes", () => {
+  it("performs less than 50ms for ~1000 nodes", () => {
     const nNodes = 1300
     let modelFile_ = modelFile()
 
     for (var i = 0; i < nNodes; i++)
       modelFile_.fields.push(putAnchor(() => M.erecord({ tag: TOPLV_TAG })))
-    // modelFile_.fields = fmodelsFixture(1000, 11)
+
     const ascSelected = modelFile_.fields.map((a, i) => ({ id: a.$a, index: i, key: i }))
 
     Sch.putp(project, "", [
@@ -469,7 +469,7 @@ describe("#taggedDiff", () => {
     Sch.putSelected(current,
       { dstId: dst.$a, startIndex: ascSelected[ascSelected.length - 1].index + 1 },
       { [dst.$a]: ascSelected })
-    assert.isBelow(performance.now() - putSelectedStart, 100)
+    assert.isBelow(performance.now() - putSelectedStart, 150) // ideally 100ms, +50ms for slow machine
 
     runDiff(current, base)
 
