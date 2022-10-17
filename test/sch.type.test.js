@@ -14,8 +14,10 @@ it("#putAnchor to fmodel box", () => {
     assert.isOk(store.fields[model].$a)
 })
 
-it("#toVal invalid json", () => {
-  assert.isNotOk(toVal(M.integer(), "string"))
+// Use case: using M.toVal inside another X.toVal where it requires casting success all the time.
+// So we just coerce its box to be its value type.
+it("#toVal mismatch type and casting value resulting in value typed box", () => {
+  assert.equal(toVal(M.integer(), "string").t, M.STRING)
 })
 
 it("#toVal valid json", () => {
