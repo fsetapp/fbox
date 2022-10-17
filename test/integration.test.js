@@ -4,7 +4,7 @@ import { start, pullState } from "../public/app.js"
 import { project } from "../lib/pkgs/proj.js"
 
 var projectTree, fmodelTree
-start({ diff: false, async: false })
+start({ diff: true, async: false })
 
 describe("projectTree actions by mouse or keyboard and rendering", () => {
   const projectTree_ = () => document.querySelector("[id='project'] [role='tree']")
@@ -281,5 +281,36 @@ describe("fmodelTree and projectTree: dependent rendering actions", () => {
     assert.equal(one(projectTree, { lv: 2, i: 1 }).querySelector("[data-group-size]").dataset.groupSize, "2")
     assert.equal(one(projectTree, { lv: 2, i: 2 }).querySelector("[data-group-size]").dataset.groupSize, "2")
     assert.equal(document.activeElement, one(fmodelTree, { lv: 2, i: 2 }))
+  })
+
+  it("clones subtop down, async reselect", () => {
+    Cmd.addItem(projectTree)
+
+    Cmd.selectDown(projectTree)
+    fmodelTree = fmodelTree_()
+
+    // Add TopA to a file
+    Cmd.tab(projectTree)
+    Cmd.addItem(fmodelTree)
+    // Add 2 Top's fields
+    Cmd.selectDown(fmodelTree)
+    Cmd.addItem(fmodelTree)
+    Cmd.addItem(fmodelTree)
+
+    // select the 2 items and clone down
+    Cmd.selectDown(fmodelTree)
+    Cmd.multiSelectDown(fmodelTree)
+    Cmd.cloneDown(fmodelTree)
+
+    // let ori1 = one(fmodelTree, { lv: 3, i: 1 })
+    // let ori2 = one(fmodelTree, { lv: 3, i: 2 })
+    let clone1 = one(fmodelTree, { lv: 3, i: 3 })
+    let clone2 = one(fmodelTree, { lv: 3, i: 4 })
+
+    assert.equal(clone1.getAttribute("aria-selected"), "true")
+    assert.equal(clone2.getAttribute("aria-selected"), "true")
+
+    assert.isOk(document.activeElement)
+    assert.equal(document.activeElement, clone2)
   })
 })

@@ -263,6 +263,49 @@ describe("#taggedDiff", () => {
     })
   })
 
+  it("clones down subtoplv and be able to get its cached toplv", () => {
+    Sch.putp(project, "", [
+      { k: "file_1", sch: modelFile, index: 0 },
+    ])
+    Sch.putp(project, "[file_1]", [
+      { k: "fmodel_A", sch: () => M.record({ tag: TOPLV_TAG }), index: 0 },
+    ])
+    Sch.putp(project, "[file_1][fmodel_A]", [
+      { k: "A1", sch: M.string, index: 0 },
+      { k: "A2", sch: M.string, index: 1 },
+    ])
+
+    let current = initFileStore(project)
+    let base = asBase(current)
+
+    let file1 = Sch.getp(current, "[file_1]")
+    let fmodelA = Sch.getp(current, "[file_1][fmodel_A]")
+    let ascSelected = fmodelA.fields.map((a => ({ id: a.$a, index: a.index, key: a.key })))
+    Sch.putSelected(current,
+      { dstId: fmodelA.$a, startIndex: ascSelected[ascSelected.length - 1].index + 1 },
+      { [fmodelA.$a]: ascSelected })
+
+    assert.equal(fmodelA.fields.length, 4)
+
+    runDiff(current, base)
+    taggedDiff(current, (diff) => {
+      const { changed, added, removed, reorder } = diff
+      assert.deepEqual(added.files, {})
+      assert.deepEqual(added.fmodels, {})
+
+      assert.deepEqual(removed.files, {})
+      assert.deepEqual(removed.fmodels, {})
+
+      assert.deepEqual(changed.files, {})
+      assert.deepEqual(changed.fmodels["[file_1][fmodel_A]"], { ...fmodelA, pa: file1.$a })
+
+      assert.deepEqual(reorder.files, {})
+      assert.deepEqual(reorder.fmodels, {})
+
+      assertDiff({ changed, added, removed, reorder })
+    })
+  })
+
   it("NEW folder", () => {
     let current = initFileStore(project)
     let base = asBase(current)
