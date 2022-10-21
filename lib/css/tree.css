@@ -26,7 +26,7 @@ button {
   outline: 1px solid transparent;
   margin: 1px 0;
   position: relative;
-  counter-increment: line;
+  /* counter-increment: line; */
   scroll-margin: 5rem;
 }
 
@@ -37,8 +37,8 @@ button {
   height: inherit;
   display: flex;
   flex-direction: column;
-  counter-set: line;
-  counter-reset: line -1;
+  /* counter-set: line;
+  counter-reset: line -1; */
 }
 
 .root-item>.h {
@@ -100,13 +100,15 @@ button {
   font-size: .75rem;
 }
 
-.setnu .node>.h:before,
+
+/* Chrome sucks at recalculate style here 1.3 sec vs firefox 0.3 sec for lots of nodes */
+/* .setnu .node>.h:before,
 .setnu .leaf:before {
   min-width: 2rem;
   content: counter(line);
   text-align: center;
   font-family: monospace;
-}
+} */
 
 [data-diff] {
   --d-color: transparent;
