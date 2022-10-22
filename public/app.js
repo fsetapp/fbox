@@ -25,7 +25,7 @@ const imports = [Model, Json, Html, Sheet]
 
 export const start = (flags = { diff: true, async: true }) => {
   const buffer_ = flags.async ? buffer : f => f
-  const handleTreeCommand = buffer_(handleTreeCommand_, 0)
+  const handleTreeCommand = buffer_(handleTreeCommand_, 10)
 
   const domEvents = [
     ["local-context", remoteConnected],
