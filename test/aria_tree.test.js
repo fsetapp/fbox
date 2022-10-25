@@ -12,7 +12,7 @@ describe("aria [role='tree']", () => {
     document.body.innerHTML = `
       <ul id="tree" role="tree">
         <li id="root" aria-selected="false" aria-level="1" aria-posinset="1" role="treeitem">
-          <ul role="group id="fmodels">
+          <ul role="group" id="fmodels">
             <li></li>
             <li id="first" aria-selected="false" role="treeitem" aria-level="2" aria-posinset="1"></li>
             <li id="second" aria-selected="false" role="treeitem" aria-level="2" aria-posinset="2"></li>

@@ -63,7 +63,7 @@ describe("Sch operations", () => {
       putp(store, "", [{ k: null, sch: M.int16, index: 0 }])
 
       assert.equal(store.fields.length, 1)
-      assert.match(store.fields[0].key, /^key_/)
+      assert.match(store.fields[0].key, /^k_/)
     })
 
     it("#put index number as key", () => {
@@ -236,7 +236,7 @@ describe("Sch operations", () => {
 
     it("#move 2 indexed-src to 1 keyed-dst", () => {
       movep(store, { dstId: "", startIndex: 1 }, { "[d_union]": [{ id: "2", index: 2 }], "[b_tuple]": [{ id: "2", index: 2 }] })
-      assert.deepEqual(store.fields.map(a => a.key), ["a_list", "2", "2 -", "b_tuple", "c_string", "d_union"])
+      assert.deepEqual(store.fields.map(a => a.key), ["a_list", "2", "2-", "b_tuple", "c_string", "d_union"])
       assert.deepEqual(store.fields.find(a => a.key == "d_union").schs.map(a => a.t), [M.STRING, M.INT16])
       assert.deepEqual(store.fields.find(a => a.key == "b_tuple").schs.map(a => a.t), [M.STRING, M.INT8])
     })
