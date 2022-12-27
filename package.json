@@ -36,7 +36,6 @@
   "dependencies": {
     "insane": "^2.6.2",
     "lit-html": "^2.4.0",
-    "snarkdown": "^2.0.0",
-    "uuid": "^9.0.0"
+    "snarkdown": "^2.0.0"
   }
 }
