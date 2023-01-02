@@ -1,4 +1,5 @@
-let esbuild = require("esbuild")
+const esbuild = require("esbuild")
+const fs = require('fs')
 
 const commonOpts = {
   platform: "neutral",
@@ -28,6 +29,7 @@ const buildOne = pkg => {
   report(result)
 }
 
+fs.rm("lib/pkgs/fset/dist", { recursive: true, force: true }, err => err && console.log(err))
 // buildOne("model")
 // buildOne("json")
 // buildOne("html")

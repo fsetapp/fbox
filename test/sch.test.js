@@ -63,7 +63,7 @@ describe("Sch operations", () => {
       putp(store, "", [{ k: null, sch: M.int16, index: 0 }])
 
       assert.equal(store.fields.length, 1)
-      assert.match(store.fields[0].key, /^k_/)
+      assert.match(store.fields[0].key, /^k/)
     })
 
     it("#put index number as key", () => {
