@@ -1,7 +1,7 @@
 import * as Sch from "../lib/sch.js"
 import { TOPLV_TAG, putAnchor, ref } from "../lib/pkgs/core.js"
 import { file, folder, project as project_ } from "../lib/pkgs/proj.js"
-import * as M from "../lib/pkgs/model.js"
+import * as Model from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
 import * as H from "../lib/pkgs/html.js"
 import { randInt, reduce } from "../lib/utils.js"
@@ -9,16 +9,17 @@ import json from "./sample.json"
 
 export { project }
 
-const { structSheet: { toVal } } = M
+const { K: M_, C: M, toVal } = Model
 
-const modelFile = () => file({ t: M.MODULE })
+const modelFile = () => file({ t: Model.MODULE })
 const htmlFile = () => file({ t: H.MODULE })
 const jsonFile = opts => file({ t: J.MODULE }, opts)
 
 const fmodelsFixture = (n, startId) => {
+  const modelCtors = Object.values(M)
   let fixture = []
   for (var i = 0; i < n; i++)
-    fixture.push(M.all[randInt(M.all.length)])
+    fixture.push(modelCtors[randInt(modelCtors.length)])
 
   return fixture.map((sch, i) => {
     let fmodel = putAnchor(sch)
@@ -39,7 +40,9 @@ const allTypesFixture = () => {
       M.int32({ key: "age" })
     ]
   })
+  // to give ids to all schs
   record = Sch.clone(record)
+  // add "recur" field to point to itself
   let recur = putAnchor(() => ref(record.$a, { key: "recur" }))
   record.fields.unshift(recur)
 
@@ -57,7 +60,7 @@ const allTypesFixture = () => {
         })
       ]
     }),
-    M.erecord({
+    M.e_record({
       key: "Editor", schs: [
         ref(record.$a),
         M.record({ fields: [M.bool({ key: "active" })] })
@@ -77,8 +80,8 @@ const allTypesFixture = () => {
         ref(record.$a)
       ]
     }),
-    M.taggedUnion({
-      key: "Role", schs: [
+    M.tagged_union({
+      key: "Role", tagname: "tag", fields: [
         M.record({
           fields: [
             M.uint8({ key: "developer" })]
@@ -106,6 +109,7 @@ const allTypesFixture = () => {
   ]
 
   let tops = all.map(a => { a = Sch.copy(a); a.tag = TOPLV_TAG; return a })
+  // tops fixtures, plus the last one that wrap all the tops (without the tag)
   let fixtures = [...tops, M.record({ key: "Settings", fields: all })].map(a => Sch.clone(a))
   fixtures.unshift(record)
   return fixtures

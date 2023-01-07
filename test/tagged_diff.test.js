@@ -495,7 +495,7 @@ describe("#taggedDiff", () => {
     let modelFile_ = modelFile()
 
     for (var i = 0; i < nNodes; i++)
-      modelFile_.fields.push(putAnchor(() => M.erecord({ tag: TOPLV_TAG })))
+      modelFile_.fields.push(putAnchor(() => M.e_record({ tag: TOPLV_TAG })))
 
     const ascSelected = modelFile_.fields.map((a, i) => ({ id: a.$a, index: i, key: i }))
 

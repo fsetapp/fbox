@@ -1,0 +1,45 @@
+{
+  "record": {"t":10, "fields": [] },
+  "e_record": {"t":11, "schs": [], "sheet": {
+    "child": {
+      "0": { "of": [
+        {"m": "core", "t": "ref", "to": [{"t": "record", "metadata": { "strict": false } }]}
+      ]},
+      "1": { "of": ["record"] }
+    }
+  }},
+  "dict": {"t":12, "schs": [], "sheet": {
+    "child": {
+      "0": { "of": ["string"] },
+      "1": { }
+    }
+  }},
+  "list": {"t":13, "sch": {"t": 27}},
+  "tuple": {"t":14, "schs": [], "sheet": {
+    "children": { "min": 1 }
+  }},
+  "union": {"t":15, "schs": [], "sheet": {
+    "children": { "min": 1 }
+  }},
+  "tagged_union": {"t":16, "fields": [], "sheet": {
+    "children": {
+      "of": ["record", {"m": "core", "t": "ref", "to": ["record"] }],
+      "min": 1
+    }
+  }},
+
+  "string": {"t":17},
+  "int8": {"t":18},
+  "uint8": {"t":19},
+  "int16": {"t":20},
+  "uint16": {"t":21},
+  "int32": {"t":22},
+  "uint32": {"t":23},
+  "float32": {"t":24},
+  "float64": {"t":25},
+
+  "bool": {"t":26},
+  "nil": {"t":27, "v": null},
+  "integer": {"t":31},
+  "number": {"t":32}
+}
