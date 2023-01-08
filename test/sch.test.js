@@ -1,10 +1,10 @@
 import { assert } from "@esm-bundle/chai";
 import { getp, updatep, putp, popp, movep, changeTp, onlyMostOuters } from "../lib/sch.js"
-import * as M from "../lib/pkgs/model.js"
+import M, * as Model from "../lib/pkgs/model.js"
 // Does it necessary needs registry? Seems like a coupling.
 import { s } from "../lib/pkgs/registry.js"
 // So every store seems to need the registry (skip module import, treat them as global)
-const initStore = () => M.record({ structSheet: { [s(M).t]: M.structSheet } })
+const initStore = () => M.record({ structSheet: { [s(Model).t]: Model } })
 
 
 describe("Sch operations", () => {

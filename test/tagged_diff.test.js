@@ -5,7 +5,7 @@ import { taggedDiff } from "../lib/repo/tagged_diff.js"
 import { diff } from "../lib/sch/diff.js"
 
 import { putAnchor, TOPLV_TAG } from "../lib/pkgs/core.js"
-import * as M from "../lib/pkgs/model.js"
+import M from "../lib/pkgs/model.js"
 import * as P from "../lib/pkgs/proj.js"
 
 import * as Sch from "../lib/sch.js"

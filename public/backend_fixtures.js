@@ -1,7 +1,7 @@
 import * as Sch from "../lib/sch.js"
 import { TOPLV_TAG, putAnchor, ref } from "../lib/pkgs/core.js"
 import { file, folder, project as project_ } from "../lib/pkgs/proj.js"
-import * as Model from "../lib/pkgs/model.js"
+import M, * as Model from "../lib/pkgs/model.js"
 import * as J from "../lib/pkgs/json.js"
 import * as H from "../lib/pkgs/html.js"
 import { randInt, reduce } from "../lib/utils.js"
@@ -9,14 +9,14 @@ import json from "./sample.json"
 
 export { project }
 
-const { K: M_, C: M, toVal } = Model
+const { toVal } = Model
 
 const modelFile = () => file({ t: Model.MODULE })
 const htmlFile = () => file({ t: H.MODULE })
 const jsonFile = opts => file({ t: J.MODULE }, opts)
 
 const fmodelsFixture = (n, startId) => {
-  const modelCtors = Object.values(M)
+  const modelCtors = Object.values(Model.C)
   let fixture = []
   for (var i = 0; i < n; i++)
     fixture.push(modelCtors[randInt(modelCtors.length)])
